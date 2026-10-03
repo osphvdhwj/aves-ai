@@ -45,6 +45,8 @@
         tools:ignore="SystemPermissionTypo" />
     <!-- TODO TLAD still needed to fetch map tiles / reverse geocoding / else ? check in release mode -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- to bind to the AI companion app, if installed -->
+    <uses-permission android:name="io.github.osphvdhwj.aves.ai.permission.BIND_AI_COMPANION" />
     <!-- from Android 12 (API 31), users can optionally grant access to the media management permission -->
     <uses-permission
         android:name="android.permission.MANAGE_MEDIA"
@@ -76,6 +78,8 @@
 
     <!-- from Android 11 (API 30), we should define <queries> to make other apps visible to this app -->
     <queries>
+        <!-- AI companion app (optional), to allow Aves to bind to it -->
+        <package android:name="io.github.osphvdhwj.aves.ai" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
         </intent>

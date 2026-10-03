@@ -25,6 +25,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import app.loup.streams_channel.StreamsChannel
 import deckers.thibault.aves.channel.calls.AccessibilityHandler
+import deckers.thibault.aves.channel.calls.AiHandler
 import deckers.thibault.aves.channel.calls.AnalysisHandler
 import deckers.thibault.aves.channel.calls.AppAdapterHandler
 import deckers.thibault.aves.channel.calls.AppProfileHandler
@@ -156,6 +157,7 @@ open class MainActivity : FlutterFragmentActivity() {
         analysisHandler = AnalysisHandler(this, ::onAnalysisCompleted)
         mediaSessionHandler = MediaSessionHandler(this, mediaCommandStreamHandler)
         MethodChannel(messenger, AccessibilityHandler.CHANNEL).setMethodCallHandler(AccessibilityHandler(this))
+        MethodChannel(messenger, AiHandler.CHANNEL).setMethodCallHandler(AiHandler(this))
         MethodChannel(messenger, AnalysisHandler.CHANNEL).setMethodCallHandler(analysisHandler)
         MethodChannel(messenger, AppAdapterHandler.CHANNEL).setMethodCallHandler(AppAdapterHandler(this))
         MethodChannel(messenger, DebugHandler.CHANNEL).setMethodCallHandler(DebugHandler(this))
