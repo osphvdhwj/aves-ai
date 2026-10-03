@@ -1,4 +1,5 @@
 import 'package:aves/model/settings/settings.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
@@ -28,6 +29,34 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
         return AvesExpansionTile(
           title: 'Settings',
           children: [
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: HighlightTitle(title: 'AI Companion'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: FutureBuilder<AiHealth>(
+                future: aiService.health(),
+                builder: (context, snap) {
+                  final h = snap.data;
+                  if (snap.connectionState != ConnectionState.done) {
+                    return const Text('querying companion...');
+                  }
+                  if (h == null) {
+                    return const Text('no result');
+                  }
+                  return InfoRowGroup(
+                    info: {
+                      'installed': '${h.installed}',
+                      'connected': '${h.connected}',
+                      'apiVersion': '${h.apiVersion}',
+                      'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
+                      if (h.error != null) 'error': h.error!,
+                    },
+                  );
+                },
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
