@@ -80,6 +80,7 @@
     <queries>
         <!-- AI companion app (optional), to allow Aves to bind to it -->
         <package android:name="io.github.osphvdhwj.aves.ai" />
+        <package android:name="io.github.osphvdhwj.aves.ai.debug" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
         </intent>

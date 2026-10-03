@@ -31,9 +31,10 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
     private fun health(result: MethodChannel.Result) {
         scope.launch {
             val out = mutableMapOf<String, Any?>()
-            out["companionPackage"] = COMPANION_PACKAGE
 
-            val installed = isCompanionInstalled()
+            val companionPackage = findInstalledCompanionPackage()
+            out["companionPackage"] = companionPackage
+            val installed = companionPackage != null
             out["installed"] = installed
             if (!installed) {
                 out["connected"] = false
@@ -41,7 +42,7 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
                 return@launch
             }
 
-            val binder = bindWithTimeout(BIND_TIMEOUT_MS)
+            val binder = bindWithTimeout(companionPackage!!, BIND_TIMEOUT_MS)
             if (binder == null) {
                 out["connected"] = false
                 withContext(Dispatchers.Main) { result.success(out) }
@@ -66,18 +67,23 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
         }
     }
 
-    private fun isCompanionInstalled(): Boolean = try {
-        @Suppress("DEPRECATION")
-        context.packageManager.getPackageInfo(COMPANION_PACKAGE, 0)
-        true
-    } catch (e: Exception) {
-        false
+    private fun findInstalledCompanionPackage(): String? {
+        for (pkg in COMPANION_PACKAGES) {
+            try {
+                @Suppress("DEPRECATION")
+                context.packageManager.getPackageInfo(pkg, 0)
+                return pkg
+            } catch (_: Exception) {
+                // not this one
+            }
+        }
+        return null
     }
 
     @Volatile
     private var lastConnection: ServiceConnection = NoopConnection
 
-    private suspend fun bindWithTimeout(timeoutMs: Long): IBinder? {
+    private suspend fun bindWithTimeout(companionPackage: String, timeoutMs: Long): IBinder? {
         val deferred = CompletableDeferred<IBinder>()
         val conn = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -88,7 +94,7 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
         lastConnection = conn
 
         val intent = Intent().apply {
-            setComponent(ComponentName(COMPANION_PACKAGE, COMPANION_SERVICE))
+            setComponent(ComponentName(companionPackage, COMPANION_SERVICE))
         }
 
         val ok = try {
@@ -114,7 +120,10 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
     companion object {
         private val LOG_TAG = LogUtils.createTag<AiHandler>()
         const val CHANNEL = "deckers.thibault/aves/ai"
-        const val COMPANION_PACKAGE = "io.github.osphvdhwj.aves.ai"
+        val COMPANION_PACKAGES = listOf(
+            "io.github.osphvdhwj.aves.ai.debug",
+            "io.github.osphvdhwj.aves.ai",
+        )
         const val COMPANION_SERVICE = "io.github.osphvdhwj.aves.ai.AiCompanionService"
         const val BIND_TIMEOUT_MS = 3000L
     }
