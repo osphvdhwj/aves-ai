@@ -1,5 +1,6 @@
 import 'package:aves/services/common/channel.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:flutter/services.dart';
 
 class AiService {
   static const _platform = AvesMethodChannel('deckers.thibault/aves/ai');
@@ -16,9 +17,9 @@ class AiService {
         capabilities: (map['capabilities'] as List?)?.cast<String>() ?? const [],
         error: map['error'] as String?,
       );
-    } catch (e, s) {
-      log('failed to query AI companion health', error: e, stackTrace: s);
-      return const AiHealth(installed: false, connected: false);
+    } on PlatformException catch (e, s) {
+      await reportService.recordError(e, s);
+      return AiHealth(installed: false, connected: false, error: e.message);
     }
   }
 }
