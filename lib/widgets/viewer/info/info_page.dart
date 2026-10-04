@@ -20,7 +20,6 @@ import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
 import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
-import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/multipage/conductor.dart';
 import 'package:aves/widgets/viewer/page_entry_builder.dart';
 import 'package:aves_model/aves_model.dart';
