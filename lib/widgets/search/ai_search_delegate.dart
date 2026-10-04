@@ -1,8 +1,11 @@
 import 'package:aves/model/ai/prompt_library.dart';
+import 'package:aves/model/ai/prompt_service.dart';
+import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 
 /// Placeholder AI search surface. Behavior to be added incrementally:
 ///   - dynamic prompts from AVES library data (albums, tags, dates)
@@ -26,9 +29,22 @@ class AiSearchDelegate extends AvesSearchDelegate {
     _rotating = PromptLibrary.pick(6);
   }
 
+  List<String> _dynamic = const [];
+
   @override
   Widget buildSuggestions(BuildContext context) {
     final theme = Theme.of(context);
+
+    // Build dynamic prompts once per delegate lifetime.
+    if (_dynamic.isEmpty) {
+      try {
+        final source = context.read<CollectionSource>();
+        _dynamic = AiPromptService(source).buildDynamicPrompts(max: 4);
+      } catch (_) {
+        _dynamic = const [];
+      }
+    }
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -49,6 +65,14 @@ class AiSearchDelegate extends AvesSearchDelegate {
             onTap: () => _onPrompt(context, 'My best pictures'),
           ),
           const SizedBox(height: 8),
+          ..._dynamic.map((p) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _PromptCard(
+                  title: p,
+                  subtitle: 'from your library',
+                  onTap: () => _onPrompt(context, p),
+                ),
+              )),
           ..._rotating.map((p) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _PromptCard(
