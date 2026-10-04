@@ -5,6 +5,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/widgets/about/about_page.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/debug/app_debug_page.dart';
@@ -69,6 +70,7 @@ class AvesNavItem extends Equatable {
   bool get _defaultTopLevel {
     switch (route) {
       case AboutPage.routeName:
+      case AiChatPage.routeName:
       case AppDebugPage.routeName:
       case SearchPage.routeName:
       case SettingsPage.routeName:
@@ -113,6 +115,8 @@ class AvesNavItem extends Equatable {
         return (_) => const TagListPage(initialGroup: null);
       case AboutPage.routeName:
         return (_) => const AboutPage();
+      case AiChatPage.routeName:
+        return (_) => const AiChatPage();
       case AppDebugPage.routeName:
         return (_) => const AppDebugPage();
       case ExplorerPage.routeName:

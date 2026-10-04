@@ -15,6 +15,7 @@ import 'package:aves/theme/icons.dart';
 import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/utils/file_utils.dart';
 import 'package:aves/widgets/about/about_page.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/basic/text/outlined.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
@@ -124,6 +125,10 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
     final drawerItems = <Widget>[
       _buildHeader(context),
       _buildHomeLink(),
+      const PageNavTile(
+        key: Key('drawer-ai-chat'),
+        navItem: AvesNavItem(route: AiChatPage.routeName),
+      ),
       ..._buildTypeLinks(),
       _buildAlbumLinks(context),
       ..._buildPageLinks(context),

@@ -4,6 +4,7 @@ import 'package:aves/model/filters/mime.dart';
 import 'package:aves/model/filters/type.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/about/about_page.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/debug/app_debug_page.dart';
@@ -49,6 +50,8 @@ class NavigationDisplay {
         return l10n.aboutPageTitle;
       case AppDebugPage.routeName:
         return 'Debug';
+      case AiChatPage.routeName:
+        return 'Ask AI';
       case ExplorerPage.routeName:
         return l10n.explorerPageTitle;
       case SearchPage.routeName:
@@ -76,6 +79,8 @@ class NavigationDisplay {
         return AIcons.info;
       case AppDebugPage.routeName:
         return AIcons.debug;
+      case AiChatPage.routeName:
+        return AIcons.help;
       case ExplorerPage.routeName:
         return AIcons.explorer;
       case SearchPage.routeName:
