@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/behaviour/pop/double_back.dart';
 import 'package:aves/widgets/common/behaviour/pop/scope.dart';
@@ -244,7 +243,7 @@ class _InputRow extends StatelessWidget {
             tooltip: 'Commands',
           ),
           IconButton(
-            icon: const Icon(AIcons.add),
+            icon: const Icon(Icons.add),
             onPressed: onPlus,
             tooltip: 'Attach',
           ),
