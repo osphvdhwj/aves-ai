@@ -23,6 +23,7 @@ class ViewerOverlayPage extends StatelessWidget {
     SettingKeys.showOverlayMinimapKey,
     SettingKeys.overlayHistogramStyleKey,
     SettingKeys.showOverlayThumbnailPreviewKey,
+    SettingKeys.showInfoThumbnailKey,
   ];
 
   const new({super.key});
@@ -127,6 +128,13 @@ class ViewerOverlayPage extends StatelessWidget {
                 selector: (context, s) => s.showOverlayThumbnailPreview,
                 onChanged: (v) => settings.showOverlayThumbnailPreview = v,
                 title: (_) => l10n.settingsViewerShowOverlayThumbnails,
+                trailing: _trailingIcon(context, AIcons.thumbnailBar),
+              ),
+              SettingsSwitchListTile(
+                selector: (context, s) => s.showInfoThumbnail,
+                onChanged: (v) => settings.showInfoThumbnail = v,
+                title: (_) => const Text('Info page thumbnail'),
+                subtitle: (_) => const Text('Show entry thumbnail at the top of the info page'),
                 trailing: _trailingIcon(context, AIcons.thumbnailBar),
               ),
             ],

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/multipage.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/filters/filters.dart';
 import 'package:aves/model/selection.dart';
 import 'package:aves/model/settings/settings.dart';
@@ -281,6 +282,10 @@ class _InfoPageContentState extends State<_InfoPageContent> {
             metadataNotifier: _metadataNotifier,
             onBackPressed: widget.goToViewer,
           ),
+          if (settings.showInfoThumbnail)
+            SliverToBoxAdapter(
+              child: _InfoThumbnail(entry: entry),
+            ),
           ValueListenableBuilder<bool>(
             valueListenable: _isBasicSectionVisibleNotifier,
             builder: (context, visible, child) {
@@ -338,5 +343,33 @@ class _InfoPageContentState extends State<_InfoPageContent> {
   void _onFilterSelection(CollectionFilter filter) {
     if (!mounted) return;
     SelectFilterNotification(filter).dispatch(context);
+  }
+}
+
+class _InfoThumbnail extends StatelessWidget {
+  final AvesEntry entry;
+
+  const new({super.key, required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Image(
+            image: entry.getThumbnail(extent: 512),
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stack) => Container(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              alignment: Alignment.center,
+              child: const Icon(Icons.broken_image, size: 32),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
