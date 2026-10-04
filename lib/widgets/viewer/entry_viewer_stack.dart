@@ -683,7 +683,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
     await _onLeave();
     final uri = entryNotifier.value?.uri;
     unawaited(
-      Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      Navigator.maybeOf(context)?.push(
         MaterialPageRoute(
           settings: const RouteSettings(name: CollectionPage.routeName),
           builder: (context) => CollectionPage(
@@ -692,7 +692,6 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
             highlightTest: uri != null ? (entry) => entry.uri == uri : null,
           ),
         ),
-        (route) => false,
       ),
     );
   }

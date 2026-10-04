@@ -463,7 +463,7 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     final isMainMode = context.read<ValueNotifier<AppMode>>().value == .main;
     if (!isMainMode) return;
 
-    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+    Navigator.maybeOf(context)?.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: CollectionPage.routeName),
         builder: (context) {
@@ -477,7 +477,6 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
           );
         },
       ),
-      (route) => false,
     );
   }
 

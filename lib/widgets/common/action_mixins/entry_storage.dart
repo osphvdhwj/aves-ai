@@ -149,7 +149,7 @@ mixin EntryStorageMixin on FeedbackMixin, PermissionAwareMixin, SizeAwareMixin, 
                 label: l10n.showButtonLabel,
                 onPressed: () {
                   if (navigator != null) {
-                    navigator.pushAndRemoveUntil(
+                    navigator.push(
                       MaterialPageRoute(
                         settings: const RouteSettings(name: CollectionPage.routeName),
                         builder: (context) => CollectionPage(
@@ -158,7 +158,6 @@ mixin EntryStorageMixin on FeedbackMixin, PermissionAwareMixin, SizeAwareMixin, 
                           highlightTest: (entry) => newUris.contains(entry.uri),
                         ),
                       ),
-                      (route) => false,
                     );
                   }
                 },
@@ -505,7 +504,7 @@ mixin EntryStorageMixin on FeedbackMixin, PermissionAwareMixin, SizeAwareMixin, 
         targetFilters.add(StoredAlbumFilter(destinationAlbum, source.getStoredAlbumDisplayName(context, destinationAlbum)));
       }
       unawaited(
-        Navigator.maybeOf(context)?.pushAndRemoveUntil(
+        Navigator.maybeOf(context)?.push(
           MaterialPageRoute(
             settings: const RouteSettings(name: CollectionPage.routeName),
             builder: (context) => CollectionPage(
@@ -514,7 +513,6 @@ mixin EntryStorageMixin on FeedbackMixin, PermissionAwareMixin, SizeAwareMixin, 
               highlightTest: highlightTest,
             ),
           ),
-          (route) => false,
         ),
       );
     } else {

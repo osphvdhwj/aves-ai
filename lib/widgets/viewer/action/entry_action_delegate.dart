@@ -322,7 +322,7 @@ class EntryActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
       onPressed: () {
         if (navigator != null) {
           final source = _collection.source;
-          navigator.pushAndRemoveUntil(
+          navigator.push(
             MaterialPageRoute(
               settings: const RouteSettings(name: CollectionPage.routeName),
               builder: (context) => CollectionPage(
@@ -331,7 +331,6 @@ class EntryActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
                 highlightTest: (entry) => entry.uri == editedUri,
               ),
             ),
-            (route) => false,
           );
         }
       },

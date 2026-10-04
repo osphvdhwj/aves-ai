@@ -133,8 +133,8 @@ class ViewerOverlayPage extends StatelessWidget {
               SettingsSwitchListTile(
                 selector: (context, s) => s.showInfoThumbnail,
                 onChanged: (v) => settings.showInfoThumbnail = v,
-                title: (_) => const Text('Info page thumbnail'),
-                subtitle: (_) => const Text('Show entry thumbnail at the top of the info page'),
+                title: (_) => 'Info page thumbnail',
+                subtitle: (_) => 'Show entry thumbnail at the top of the info page',
                 trailing: _trailingIcon(context, AIcons.thumbnailBar),
               ),
             ],
