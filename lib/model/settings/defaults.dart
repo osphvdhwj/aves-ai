@@ -17,6 +17,7 @@ class SettingsDefaults {
   // app
   static const hasAcceptedTerms = false;
   static const canUseAnalysisService = true;
+  static const aiSearchEnabled = false;
   static const isInstalledAppAccessAllowed = false;
   static const isErrorReportingAllowed = false;
   static const calendar = ACalendar.gregorian;

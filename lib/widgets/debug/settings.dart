@@ -81,6 +81,12 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
               onChanged: (v) => settings.canUseAnalysisService = v,
               title: const Text('canUseAnalysisService'),
             ),
+            SwitchListTile(
+              value: settings.aiSearchEnabled,
+              onChanged: (v) => settings.aiSearchEnabled = v,
+              title: const Text('aiSearchEnabled'),
+              subtitle: const Text('replace search page with AI surface'),
+            ),
             Padding(
               padding: const EdgeInsets.all(8),
               child: InfoRowGroup(
