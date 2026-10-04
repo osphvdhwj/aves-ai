@@ -8,6 +8,7 @@ import 'package:aves/widgets/common/behaviour/pop/scope.dart';
 import 'package:aves/widgets/common/behaviour/pop/tv_navigation.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -211,48 +212,103 @@ class _InputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: theme.dividerColor)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            icon: const Text('@', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-            onPressed: onAt,
-            tooltip: 'Modes',
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: const InputDecoration(
-                hintText: 'Ask or type /find dog...',
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              ),
-              onSubmitted: (_) => onSubmit(),
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(28),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _RoundActionButton(
+              label: '@',
+              tooltip: 'Modes',
+              onPressed: onAt,
+              colors: colors,
             ),
-          ),
-          IconButton(
-            icon: const Text('/', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-            onPressed: onSlash,
-            tooltip: 'Commands',
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: onPlus,
-            tooltip: 'Attach',
-          ),
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: onSubmit,
-            tooltip: 'Send',
-          ),
-        ],
+            Expanded(
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                decoration: InputDecoration(
+                  hintText: 'Ask or type /find dog...',
+                  hintStyle: TextStyle(color: colors.onSurfaceVariant),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                ),
+                onSubmitted: (_) => onSubmit(),
+              ),
+            ),
+            _RoundActionButton(
+              label: '/',
+              tooltip: 'Commands',
+              onPressed: onSlash,
+              colors: colors,
+            ),
+            const SizedBox(width: 2),
+            _RoundActionButton(
+              icon: Icons.add,
+              tooltip: 'Attach',
+              onPressed: onPlus,
+              colors: colors,
+            ),
+            const SizedBox(width: 2),
+            _RoundActionButton(
+              icon: Icons.send,
+              tooltip: 'Send',
+              onPressed: onSubmit,
+              colors: colors,
+              accent: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundActionButton extends StatelessWidget {
+  final String? label;
+  final IconData? icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final ColorScheme colors;
+  final bool accent;
+
+  const new({
+    super.key,
+    this.label,
+    this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    required this.colors,
+    this.accent = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = accent ? colors.onPrimary : colors.onSurfaceVariant;
+    final bg = accent ? colors.primary : Colors.transparent;
+    final child = icon != null
+        ? Icon(icon, size: 22, color: fg)
+        : Text(label ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: fg));
+    return PressableScale(
+      onTap: onPressed,
+      scale: 0.88,
+      child: Tooltip(
+        message: tooltip,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+          alignment: Alignment.center,
+          child: child,
+        ),
       ),
     );
   }

@@ -182,8 +182,7 @@ class _FaceRow extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, i) {
           if (i == 6) {
-            return InkWell(
-              borderRadius: BorderRadius.circular(_circleDim / 2),
+            return PressableScale(
               onTap: () => _notify(context, 'more'),
               child: Container(
                 width: _circleDim,
@@ -196,17 +195,16 @@ class _FaceRow extends StatelessWidget {
               ),
             );
           }
-          return InkWell(
-            borderRadius: BorderRadius.circular(_circleDim / 2),
+          return PressableScale(
             onTap: () => _notify(context, 'person ${i + 1}'),
             child: Container(
               width: _circleDim,
               height: _circleDim,
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
+                color: theme.colorScheme.secondaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.person, color: theme.colorScheme.onSurfaceVariant),
+              child: Icon(Icons.person, color: theme.colorScheme.onSecondaryContainer),
             ),
           );
         },
