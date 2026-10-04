@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import deckers.thibault.aves.utils.LogUtils
@@ -16,14 +17,17 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import java.util.concurrent.atomic.AtomicLong
 
 class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val requestCounter = AtomicLong(0)
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "health" -> health(result)
+            "chat" -> chat(call, result)
             else -> result.notImplemented()
         }
     }
@@ -31,7 +35,6 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
     private fun health(result: MethodChannel.Result) {
         scope.launch {
             val out = mutableMapOf<String, Any?>()
-
             val companionPackage = findInstalledCompanionPackage()
             out["companionPackage"] = companionPackage
             val installed = companionPackage != null
@@ -67,6 +70,86 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
         }
     }
 
+    private fun chat(call: MethodCall, result: MethodChannel.Result) {
+        val text = call.argument<String>("text") ?: ""
+        if (text.isBlank()) {
+            result.error("chat-empty", "empty text", null)
+            return
+        }
+        scope.launch {
+            val companionPackage = findInstalledCompanionPackage()
+            if (companionPackage == null) {
+                withContext(Dispatchers.Main) {
+                    result.error("chat-no-companion", "companion not installed", null)
+                }
+                return@launch
+            }
+
+            val binder = bindWithTimeout(companionPackage, BIND_TIMEOUT_MS)
+            if (binder == null) {
+                withContext(Dispatchers.Main) {
+                    result.error("chat-bind-timeout", "companion bind timeout", null)
+                }
+                return@launch
+            }
+
+            val response = CompletableDeferred<Map<String, Any?>>()
+            val requestId = requestCounter.incrementAndGet()
+
+            val callback = object : io.github.osphvdhwj.aves.ai.IAvesAiCallback.Stub() {
+                override fun onProgress(id: Long, percent: Int) {
+                    // no streaming in v1
+                }
+
+                override fun onResult(id: Long, bundle: Bundle?) {
+                    val out = mutableMapOf<String, Any?>()
+                    out["requestId"] = id
+                    if (bundle != null) {
+                        for (key in bundle.keySet()) {
+                            out[key] = bundle.get(key)
+                        }
+                    }
+                    response.complete(out)
+                }
+
+                override fun onError(id: Long, code: Int, message: String?) {
+                    response.complete(mapOf(
+                        "requestId" to id,
+                        "errorCode" to code,
+                        "errorMessage" to (message ?: ""),
+                    ))
+                }
+            }
+
+            try {
+                val svc = io.github.osphvdhwj.aves.ai.IAvesAi.Stub.asInterface(binder)
+                val req = Bundle().apply {
+                    putString("capability", CAP_CHAT)
+                    putLong("requestId", requestId)
+                    putString("text", text)
+                }
+                svc.submit(req, callback)
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    result.error("chat-submit-failed", e.message, null)
+                }
+                try { context.unbindService(lastConnection) } catch (_: Exception) {}
+                return@launch
+            }
+
+            val reply = withTimeoutOrNull(CHAT_TIMEOUT_MS) { response.await() }
+            try { context.unbindService(lastConnection) } catch (_: Exception) {}
+
+            if (reply == null) {
+                withContext(Dispatchers.Main) {
+                    result.error("chat-timeout", "companion did not reply in time", null)
+                }
+            } else {
+                withContext(Dispatchers.Main) { result.success(reply) }
+            }
+        }
+    }
+
     private fun findInstalledCompanionPackage(): String? {
         for (pkg in COMPANION_PACKAGES) {
             try {
@@ -74,7 +157,6 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
                 context.packageManager.getPackageInfo(pkg, 0)
                 return pkg
             } catch (_: Exception) {
-                // not this one
             }
         }
         return null
@@ -120,11 +202,13 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
     companion object {
         private val LOG_TAG = LogUtils.createTag<AiHandler>()
         const val CHANNEL = "deckers.thibault/aves/ai"
+        const val CAP_CHAT = "chat"
         val COMPANION_PACKAGES = listOf(
             "io.github.osphvdhwj.aves.ai.debug",
             "io.github.osphvdhwj.aves.ai",
         )
         const val COMPANION_SERVICE = "io.github.osphvdhwj.aves.ai.AiCompanionService"
         const val BIND_TIMEOUT_MS = 3000L
+        const val CHAT_TIMEOUT_MS = 30000L
     }
 }

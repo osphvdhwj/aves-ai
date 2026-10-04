@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:aves/model/ai/chat_message.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -49,17 +50,19 @@ class _AiChatPageState extends State<AiChatPage> {
     _input.clear();
     _scrollToBottom();
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+    () async {
+      final reply = await aiService.chat(content);
       if (!mounted) return;
       setState(() {
         _messages.removeLast();
         _messages.add(ChatMessage(
           role: ChatRole.ai,
-          text: 'Command "$content" received.\n\nCompanion not wired yet - this is a placeholder response.',
+          text: reply.error != null ? 'Error: ${reply.error}' : (reply.text.isEmpty ? '(empty reply)' : reply.text),
+          entryIds: reply.entryIds,
         ));
       });
       _scrollToBottom();
-    });
+    }();
   }
 
   @override

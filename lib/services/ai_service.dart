@@ -22,6 +22,22 @@ class AiService {
       return AiHealth(installed: false, connected: false, error: e.message);
     }
   }
+
+  Future<AiChatReply> chat(String text) async {
+    try {
+      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('chat', {'text': text});
+      if (result == null) return const AiChatReply(text: '', error: 'no reply');
+      final map = result.cast<String, dynamic>();
+      return AiChatReply(
+        text: (map['text'] as String?) ?? '',
+        entryIds: (map['entryIds'] as List?)?.cast<int>() ?? const [],
+        error: map['errorMessage'] as String?,
+      );
+    } on PlatformException catch (e, s) {
+      await reportService.recordError(e, s);
+      return AiChatReply(text: '', error: e.message ?? e.code);
+    }
+  }
 }
 
 class AiHealth {
@@ -41,6 +57,18 @@ class AiHealth {
 
   @override
   String toString() => 'AiHealth(installed: $installed, connected: $connected, apiVersion: $apiVersion, capabilities: $capabilities, error: $error)';
+}
+
+class AiChatReply {
+  final String text;
+  final List<int> entryIds;
+  final String? error;
+
+  const AiChatReply({
+    required this.text,
+    this.entryIds = const [],
+    this.error,
+  });
 }
 
 final aiService = AiService();
