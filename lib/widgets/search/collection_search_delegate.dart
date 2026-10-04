@@ -398,7 +398,8 @@ class CollectionSearchDelegate extends AvesSearchDelegate with FeedbackMixin, Va
 
   void _jumpToCollectionPage(BuildContext context, Set<CollectionFilter> filters) {
     clean();
-    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+    // push instead of replace, so back returns to the search page
+    Navigator.maybeOf(context)?.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: CollectionPage.routeName),
         builder: (context) => CollectionPage(
@@ -406,7 +407,6 @@ class CollectionSearchDelegate extends AvesSearchDelegate with FeedbackMixin, Va
           filters: filters,
         ),
       ),
-      (route) => false,
     );
   }
 }

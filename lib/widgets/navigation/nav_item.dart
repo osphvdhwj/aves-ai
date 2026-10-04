@@ -57,14 +57,9 @@ class AvesNavItem extends Equatable {
   Future<void> goTo(BuildContext context, {bool? topLevel}) async {
     topLevel ??= _defaultTopLevel;
     final route = routeBuilder(context, topLevel: topLevel);
-    if (topLevel) {
-      await Navigator.maybeOf(context)?.pushAndRemoveUntil(
-        route,
-        (route) => false,
-      );
-    } else {
-      await Navigator.maybeOf(context)?.push(route);
-    }
+    // always push, keeping the existing stack intact
+    // so Android back returns to the previous page instead of exiting
+    await Navigator.maybeOf(context)?.push(route);
   }
 
   bool get _defaultTopLevel {
