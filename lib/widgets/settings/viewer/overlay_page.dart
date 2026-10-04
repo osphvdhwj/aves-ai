@@ -130,12 +130,17 @@ class ViewerOverlayPage extends StatelessWidget {
                 title: (_) => l10n.settingsViewerShowOverlayThumbnails,
                 trailing: _trailingIcon(context, AIcons.thumbnailBar),
               ),
-              SettingsSwitchListTile(
-                selector: (context, s) => s.showInfoThumbnail,
-                onChanged: (v) => settings.showInfoThumbnail = v,
-                title: (_) => 'Info page thumbnail',
-                subtitle: (_) => 'Show entry thumbnail at the top of the info page',
-                trailing: _trailingIcon(context, AIcons.thumbnailBar),
+              Selector<Settings, bool>(
+                selector: (context, s) => s.showOverlayThumbnailPreview,
+                builder: (context, showThumbnails, child) {
+                  return SettingsSwitchListTile(
+                    selector: (context, s) => s.showInfoThumbnail,
+                    onChanged: showThumbnails ? (v) => settings.showInfoThumbnail = v : null,
+                    title: (_) => 'Show thumbnail in info page',
+                    subtitle: (_) => 'Show thumbnail strip at the bottom of the info page',
+                    trailing: _trailingIcon(context, AIcons.thumbnailBar),
+                  );
+                },
               ),
             ],
           ],
