@@ -1,11 +1,11 @@
+import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Placeholder AI search surface. Behavior to be added incrementally:
-///   - example prompts on empty state
-///   - dynamic prompt generation from AVES library data
+///   - dynamic prompts from AVES library data (albums, tags, dates)
 ///   - "/" command palette (Telegram-style, filters by typed prefix)
 ///   - "@" modifier palette (deep / fast / ocr / person / like)
 ///   - command + query history (separate from the old search history)
@@ -14,6 +14,8 @@ import 'package:material_ui/material_ui.dart';
 class AiSearchDelegate extends AvesSearchDelegate {
   final String? initialText;
 
+  List<AiPrompt> _rotating = const [];
+
   new({
     required super.searchFieldLabel,
     required super.searchFieldStyle,
@@ -21,6 +23,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
     this.initialText,
   }) : super(routeName: SearchPage.routeName) {
     query = initialText ?? '';
+    _rotating = PromptLibrary.pick(6);
   }
 
   @override
@@ -28,27 +31,37 @@ class AiSearchDelegate extends AvesSearchDelegate {
     final theme = Theme.of(context);
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
           Text('Ask AI', style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
-            'Type a question or use / for commands and @ for modes.',
+            'Ask about your photos. Use / for commands, @ for modes.',
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 24),
-          Text('Coming soon', style: theme.textTheme.titleMedium),
+          _sectionTitle(theme, 'Try asking'),
           const SizedBox(height: 8),
-          const _Bullet(text: 'Example prompts generated from your library'),
-          const _Bullet(text: 'Dynamic "me" face onboarding'),
-          const _Bullet(text: '/ commands and @ modes, Telegram-style'),
-          const _Bullet(text: 'Query history with tap-to-rerun'),
-          const _Bullet(text: 'Inline result grid'),
-          const SizedBox(height: 24),
-          Text(
-            'The original search page is still active when this setting is off.',
-            style: theme.textTheme.bodySmall,
+          _PromptCard(
+            title: 'My best pictures',
+            subtitle: 'A curated view of your top shots',
+            isSpecial: true,
+            onTap: () => _onPrompt(context, 'My best pictures'),
           ),
+          const SizedBox(height: 8),
+          ..._rotating.map((p) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _PromptCard(
+                  title: p.text,
+                  subtitle: p.category,
+                  onTap: () => _onPrompt(context, p.text),
+                ),
+              )),
+          const SizedBox(height: 16),
+          _sectionTitle(theme, 'Type directly'),
+          const SizedBox(height: 8),
+          _hint(theme, '/  commands - find, dup, blur, receipt'),
+          _hint(theme, '@  modes - deep, fast, ocr, person, like'),
         ],
       ),
     );
@@ -56,26 +69,72 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    // No real query yet. Keeps the surface consistent while features are added.
+    // No query execution yet.
     return const SizedBox();
+  }
+
+  Widget _sectionTitle(ThemeData theme, String text) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Text(
+          text.toUpperCase(),
+          style: theme.textTheme.labelSmall?.copyWith(
+            letterSpacing: 1.2,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      );
+
+  Widget _hint(ThemeData theme, String text) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(text, style: theme.textTheme.bodySmall),
+      );
+
+  void _onPrompt(BuildContext context, String text) {
+    query = text;
+    showResults(context);
   }
 }
 
-class _Bullet extends StatelessWidget {
-  final String text;
+class _PromptCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final bool isSpecial;
+  final VoidCallback onTap;
 
-  const new({required this.text});
+  const new({
+    required this.title,
+    required this.subtitle,
+    this.isSpecial = false,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('- '),
-          Expanded(child: Text(text)),
-        ],
+    final theme = Theme.of(context);
+    final bg = isSpecial
+        ? theme.colorScheme.primaryContainer
+        : theme.colorScheme.surfaceContainerHighest;
+    final fg = isSpecial
+        ? theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurface;
+
+    return Material(
+      color: bg,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: theme.textTheme.bodyLarge?.copyWith(color: fg, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 2),
+              Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: fg.withValues(alpha: 0.7))),
+            ],
+          ),
+        ),
       ),
     );
   }
