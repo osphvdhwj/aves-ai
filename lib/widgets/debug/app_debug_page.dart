@@ -15,6 +15,7 @@ import 'package:aves/widgets/common/behaviour/pop/scope.dart';
 import 'package:aves/widgets/common/behaviour/pop/tv_navigation.dart';
 import 'package:aves/widgets/common/extensions/media_query.dart';
 import 'package:aves/widgets/debug/app_debug_action.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/debug/cache.dart';
 import 'package:aves/widgets/debug/capabilities.dart';
 import 'package:aves/widgets/debug/colors.dart';
@@ -142,6 +143,12 @@ class AppDebugPage extends StatelessWidget {
               backgroundColor: Colors.green,
               body: SizedBox(),
             ),
+          ),
+        );
+      case .openAiChat:
+        await Navigator.maybeOf(context)?.push(
+          MaterialPageRoute(
+            builder: (context) => const AiChatPage(),
           ),
         );
     }

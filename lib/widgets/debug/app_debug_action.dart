@@ -4,4 +4,5 @@ enum AppDebugAction {
   prepScreenshotCountries,
   mediaStoreScanDir,
   greenScreen,
+  openAiChat,
 }
