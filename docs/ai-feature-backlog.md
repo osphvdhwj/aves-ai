@@ -87,3 +87,28 @@ Status legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - Objects grid (after People)
 - Real conversational LLM (after CLIP)
 - Multi-device sync
+
+## App rename & rebranding
+- [ ] applicationId → `com.harry.avesplus`
+- [ ] app label → "Aves +"
+- [ ] new launcher icon (adaptive + legacy PNGs)
+- [ ] remove terms & conditions flow
+- [ ] remove all data collection / analytics / crashlytics
+- [ ] remove `aves_report_crashlytics` module reference
+- [ ] remove `isErrorReportingAllowed` setting + UI
+- [ ] strip About page: remove deckerst links, GitHub, funding, Play Store, changelog
+- [ ] About shows only: Aves + name, version, license (BSD-3), no external links
+- [ ] audit `deckers.thibault.aves` string references in Dart
+- [ ] DECISION PENDING: full Kotlin package move vs applicationId-only (see notes below)
+
+### Rename scope decision (pending user answer)
+Three options:
+1. applicationId + label only, keep Kotlin package `deckers.thibault.aves` — zero risk
+2. full source tree move to new Kotlin package path (~120 files) — high risk
+3. hybrid: applicationId + label now, package move as separate later commit
+Recommendation: option 3
+
+### Rename open questions (pending user answer)
+- Launcher icon source: user-supplied or generated placeholder?
+- Kotlin package: safe path (option 1/3) or full move (option 2)?
+- About page scope: keep page with only Aves + info, or remove entirely?
