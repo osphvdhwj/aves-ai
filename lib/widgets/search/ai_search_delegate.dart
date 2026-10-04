@@ -55,7 +55,9 @@ class AiSearchDelegate extends AvesSearchDelegate {
             'Ask about your photos. Use / for commands, @ for modes.',
             style: theme.textTheme.bodyMedium,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+          _FaceRow(),
+          const SizedBox(height: 16),
           _sectionTitle(theme, 'Try asking'),
           const SizedBox(height: 8),
           _PromptCard(
@@ -160,6 +162,61 @@ class _PromptCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _FaceRow extends StatelessWidget {
+  static const _circleDim = 56.0;
+
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      height: _circleDim,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: 7,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (context, i) {
+          if (i == 6) {
+            return InkWell(
+              borderRadius: BorderRadius.circular(_circleDim / 2),
+              onTap: () => _notify(context, 'more'),
+              child: Container(
+                width: _circleDim,
+                height: _circleDim,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.more_horiz, color: theme.colorScheme.onSurfaceVariant),
+              ),
+            );
+          }
+          return InkWell(
+            borderRadius: BorderRadius.circular(_circleDim / 2),
+            onTap: () => _notify(context, 'person ${i + 1}'),
+            child: Container(
+              width: _circleDim,
+              height: _circleDim,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.person, color: theme.colorScheme.onSurfaceVariant),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _notify(BuildContext context, String label) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 1)),
     );
   }
 }
