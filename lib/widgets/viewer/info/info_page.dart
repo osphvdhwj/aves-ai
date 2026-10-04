@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/multipage.dart';
-import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/filters/filters.dart';
 import 'package:aves/model/selection.dart';
 import 'package:aves/model/settings/settings.dart';
@@ -20,6 +19,7 @@ import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
+import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/multipage/conductor.dart';
 import 'package:aves/widgets/viewer/page_entry_builder.dart';
@@ -270,9 +270,12 @@ class _InfoPageContentState extends State<_InfoPageContent> {
         _onFilterSelection(notification.filter);
         return true;
       },
-      child: CustomScrollView(
-        controller: widget.scrollController,
-        slivers: [
+      child: Column(
+        children: [
+          Expanded(
+            child: CustomScrollView(
+              controller: widget.scrollController,
+              slivers: [
           const SliverToBoxAdapter(
             child: TvEdgeFocus(),
           ),
@@ -283,10 +286,6 @@ class _InfoPageContentState extends State<_InfoPageContent> {
             metadataNotifier: _metadataNotifier,
             onBackPressed: widget.goToViewer,
           ),
-          if (settings.showInfoThumbnail)
-            SliverToBoxAdapter(
-              child: _InfoThumbnail(entry: entry),
-            ),
           ValueListenableBuilder<bool>(
             valueListenable: _isBasicSectionVisibleNotifier,
             builder: (context, visible, child) {
@@ -326,6 +325,14 @@ class _InfoPageContentState extends State<_InfoPageContent> {
             ),
           const BottomPaddingSliver(),
         ],
+            ),
+          ),
+          if (settings.showOverlayThumbnailPreview && settings.showInfoThumbnail)
+            _InfoBottomThumbnail(
+              collection: collection,
+              currentEntry: entry,
+            ),
+        ],
       ),
     );
   }
@@ -347,28 +354,32 @@ class _InfoPageContentState extends State<_InfoPageContent> {
   }
 }
 
-class _InfoThumbnail extends StatelessWidget {
-  final AvesEntry entry;
+class _InfoBottomThumbnail extends StatelessWidget {
+  final CollectionLens? collection;
+  final AvesEntry currentEntry;
 
-  const new({super.key, required this.entry});
+  const new({
+    super.key,
+    required this.collection,
+    required this.currentEntry,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Image(
-            image: entry.getThumbnail(extent: 512),
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stack) => Container(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              alignment: Alignment.center,
-              child: const Icon(Icons.broken_image, size: 32),
-            ),
-          ),
+    final entries = collection?.sortedEntries ?? [currentEntry];
+    final index = entries.indexWhere((e) => e.id == currentEntry.id);
+    if (index < 0) return const SizedBox();
+
+    final width = MediaQuery.sizeOf(context).width;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: ViewerThumbnailPreview(
+          entries: entries,
+          displayedIndex: index,
+          availableWidth: width,
         ),
       ),
     );
