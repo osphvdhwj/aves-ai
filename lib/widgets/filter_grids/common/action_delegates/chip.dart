@@ -82,7 +82,12 @@ class ChipActionDelegate with FeedbackMixin, VaultAwareMixin {
           path = filter.path;
         }
         if (path != null) {
-          Navigator.maybeOf(context)?.push(
+          Navigator.maybeOf(context)?.pushAndRemoveUntil(
+            MaterialPageRoute(
+              settings: const RouteSettings(name: ExplorerPage.routeName),
+              builder: (context) => ExplorerPage(path: path),
+            ),
+            (route) => false,
           );
         }
       case .ratingOrGreater:
@@ -113,7 +118,12 @@ class ChipActionDelegate with FeedbackMixin, VaultAwareMixin {
     WidgetBuilder pageBuilder,
   ) {
     context.read<HighlightInfo>().set(filter);
-    Navigator.maybeOf(context)?.push(
+    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        settings: RouteSettings(name: routeName),
+        builder: pageBuilder,
+      ),
+      (route) => false,
     );
   }
 

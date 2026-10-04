@@ -265,7 +265,12 @@ class AlbumChipSetActionDelegate extends ChipSetActionDelegate<AlbumBaseFilter> 
       } else {
         highlightInfo.set(filter);
         final initialGroup = albumGrouping.getFilterParent(filter);
-        await navigator.push(
+        await navigator.pushAndRemoveUntil(
+          MaterialPageRoute(
+            settings: const RouteSettings(name: AlbumListPage.routeName),
+            builder: (_) => AlbumListPage(initialGroup: initialGroup),
+          ),
+          (route) => false,
         );
       }
     }

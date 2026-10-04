@@ -370,7 +370,15 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
   }
 
   void _jumpToCollectionPage(BuildContext context, CollectionFilter filter) {
-    Navigator.maybeOf(context)?.push(
+    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: CollectionPage.routeName),
+        builder: (context) => CollectionPage(
+          source: widget.source,
+          filters: {filter},
+        ),
+      ),
+      (route) => false,
     );
   }
 

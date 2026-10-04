@@ -463,7 +463,21 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     final isMainMode = context.read<ValueNotifier<AppMode>>().value == .main;
     if (!isMainMode) return;
 
-    Navigator.maybeOf(context)?.push(
+    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: CollectionPage.routeName),
+        builder: (context) {
+          final filters = {...openingCollection.filters, filter};
+          if (filter is CoordinateFilter) {
+            filters.removeWhere((v) => (v is CoordinateFilter && v != filter) || v == LocationFilter.located);
+          }
+          return CollectionPage(
+            source: openingCollection.source,
+            filters: filters,
+          );
+        },
+      ),
+      (route) => false,
     );
   }
 

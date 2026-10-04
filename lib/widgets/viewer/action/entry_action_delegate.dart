@@ -322,7 +322,16 @@ class EntryActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
       onPressed: () {
         if (navigator != null) {
           final source = _collection.source;
-          navigator.push(
+          navigator.pushAndRemoveUntil(
+            MaterialPageRoute(
+              settings: const RouteSettings(name: CollectionPage.routeName),
+              builder: (context) => CollectionPage(
+                source: source,
+                filters: matchCurrentFilters ? _collection.filters : {},
+                highlightTest: (entry) => entry.uri == editedUri,
+              ),
+            ),
+            (route) => false,
           );
         }
       },
