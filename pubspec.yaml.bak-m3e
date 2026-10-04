@@ -117,8 +117,6 @@ dependencies:
   flutter_material_design_icons:
   material_symbols_icons:
   material_ui:
-  m3e_design:
-  expressive_m3:
   network_info_plus:
   overlay_support:
     git:

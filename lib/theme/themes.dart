@@ -1,4 +1,5 @@
 import 'package:aves/widgets/aves_app.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
@@ -53,6 +54,8 @@ class Themes {
 
   static ThemeData _baseTheme(ColorScheme colors, bool deviceInitialized) {
     return ThemeData(
+      // M3E TOKENS
+      extensions: [M3ETokens.fromColorScheme(colors)],
       // COLOR
       brightness: colors.brightness,
       canvasColor: _schemeSecondLayer(colors),
