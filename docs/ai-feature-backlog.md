@@ -20,9 +20,21 @@ Status legend: [ ] todo · [~] in progress · [x] done · [!] blocked
 - [ ] Audit remaining flows after device testing
 
 ## Info page
-- [ ] Show thumbnail preview at top
-- [ ] Setting toggle for thumbnail on/off
-- [ ] Refined UI for the thumbnail + existing chips
+- [x] Show thumbnail preview at top
+- [x] Setting toggle for thumbnail on/off
+- [ ] Google Photos-style redesign:
+  - [ ] Date as large header
+  - [ ] Editable caption field
+  - [ ] People section (placeholder until faces exist)
+  - [ ] Albums section (which albums contain this entry)
+  - [ ] Details section (filename, resolution, size, backup status)
+  - [ ] Location section ("Add a location")
+  - [ ] Keep Exif / color sections below, collapsed
+- [ ] Edit metadata for all media types + all extensions
+
+## Design language
+- Confirm: Material 3 + Material Symbols (Pixel icon set) everywhere
+- Any new UI must match existing chips, tiles, spacing, typography
 
 ## Album page refinement
 - [ ] Layout matching Google Photos Collections tab
