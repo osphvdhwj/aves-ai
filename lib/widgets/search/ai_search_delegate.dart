@@ -1,4 +1,5 @@
 import 'package:aves/model/ai/prompt_library.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/model/settings/settings.dart';
@@ -144,14 +145,13 @@ class _PromptCard extends StatelessWidget {
         ? theme.colorScheme.onPrimaryContainer
         : theme.colorScheme.onSurface;
 
-    return Material(
-      color: bg,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
+    return PressableScale(
+      onTap: onTap,
+      child: Material(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
