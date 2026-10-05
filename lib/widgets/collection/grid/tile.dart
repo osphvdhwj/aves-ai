@@ -6,6 +6,7 @@ import 'package:aves/services/intent_service.dart';
 import 'package:aves/widgets/collection/grid/list_details.dart';
 import 'package:aves/widgets/collection/grid/list_details_theme.dart';
 import 'package:aves/widgets/common/grid/scaling.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/providers/viewer_entry_provider.dart';
 import 'package:aves/widgets/common/thumbnail/decorated.dart';
 import 'package:aves/widgets/common/thumbnail/notifications.dart';
@@ -24,7 +25,10 @@ class const InteractiveTile({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return PressableScale(
+      passthrough: true,
+      scale: 0.94,
+      child: InkWell(
       onTap: () {
         final appMode = context.read<ValueNotifier<AppMode>>().value;
         switch (appMode) {
@@ -58,6 +62,7 @@ class const InteractiveTile({
           isScrollingNotifier: isScrollingNotifier,
           heroTagger: () => EntryHeroInfo(collection, entry).tag,
         ),
+      ),
       ),
     );
   }
