@@ -13,6 +13,7 @@ import 'package:aves/widgets/common/basic/divider.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/home_widget.dart';
 import 'package:aves/widgets/settings/common/collection_tile.dart';
 import 'package:aves/widgets/settings/common/tiles/single_selection.dart';
@@ -181,7 +182,10 @@ class _HomeWidgetSettingsPageState extends State<HomeWidgetSettingsPage> {
           final duration = context.read<DurationsData>().formTransition;
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: GestureDetector(
+            child: PressableScale(
+              passthrough: true,
+              scale: 0.94,
+              child: GestureDetector(
               onTap: () => setState(() => _shape = shape),
               child: AnimatedOpacity(
                 duration: duration,
@@ -197,6 +201,7 @@ class _HomeWidgetSettingsPageState extends State<HomeWidgetSettingsPage> {
                   ),
                 ),
               ),
+            ),
             ),
           );
         },
