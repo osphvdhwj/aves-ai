@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:aves/model/settings/settings.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/theme/colors.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/theme/themes.dart';
@@ -136,7 +137,10 @@ class _AvesDonutState extends State<AvesDonut> with AutomaticKeepAliveClientMixi
               crossAxisAlignment: .start,
               children: seriesData
                   .map(
-                    (d) => InkWell(
+                    (d) => PressableScale(
+                      passthrough: true,
+                      scale: 0.96,
+                      child: InkWell(
                       onTap: onTap != null ? () => onTap(d) : null,
                       borderRadius: const BorderRadius.all(Radius.circular(123)),
                       child: Row(
@@ -156,6 +160,7 @@ class _AvesDonutState extends State<AvesDonut> with AutomaticKeepAliveClientMixi
                           ),
                           const SizedBox(width: 4),
                         ],
+                      ),
                       ),
                     ),
                   )
