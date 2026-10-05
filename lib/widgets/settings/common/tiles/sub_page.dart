@@ -1,4 +1,5 @@
 import 'package:aves/widgets/common/basic/list_tiles/common.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 class const SettingsSubPageTile({
@@ -10,17 +11,21 @@ class const SettingsSubPageTile({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title(context) ?? '?'),
-      subtitle: subtitle?.call(context),
-      onTap: () {
-        Navigator.maybeOf(context)?.push(
-          MaterialPageRoute(
-            settings: RouteSettings(name: routeName),
-            builder: builder,
-          ),
-        );
-      },
+    return PressableScale(
+      passthrough: true,
+      scale: 0.98,
+      child: ListTile(
+        title: Text(title(context) ?? '?'),
+        subtitle: subtitle?.call(context),
+        onTap: () {
+          Navigator.maybeOf(context)?.push(
+            MaterialPageRoute(
+              settings: RouteSettings(name: routeName),
+              builder: builder,
+            ),
+          );
+        },
+      ),
     );
   }
 }

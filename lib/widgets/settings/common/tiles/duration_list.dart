@@ -1,5 +1,6 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/widgets/common/basic/list_tiles/common.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_list_subtitle.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
@@ -27,18 +28,22 @@ class const SettingsDurationListTile({
           if (currentSeconds > 0) l10n.timeSeconds(currentSeconds),
         ].join(' ');
 
-        return ListTile(
-          title: Text(title(context) ?? '?'),
-          subtitle: AvesListSubtitle(subtitle),
-          onTap: () async {
-            final seconds = await showAvesDialog<int>(
-              context: context,
-              builder: (context) => DurationDialog(initialSeconds: current),
-            );
-            if (seconds != null) {
-              onChanged(seconds);
-            }
-          },
+        return PressableScale(
+          passthrough: true,
+          scale: 0.98,
+          child: ListTile(
+            title: Text(title(context) ?? '?'),
+            subtitle: AvesListSubtitle(subtitle),
+            onTap: () async {
+              final seconds = await showAvesDialog<int>(
+                context: context,
+                builder: (context) => DurationDialog(initialSeconds: current),
+              );
+              if (seconds != null) {
+                onChanged(seconds);
+              }
+            },
+          ),
         );
       },
     );
