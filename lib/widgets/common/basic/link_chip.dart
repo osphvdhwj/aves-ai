@@ -1,6 +1,7 @@
 import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 class LinkChip extends StatelessWidget {
@@ -27,7 +28,10 @@ class LinkChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTextStyle.merge(
       style: (textStyle ?? const TextStyle()).copyWith(color: color),
-      child: InkWell(
+      child: PressableScale(
+        passthrough: true,
+        scale: 0.96,
+        child: InkWell(
         borderRadius: borderRadius,
         onTap: onTap ?? () => AvesApp.launchUrl(urlString),
         child: Padding(
@@ -53,6 +57,7 @@ class LinkChip extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
