@@ -2,6 +2,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/widgets/common/basic/color_indicator.dart';
 import 'package:aves/widgets/common/basic/list_tiles/common.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:material_ui/material_ui.dart';
@@ -14,7 +15,10 @@ class const ColorListTile({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return PressableScale(
+      passthrough: true,
+      scale: 0.98,
+      child: ListTile(
       title: Text(title(context) ?? '?'),
       trailing: ColorIndicator(
         value: value,
@@ -32,6 +36,7 @@ class const ColorListTile({
           onChanged(color);
         }
       },
+      ),
     );
   }
 }
@@ -80,9 +85,13 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       ],
       actions: [
         const CancelButton(),
-        TextButton(
-          onPressed: () => Navigator.maybeOf(context)?.pop<Color>(color),
-          child: Text(context.l10n.applyButtonLabel),
+        PressableScale(
+          passthrough: true,
+          scale: 0.94,
+          child: TextButton(
+            onPressed: () => Navigator.maybeOf(context)?.pop<Color>(color),
+            child: Text(context.l10n.applyButtonLabel),
+          ),
         ),
       ],
     );
