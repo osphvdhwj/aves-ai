@@ -1,6 +1,7 @@
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/basic/divider.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -49,7 +50,10 @@ class AvesExpansionTile extends StatelessWidget {
     final animationDuration = context.select<DurationsData, Duration>((v) => v.expansionTileAnimation);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    return ExpansionTileCard(
+    return PressableScale(
+      passthrough: true,
+      scale: 0.99,
+      child: ExpansionTileCard(
       // key is expected by test driver
       key: Key('tilecard-$value'),
       value: value,
@@ -69,6 +73,7 @@ class AvesExpansionTile extends StatelessWidget {
           const SizedBox(height: 4),
           if (enabled) ...children,
         ],
+      ),
       ),
     );
   }
