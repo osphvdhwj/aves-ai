@@ -85,7 +85,11 @@ class _AvesDialogState extends State<AvesDialog> {
               top: 20,
               right: widget.horizontalContentPadding,
             ),
-      actions: widget.actions,
+      actions: widget.actions.map((a) => PressableScale(
+        passthrough: true,
+        scale: 0.94,
+        child: a,
+      )).toList(),
       actionsPadding: AvesDialog.actionsPadding,
       buttonPadding: AvesDialog.buttonPadding,
       // clipping to prevent highlighted material to bleed through rounded corners
@@ -234,14 +238,10 @@ class CancelButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PressableScale(
-      passthrough: true,
-      scale: 0.94,
-      child: TextButton(
-        onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
-        // MD2 button labels were upper case but they are lower case in MD3
-        child: Text(text ?? Themes.asButtonLabel(context.l10n.cancelTooltip)),
-      ),
+    return TextButton(
+      onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
+      // MD2 button labels were upper case but they are lower case in MD3
+      child: Text(text ?? Themes.asButtonLabel(context.l10n.cancelTooltip)),
     );
   }
 }
@@ -258,14 +258,10 @@ class OkButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PressableScale(
-      passthrough: true,
-      scale: 0.94,
-      child: TextButton(
-        onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
-        // MD2 button labels were upper case but they are lower case in MD3
-        child: Text(text ?? Themes.asButtonLabel(MaterialLocalizations.of(context).okButtonLabel)),
-      ),
+    return TextButton(
+      onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
+      // MD2 button labels were upper case but they are lower case in MD3
+      child: Text(text ?? Themes.asButtonLabel(MaterialLocalizations.of(context).okButtonLabel)),
     );
   }
 }
