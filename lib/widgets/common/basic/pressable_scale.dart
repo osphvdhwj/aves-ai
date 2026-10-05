@@ -18,6 +18,10 @@ class PressableScale extends StatefulWidget {
   final Duration? duration;
   final HitTestBehavior behavior;
   final bool enabled;
+  /// When true, this widget does not consume taps; it only tracks press state
+  /// for scale feedback. Use to wrap widgets that already handle taps, e.g.
+  /// a `ListTile` with its own `onTap`.
+  final bool passthrough;
 
   const new({
     super.key,
@@ -29,6 +33,7 @@ class PressableScale extends StatefulWidget {
     this.duration,
     this.behavior = HitTestBehavior.opaque,
     this.enabled = true,
+    this.passthrough = false,
   });
 
   @override
@@ -38,7 +43,7 @@ class PressableScale extends StatefulWidget {
 class _PressableScaleState extends State<PressableScale> {
   bool _pressed = false;
 
-  bool get _interactive => widget.enabled && (widget.onTap != null || widget.onLongPress != null);
+  bool get _interactive => widget.enabled && (widget.passthrough || widget.onTap != null || widget.onLongPress != null);
 
   void _setPressed(bool v) {
     if (!_interactive) return;
@@ -53,15 +58,17 @@ class _PressableScaleState extends State<PressableScale> {
     final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     return GestureDetector(
-      behavior: widget.behavior,
-      onTap: _interactive ? widget.onTap : null,
-      onLongPress: _interactive ? widget.onLongPress : null,
-      onTapDown: (_) => _setPressed(true),
-      onTapUp: (_) {
-        _setPressed(false);
-        widget.onTapUp?.call();
-      },
-      onTapCancel: () => _setPressed(false),
+      behavior: widget.passthrough ? HitTestBehavior.translucent : widget.behavior,
+      onTap: (widget.passthrough || !_interactive) ? null : widget.onTap,
+      onLongPress: (widget.passthrough || !_interactive) ? null : widget.onLongPress,
+      onTapDown: _interactive ? (_) => _setPressed(true) : null,
+      onTapUp: _interactive
+          ? (_) {
+              _setPressed(false);
+              widget.onTapUp?.call();
+            }
+          : null,
+      onTapCancel: _interactive ? () => _setPressed(false) : null,
       child: AnimatedScale(
         scale: (disableAnimations || !_pressed) ? 1.0 : widget.scale,
         duration: duration,

@@ -7,6 +7,7 @@ import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/action_mixins/feedback.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/action_mixins/vault_aware.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/navigation/drawer/tile.dart';
@@ -34,7 +35,10 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
     return SafeArea(
       top: false,
       bottom: false,
-      child: ListTile(
+      child: PressableScale(
+        passthrough: true,
+        scale: 0.97,
+        child: ListTile(
         leading: leading,
         title: title,
         trailing: trailing != null
@@ -51,8 +55,9 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
                 },
               )
             : null,
-        onTap: () => _goToCollection(context),
-        selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+          onTap: () => _goToCollection(context),
+          selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+        ),
       ),
     );
   }

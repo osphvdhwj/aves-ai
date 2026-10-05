@@ -1,4 +1,5 @@
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/navigation/drawer/tile.dart';
 import 'package:aves/widgets/navigation/nav_item.dart';
 import 'package:material_ui/material_ui.dart';
@@ -27,7 +28,10 @@ class PageNavTile extends StatelessWidget {
     return SafeArea(
       top: false,
       bottom: false,
-      child: ListTile(
+      child: PressableScale(
+        passthrough: true,
+        scale: 0.97,
+        child: ListTile(
         // key is expected by test driver
         key: Key('$routeName-tile'),
         leading: leading ?? DrawerPageIcon(route: routeName),
@@ -46,7 +50,8 @@ class PageNavTile extends StatelessWidget {
           Navigator.maybeOf(context)?.pop();
           navItem.goTo(context);
         },
-        selected: context.currentRouteName == routeName && (isSelected?.call() ?? true),
+          selected: context.currentRouteName == routeName && (isSelected?.call() ?? true),
+        ),
       ),
     );
   }
