@@ -8,7 +8,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Kotlin source package name — stays as-is, used for class references
 val packageName = "deckers.thibault.aves"
+// Android applicationId — what the OS sees as the package name
+val appId = "com.harry.avesplus"
 
 // Keys
 
@@ -60,7 +63,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = packageName
+        applicationId = appId
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
