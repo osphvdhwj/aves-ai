@@ -1,15 +1,10 @@
 import 'package:aves/model/device.dart';
 import 'package:aves/ref/locales.dart';
-import 'package:aves/theme/icons.dart';
-import 'package:aves/widgets/about/policy_page.dart';
-import 'package:aves/widgets/common/basic/link_chip.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_logo.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AppReference extends StatelessWidget {
-  static const avesGithub = 'https://github.com/deckerst/aves';
-  static const avesFaq = '$avesGithub/wiki/FAQ';
 
   const new({super.key});
 
@@ -19,13 +14,7 @@ class AppReference extends StatelessWidget {
       child: Column(
         children: [
           _buildAvesLine(context),
-          const SizedBox(height: 16),
-          Wrap(
-            alignment: .center,
-            spacing: 16,
-            crossAxisAlignment: .center,
-            children: AppReference.buildLinks(context),
-          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -60,43 +49,4 @@ class AppReference extends StatelessWidget {
     letterSpacing: canHaveLetterSpacing(localeName) ? 1 : 0,
     fontFeatures: const [FontFeature.enable('smcp')],
   );
-
-  static List<Widget> buildLinks(BuildContext context) {
-    final l10n = context.l10n;
-    return [
-      const LinkChip(
-        leading: Icon(
-          AIcons.github,
-          size: 24,
-        ),
-        text: 'GitHub',
-        urlString: AppReference.avesGithub,
-      ),
-      LinkChip(
-        leading: const Icon(
-          AIcons.legal,
-          size: 22,
-        ),
-        text: l10n.aboutLinkLicense,
-        urlString: '${AppReference.avesGithub}/blob/main/LICENSE',
-      ),
-      LinkChip(
-        leading: const Icon(
-          AIcons.privacy,
-          size: 22,
-        ),
-        text: l10n.aboutLinkPolicy,
-        onTap: () => _goToPolicyPage(context),
-      ),
-    ];
-  }
-
-  static void _goToPolicyPage(BuildContext context) {
-    Navigator.maybeOf(context)?.push(
-      MaterialPageRoute(
-        settings: const RouteSettings(name: PolicyPage.routeName),
-        builder: (context) => const PolicyPage(),
-      ),
-    );
-  }
 }
