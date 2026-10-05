@@ -70,23 +70,8 @@ class const AvesApp({
 }) extends StatefulWidget {
   // temporary exclude locales not ready yet for prime time
   // `ckb`: add `flutter_ckb_localization` and necessary app localization delegates when ready
-  static final _unsupportedLocales = {
-    'az', // Azerbaijani
-    'bn', // Bengali
-    'ckb', // Kurdish (Sorani, Central)
-    'he', // Hebrew
-    'hi', // Hindi
-    'hr', // Croatian
-    'ml', // Malayalam
-    'my', // Burmese
-    'ne', // Nepali
-    'or', // Odia
-    'sat', // Santali
-    'sl', // Slovenian
-    'sr', // Serbian
-    'ur', // Urdu
-  }.map(Locale.new).toSet();
-  static final List<Locale> supportedLocales = AppLocalizations.supportedLocales.where((v) => !_unsupportedLocales.contains(v)).toList();
+  // Aves + ships English only.
+  static const List<Locale> supportedLocales = [Locale('en')];
   static final ValueNotifier<bool> canGestureToOtherApps = ValueNotifier(false);
   static final ValueNotifier<bool> isInPictureInPictureMode = ValueNotifier(false);
   static final ValueNotifier<EdgeInsets> cutoutInsetsNotifier = ValueNotifier(EdgeInsets.zero);
