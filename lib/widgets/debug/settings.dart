@@ -72,11 +72,6 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
               ),
             ),
             SwitchListTile(
-              value: settings.hasAcceptedTerms,
-              onChanged: (v) => settings.hasAcceptedTerms = v,
-              title: const Text('hasAcceptedTerms'),
-            ),
-            SwitchListTile(
               value: settings.canUseAnalysisService,
               onChanged: (v) => settings.canUseAnalysisService = v,
               title: const Text('canUseAnalysisService'),

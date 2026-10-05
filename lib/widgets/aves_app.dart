@@ -46,7 +46,6 @@ import 'package:aves/widgets/navigation/tv_page_transitions.dart';
 import 'package:aves/widgets/navigation/tv_rail.dart';
 import 'package:aves/widgets/settings/app_export/items.dart';
 import 'package:aves/widgets/settings/settings_action_delegate.dart';
-import 'package:aves/widgets/welcome_page.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:collection/collection.dart';
@@ -409,7 +408,8 @@ class _AvesAppState extends State<AvesApp> with WidgetsBindingObserver {
     }
   }
 
-  static Widget getFirstPage({Map<String, Object?>? intentData}) => settings.hasAcceptedTerms ? HomePage(intentData: intentData) : const WelcomePage();
+  // Aves + skips the welcome/terms page; users land directly on Home.
+  static Widget getFirstPage({Map<String, Object?>? intentData}) => HomePage(intentData: intentData);
 
   Size? _getScreenSize(BuildContext context) {
     final view = View.of(context);
