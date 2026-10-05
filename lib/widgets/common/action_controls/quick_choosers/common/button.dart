@@ -4,6 +4,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/common/route_layout.dart';
 import 'package:aves/widgets/common/basic/gestures/gesture_detector.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -96,7 +97,11 @@ abstract class ChooserQuickButtonState<T extends ChooserQuickButton<U>, U> exten
             : null,
         onLongPressCancel: _clearChooserOverlayEntry,
         longPressTimeout: settings.longPressTimeout,
-        child: child,
+        child: PressableScale(
+          passthrough: true,
+          scale: 0.88,
+          child: child,
+        ),
       ),
     );
   }
