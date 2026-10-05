@@ -1,10 +1,14 @@
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
+import 'package:aves/model/entry/entry.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/model/settings/settings.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
+import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -95,9 +99,46 @@ class AiSearchDelegate extends AvesSearchDelegate {
   }
 
   @override
+  Future<AiChatReply>? _resultFuture;
+  String? _lastQuery;
+
   Widget buildResults(BuildContext context) {
-    // No query execution yet.
-    return const SizedBox();
+    final currentQuery = query.trim();
+    if (currentQuery != _lastQuery) {
+      _lastQuery = currentQuery;
+      _resultFuture = _runQuery(context, currentQuery);
+    }
+    return FutureBuilder<AiChatReply>(
+      future: _resultFuture,
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final reply = snap.data;
+        if (reply == null) {
+          return const Center(child: Text('No reply'));
+        }
+        if (reply.error != null) {
+          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('Error: ${reply.error}')));
+        }
+        final source = context.read<CollectionSource>();
+        final entries = reply.entryIds
+            .map(source.getEntryById)
+            .whereType<AvesEntry>()
+            .toList();
+        if (entries.isEmpty) {
+          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
+        }
+        return _ResultGrid(entries: entries);
+      },
+    );
+  }
+
+  Future<AiChatReply> _runQuery(BuildContext context, String q) async {
+    final source = context.read<CollectionSource>();
+    // v1 sends a capped slice — real CLIP indexing will replace this
+    final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
+    return aiService.chat(q, entryIds: ids);
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
@@ -215,6 +256,53 @@ class _FaceRow extends StatelessWidget {
   void _notify(BuildContext context, String label) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 1)),
+    );
+  }
+}
+
+class _ResultGrid extends StatelessWidget {
+  final List<AvesEntry> entries;
+
+  const new({super.key, required this.entries});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(8),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+      ),
+      itemCount: entries.length,
+      itemBuilder: (context, i) {
+        final entry = entries[i];
+        return PressableScale(
+          onTap: () => _openViewer(context, entry),
+          scale: 0.92,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image(
+              image: entry.getThumbnail(extent: 256),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) => Container(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                alignment: Alignment.center,
+                child: const Icon(Icons.broken_image, size: 24),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _openViewer(BuildContext context, AvesEntry entry) {
+    Navigator.maybeOf(context)?.push(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: EntryViewerPage.routeName),
+        builder: (_) => EntryViewerPage(initialEntry: entry),
+      ),
     );
   }
 }
