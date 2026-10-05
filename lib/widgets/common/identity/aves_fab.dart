@@ -1,3 +1,4 @@
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AvesFab extends StatelessWidget {
@@ -18,11 +19,15 @@ class AvesFab extends StatelessWidget {
       data: TooltipTheme.of(context).copyWith(
         preferBelow: false,
       ),
-      child: FloatingActionButton(
-        tooltip: tooltip,
-        backgroundColor: onPressed != null ? null : Theme.of(context).disabledColor,
-        onPressed: onPressed,
-        child: icon,
+      child: PressableScale(
+        passthrough: true,
+        scale: 0.92,
+        child: FloatingActionButton(
+          tooltip: tooltip,
+          backgroundColor: onPressed != null ? null : Theme.of(context).disabledColor,
+          onPressed: onPressed,
+          child: icon,
+        ),
       ),
     );
   }
