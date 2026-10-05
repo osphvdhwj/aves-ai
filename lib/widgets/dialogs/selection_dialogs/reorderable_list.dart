@@ -1,4 +1,5 @@
 import 'package:aves/theme/icons.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:collection/collection.dart';
@@ -58,9 +59,13 @@ class _AvesReorderableListDialogState<T> extends State<AvesReorderableListDialog
       ],
       actions: [
         const CancelButton(),
-        TextButton(
-          onPressed: () => Navigator.maybeOf(context)?.pop<List<T>>(items),
-          child: Text(widget.confirmationButtonLabel ?? context.l10n.applyButtonLabel),
+        PressableScale(
+          passthrough: true,
+          scale: 0.94,
+          child: TextButton(
+            onPressed: () => Navigator.maybeOf(context)?.pop<List<T>>(items),
+            child: Text(widget.confirmationButtonLabel ?? context.l10n.applyButtonLabel),
+          ),
         ),
       ],
     );

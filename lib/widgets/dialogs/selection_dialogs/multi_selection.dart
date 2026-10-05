@@ -1,5 +1,6 @@
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/dialogs/selection_dialogs/common.dart';
 import 'package:material_ui/material_ui.dart';
@@ -46,34 +47,42 @@ class _AvesMultiSelectionDialogState<T> extends State<AvesMultiSelectionDialog<T
           final value = kv.key;
           final title = kv.value;
           final subtitle = widget.optionSubtitleBuilder?.call(value);
-          return SwitchListTile(
-            value: _selectedValues.contains(value),
-            onChanged: (v) {
-              if (v) {
-                _selectedValues.add(value);
-              } else {
-                _selectedValues.remove(value);
-              }
-              setState(() {});
-            },
-            title: Align(
-              alignment: .centerStart,
-              child: Text(title),
+          return PressableScale(
+            passthrough: true,
+            scale: 0.98,
+            child: SwitchListTile(
+              value: _selectedValues.contains(value),
+              onChanged: (v) {
+                if (v) {
+                  _selectedValues.add(value);
+                } else {
+                  _selectedValues.remove(value);
+                }
+                setState(() {});
+              },
+              title: Align(
+                alignment: .centerStart,
+                child: Text(title),
+              ),
+              subtitle: subtitle != null ? FadingLine(subtitle) : null,
+              dense: widget.dense,
             ),
-            subtitle: subtitle != null ? FadingLine(subtitle) : null,
-            dense: widget.dense,
           );
         }),
         if (verticalPadding != 0) SizedBox(height: verticalPadding),
       ],
       actions: [
         const CancelButton(),
-        TextButton(
-          onPressed: () {
-            final result = widget.options.keys.where(_selectedValues.contains).toList();
-            return Navigator.maybeOf(context)?.pop<List<T>>(result);
-          },
-          child: Text(context.l10n.applyButtonLabel),
+        PressableScale(
+          passthrough: true,
+          scale: 0.94,
+          child: TextButton(
+            onPressed: () {
+              final result = widget.options.keys.where(_selectedValues.contains).toList();
+              return Navigator.maybeOf(context)?.pop<List<T>>(result);
+            },
+            child: Text(context.l10n.applyButtonLabel),
+          ),
         ),
       ],
     );
