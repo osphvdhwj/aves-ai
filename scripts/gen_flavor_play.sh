@@ -6,7 +6,7 @@ fi
 ./flutterw clean
 
 sed -i 's|plugins/aves_services_.*|plugins/aves_services_google|g' "pubspec.yaml"
-sed -i 's|plugins/aves_report_.*|plugins/aves_report_crashlytics|g' "pubspec.yaml"
+sed -i 's|plugins/aves_report_.*|plugins/aves_report_console|g' "pubspec.yaml"
 
 ./flutterw pub get
 
