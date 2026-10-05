@@ -6,6 +6,15 @@ import 'package:material_ui/material_ui.dart';
 
 class AppReference extends StatelessWidget {
 
+  // Aves + uses this fork's own repository for any external references.
+  // No upstream deckerst links anywhere.
+  static const avesGithub = 'https://github.com/osphvdhwj/aves-ai';
+  static const avesFaq = '';
+
+  /// About page shows only app name, version, data usage, and licenses.
+  /// No external link chips on any layout.
+  static List<Widget> buildLinks(BuildContext context) => const [];
+
   const new({super.key});
 
   @override
