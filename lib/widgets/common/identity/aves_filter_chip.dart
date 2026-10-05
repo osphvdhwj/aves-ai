@@ -165,10 +165,16 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
   late Color _outlineColor;
   late bool _tapped;
   Offset? _tapPosition;
+  bool _pressed = false;
 
   CollectionFilter get filter => widget.filter;
 
   double get padding => widget.padding;
+
+  void _setPressed(bool v) {
+    if (_pressed == v) return;
+    setState(() => _pressed = v);
+  }
 
   @override
   void initState() {
@@ -359,7 +365,12 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
             child: AInkResponse(
               // as of Flutter v2.8.0, `InkWell` does not have `onLongPressStart` like `GestureDetector`,
               // so we get the long press details from the tap instead
-              onTapDown: onLongPress != null ? (details) => _tapPosition = details.globalPosition : null,
+              onTapDown: (details) {
+                if (onLongPress != null) _tapPosition = details.globalPosition;
+                _setPressed(true);
+              },
+              onTapUp: (_) => _setPressed(false),
+              onTapCancel: () => _setPressed(false),
               onTap: onTap,
               onLongPress: onLongPress,
               containedInkWell: true,
@@ -431,6 +442,12 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
         );
       }
     }
-    return chip;
+    final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    return AnimatedScale(
+      scale: (_pressed && !disableAnimations) ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: chip,
+    );
   }
 }
