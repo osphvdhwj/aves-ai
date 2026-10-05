@@ -1,6 +1,7 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -233,10 +234,14 @@ class CancelButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
-      // MD2 button labels were upper case but they are lower case in MD3
-      child: Text(text ?? Themes.asButtonLabel(context.l10n.cancelTooltip)),
+    return PressableScale(
+      passthrough: true,
+      scale: 0.94,
+      child: TextButton(
+        onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
+        // MD2 button labels were upper case but they are lower case in MD3
+        child: Text(text ?? Themes.asButtonLabel(context.l10n.cancelTooltip)),
+      ),
     );
   }
 }
@@ -253,10 +258,14 @@ class OkButton<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
-      // MD2 button labels were upper case but they are lower case in MD3
-      child: Text(text ?? Themes.asButtonLabel(MaterialLocalizations.of(context).okButtonLabel)),
+    return PressableScale(
+      passthrough: true,
+      scale: 0.94,
+      child: TextButton(
+        onPressed: () => Navigator.maybeOf(context)?.pop<T>(result),
+        // MD2 button labels were upper case but they are lower case in MD3
+        child: Text(text ?? Themes.asButtonLabel(MaterialLocalizations.of(context).okButtonLabel)),
+      ),
     );
   }
 }
