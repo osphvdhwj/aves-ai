@@ -23,9 +23,12 @@ class AiService {
     }
   }
 
-  Future<AiChatReply> chat(String text) async {
+  Future<AiChatReply> chat(String text, {List<int> entryIds = const []}) async {
     try {
-      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('chat', {'text': text});
+      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('chat', {
+        'text': text,
+        'entryIds': entryIds,
+      });
       if (result == null) return const AiChatReply(text: '', error: 'no reply');
       final map = result.cast<String, dynamic>();
       return AiChatReply(

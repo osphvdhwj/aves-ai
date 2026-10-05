@@ -72,6 +72,7 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
 
     private fun chat(call: MethodCall, result: MethodChannel.Result) {
         val text = call.argument<String>("text") ?: ""
+        val entryIds = call.argument<List<Int>>("entryIds") ?: emptyList()
         if (text.isBlank()) {
             result.error("chat-empty", "empty text", null)
             return
@@ -127,6 +128,7 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
                     putString("capability", CAP_CHAT)
                     putLong("requestId", requestId)
                     putString("text", text)
+                    putIntArray("entryIds", entryIds.toIntArray())
                 }
                 svc.submit(req, callback)
             } catch (e: Exception) {
