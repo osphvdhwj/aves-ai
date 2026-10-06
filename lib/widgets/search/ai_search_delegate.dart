@@ -211,6 +211,12 @@ class AiSearchDelegate extends AvesSearchDelegate {
         return Icons.schedule_outlined;
       case 'mood':
         return Icons.emoji_emotions_outlined;
+      case 'translate':
+        return Icons.translate;
+      case 'objects':
+        return Icons.category_outlined;
+      case 'clean':
+        return Icons.cleaning_services_outlined;
       default:
         return Icons.auto_awesome;
     }
