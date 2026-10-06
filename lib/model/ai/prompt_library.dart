@@ -153,11 +153,33 @@ class PromptLibrary {
     AiPrompt('Minimalist photos', 'mood'),
     AiPrompt('Colourful photos', 'mood'),
     AiPrompt('Black and white photos', 'mood'),
+
+    // text & translation
+    AiPrompt('Translate text in photos', 'translate'),
+    AiPrompt('Signs in other languages', 'translate'),
+    AiPrompt('Menus in foreign languages', 'translate'),
+    AiPrompt('Business cards to translate', 'translate'),
+
+    // objects
+    AiPrompt('Photos with cars', 'objects'),
+    AiPrompt('Photos with plants', 'objects'),
+    AiPrompt('Photos with furniture', 'objects'),
+    AiPrompt('Photos with electronics', 'objects'),
+    AiPrompt('Photos with musical instruments', 'objects'),
+    AiPrompt('Photos with sports equipment', 'objects'),
+
+    // cleanup
+    AiPrompt('Large files', 'clean'),
+    AiPrompt('Very old photos', 'clean'),
+    AiPrompt('Screenshots to delete', 'clean'),
+    AiPrompt('Similar photos to deduplicate', 'clean'),
+    AiPrompt('Blurry photos to remove', 'clean'),
   ];
 
   static const List<String> categories = [
     'people', 'places', 'nature', 'food', 'animals', 'activity',
     'event', 'document', 'quality', 'time', 'mood',
+    'translate', 'objects', 'clean',
   ];
 
   /// Pick [count] random prompts, optionally excluding texts already seen.
