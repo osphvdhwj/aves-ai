@@ -1,9 +1,11 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
+import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/format.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
@@ -12,11 +14,11 @@ import 'package:material_ui/material_ui.dart';
 
 /// Google Photos-style top section for the info page.
 ///
-/// Replaces the old bare rows at the top with:
-///   - large date header
+/// M3E-styled header:
+///   - large emphasized date header
 ///   - editable caption line ("Add a caption" when empty)
-///   - album row with a thumbnail preview
 ///   - People row (placeholder until face clustering ships)
+///   - Album row with thumbnail, name, and item count
 class InfoHeaderSection extends StatelessWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
@@ -52,21 +54,29 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildDateHeader(BuildContext context, ThemeData theme) {
+    final tokens = context.m3e;
     final date = entry.bestDate;
     final locale = settings.avesLocale;
     final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
     final dateText = date != null ? formatDateTime(date, locale, use24hour) : '';
 
+    final baseWeight = theme.textTheme.headlineSmall?.fontWeight ?? FontWeight.w400;
+    final steps = (tokens.emphasizedWeightDelta / 100).round();
+    final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
+    final emphasizedWeight = FontWeight.values[emphasizedIndex];
+
     return Text(
       dateText.isEmpty ? 'Undated' : dateText,
       style: theme.textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.w500,
+        fontWeight: emphasizedWeight,
         letterSpacing: -0.4,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
 
   Widget _buildCaption(BuildContext context, ThemeData theme) {
+    final tokens = context.m3e;
     final colors = theme.colorScheme;
     final caption = entry.catalogMetadata?.xmpTitle;
     final hasCaption = caption != null && caption.isNotEmpty;
@@ -77,7 +87,7 @@ class InfoHeaderSection extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(tokens.shapeMedium),
         ),
         child: Row(
           children: [
@@ -155,7 +165,12 @@ class InfoHeaderSection extends StatelessWidget {
     final album = entry.directory;
     if (album == null) return const SizedBox.shrink();
 
-    final albumName = collection?.source.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
+    final source = collection?.source;
+    final albumName = source?.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
+    final itemCount = source?.albumEntryCount(StoredAlbumFilter(album, null));
+    final subtitle = itemCount != null
+        ? (itemCount == 1 ? '1 item' : '$itemCount items')
+        : album;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +218,7 @@ class InfoHeaderSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      album,
+                      subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
