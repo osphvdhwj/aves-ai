@@ -100,6 +100,35 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
             );
           },
         ),
+        FutureBuilder<AiChatReply>(
+          future: _future,
+          builder: (context, snapshot) {
+            final text = snapshot.data?.text.trim() ?? '';
+            final enabled = text.isNotEmpty;
+            return TextButton.icon(
+              onPressed: enabled
+                  ? () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final copied = await appService.copyToClipboard(text: text);
+                      if (!mounted) return;
+                      Navigator.of(context).maybePop();
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            copied
+                                ? 'Text copied — paste it into your translation app.'
+                                : 'Copy failed',
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  : null,
+              icon: const Icon(Symbols.translate, size: 18),
+              label: const Text('Translate'),
+            );
+          },
+        ),
       ],
     );
   }
