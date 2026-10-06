@@ -147,14 +147,20 @@ class AiSearchDelegate extends AvesSearchDelegate {
       future: _resultFuture,
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
+          return const _LoadingState();
         }
         final reply = snap.data;
         if (reply == null) {
-          return const Center(child: Text('No reply'));
+          return _ErrorState(
+            message: 'No reply from the assistant.',
+            onRetry: () => _retry(context),
+          );
         }
         if (reply.error != null) {
-          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('Error: ${reply.error}')));
+          return _ErrorState(
+            message: reply.error!,
+            onRetry: () => _retry(context),
+          );
         }
         final source = context.read<CollectionSource>();
         final entries = reply.entryIds
@@ -162,7 +168,10 @@ class AiSearchDelegate extends AvesSearchDelegate {
             .whereType<AvesEntry>()
             .toList();
         if (entries.isEmpty) {
-          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
+          return _EmptyResults(
+            text: reply.text,
+            onPrompt: (p) => _onPrompt(context, p),
+          );
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -179,6 +188,12 @@ class AiSearchDelegate extends AvesSearchDelegate {
     final source = context.read<CollectionSource>();
     final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
     return aiService.chat(q, entryIds: ids);
+  }
+
+  void _retry(BuildContext context) {
+    _lastQuery = null;
+    _resultFuture = null;
+    showResults(context);
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
@@ -776,6 +791,200 @@ class _ResultGrid extends StatelessWidget {
       MaterialPageRoute(
         settings: const RouteSettings(name: EntryViewerPage.routeName),
         builder: (_) => EntryViewerPage(initialEntry: entry),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// loading / error / empty
+// ─────────────────────────────────────────────────────────────
+class _LoadingState extends StatefulWidget {
+  const new({super.key});
+
+  @override
+  State<_LoadingState> createState() => _LoadingStateState();
+}
+
+class _LoadingStateState extends State<_LoadingState> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final m3e = context.m3e;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
+          child: Row(
+            children: [
+              Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Searching…',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
+            ),
+            itemCount: 9,
+            itemBuilder: (context, i) => FadeTransition(
+              opacity: Tween<double>(begin: 0.45, end: 0.85).animate(_ctl),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const new({super.key, required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.errorContainer,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(Symbols.error, size: 32, color: colors.onErrorContainer),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Couldn't reach AI",
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            PressableScale(
+              passthrough: true,
+              child: FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Symbols.refresh, size: 18),
+                label: const Text('Retry'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyResults extends StatelessWidget {
+  final String text;
+  final ValueChanged<String> onPrompt;
+
+  static const _fallbacks = <String>[
+    'My best pictures',
+    'Sunsets',
+    'Photos of friends',
+  ];
+
+  const new({super.key, required this.text, required this.onPrompt});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(Symbols.search_off, size: 32, color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No matches',
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              text.isEmpty ? 'Try a different phrasing, or pick a suggestion below.' : text,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: _fallbacks.map((p) {
+                return PressableScale(
+                  onTap: () => onPrompt(p),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
+                    ),
+                    child: Text(
+                      p,
+                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
