@@ -70,7 +70,7 @@ class SettingsListView extends StatelessWidget {
         builder: (context, mqPaddingBottom, child) {
           final durations = context.watch<DurationsData>();
           return ListView(
-            padding: const EdgeInsets.all(8) + EdgeInsets.only(bottom: mqPaddingBottom),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8) + EdgeInsets.only(bottom: mqPaddingBottom),
             children: AnimationConfiguration.toStaggeredList(
               duration: durations.staggeredAnimation,
               delay: durations.staggeredAnimationDelay * timeDilation,
