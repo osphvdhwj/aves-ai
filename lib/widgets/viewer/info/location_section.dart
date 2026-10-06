@@ -81,6 +81,7 @@ class _LocationSectionState extends State<LocationSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (entry.trashed) return const SizedBox();
     if (!entry.hasGps) {
       return _buildAddLocationCta(context);
     }

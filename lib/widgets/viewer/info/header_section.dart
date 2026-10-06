@@ -8,6 +8,7 @@ import 'package:aves/theme/format.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_ui/material_ui.dart';
@@ -185,7 +186,8 @@ class InfoHeaderSection extends StatelessWidget {
         const SizedBox(height: 10),
         PressableScale(
           onTap: () {
-            // future: jump to album's collection view
+            final displayName = source?.getStoredAlbumDisplayName(context, album) ?? album;
+            SelectFilterNotification(StoredAlbumFilter(album, displayName)).dispatch(context);
           },
           child: Row(
             children: [
