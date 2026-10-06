@@ -70,31 +70,52 @@ class _DetailsSectionState extends State<DetailsSection> {
     final sizeText = entry.sizeBytes != null ? formatFileSize(locale, entry.sizeBytes!) : infoUnknown;
     final path = entry.path;
 
-    return FutureBuilder<String?>(
-      future: _ownerPackageLoader,
-      builder: (context, snapshot) {
-        final ownerPackage = snapshot.data;
-        return FutureBuilder<void>(
-          future: _appNameLoader,
-          builder: (context, snapshot) {
-            return InfoRowGroup(
-              info: {
-                l10n.viewerInfoLabelTitle: title,
-                l10n.viewerInfoLabelDate: dateText,
-                if (entry.isVideo) ..._buildVideoRows(context),
-                if (showResolution) l10n.viewerInfoLabelResolution: context.applyDirectionality(getRasterResolutionText(locale)),
-                l10n.viewerInfoLabelSize: context.applyDirectionality(sizeText),
-                if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
-                l10n.viewerInfoLabelPath: ?path,
-                l10n.viewerInfoLabelOwner: ?ownerPackage,
-              },
-              spanBuilders: {
-                l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
-              },
-            );
-          },
-        );
-      },
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Text(
+            'Details',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: colors.onSurface,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: FutureBuilder<String?>(
+            future: _ownerPackageLoader,
+            builder: (context, snapshot) {
+              final ownerPackage = snapshot.data;
+              return FutureBuilder<void>(
+                future: _appNameLoader,
+                builder: (context, snapshot) {
+                  return InfoRowGroup(
+                    info: {
+                      l10n.viewerInfoLabelTitle: title,
+                      l10n.viewerInfoLabelDate: dateText,
+                      if (entry.isVideo) ..._buildVideoRows(context),
+                      if (showResolution) l10n.viewerInfoLabelResolution: context.applyDirectionality(getRasterResolutionText(locale)),
+                      l10n.viewerInfoLabelSize: context.applyDirectionality(sizeText),
+                      if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
+                      l10n.viewerInfoLabelPath: ?path,
+                      l10n.viewerInfoLabelOwner: ?ownerPackage,
+                    },
+                    spanBuilders: {
+                      l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
