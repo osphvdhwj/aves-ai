@@ -4,9 +4,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/info.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
-import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir_tile.dart';
 import 'package:aves/widgets/viewer/info/metadata/tv_page.dart';
@@ -116,10 +114,7 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                           ),
                         ]
                       : [
-                          const SectionRow(
-                            icon: AIcons.info,
-                            padding: EdgeInsets.only(top: 24, bottom: 8),
-                          ),
+                          const SizedBox(height: 16),
                           ...metadata.entries.map(
                             (kv) => MetadataDirTile(
                               entry: entry,
