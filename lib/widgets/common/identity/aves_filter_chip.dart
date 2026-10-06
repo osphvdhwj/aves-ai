@@ -56,14 +56,15 @@ class AvesFilterChip extends StatefulWidget {
   final AFilterCallback? onTap, onRemove;
   final OffsetFilterCallback? onLongPress;
 
-  static const double defaultPadding = 6.0;
+  static const double defaultPadding = 8.0;
   static const double defaultRadius = 32;
   static const double outlineWidth = 2;
-  static const double minChipHeight = kMinInteractiveDimension;
+  // M3E: roomier chip, slightly taller than kMinInteractiveDimension
+  static const double minChipHeight = 52;
   static const double minChipWidth = kMinInteractiveDimension;
-  static const double iconSize = 18;
+  static const double iconSize = 20;
   static const double fontSize = 14;
-  static const double decoratedContentVerticalPadding = 5;
+  static const double decoratedContentVerticalPadding = 6;
 
   const new({
     super.key,
@@ -287,6 +288,8 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
                 filter.getLabel(context),
                 style: TextStyle(
                   fontSize: AvesFilterChip.fontSize,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.1,
                   decoration: filter.reversed ? TextDecoration.lineThrough : null,
                   decorationThickness: 2,
                 ),
