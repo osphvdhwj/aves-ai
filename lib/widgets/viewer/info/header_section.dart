@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
@@ -245,7 +247,7 @@ class _CaptionRowState extends State<_CaptionRow> {
   void initState() {
     super.initState();
     entry.metadataChangeNotifier.addListener(_onMetadataChanged);
-    _load();
+    unawaited(_load());
   }
 
   @override
@@ -255,7 +257,7 @@ class _CaptionRowState extends State<_CaptionRow> {
       oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
       entry.metadataChangeNotifier.addListener(_onMetadataChanged);
       _description = null;
-      _load();
+      unawaited(_load());
     }
   }
 
@@ -266,7 +268,7 @@ class _CaptionRowState extends State<_CaptionRow> {
   }
 
   void _onMetadataChanged() {
-    _load();
+    unawaited(_load());
   }
 
   Future<void> _load() async {
