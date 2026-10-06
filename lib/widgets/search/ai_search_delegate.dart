@@ -164,7 +164,13 @@ class AiSearchDelegate extends AvesSearchDelegate {
         if (entries.isEmpty) {
           return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
         }
-        return _ResultGrid(entries: entries);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _ResultsHeader(count: entries.length),
+            Expanded(child: _ResultGrid(entries: entries)),
+          ],
+        );
       },
     );
   }
@@ -674,6 +680,50 @@ class _PersonCircle extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
+// results header
+// ─────────────────────────────────────────────────────────────
+class _ResultsHeader extends StatelessWidget {
+  final int count;
+
+  const new({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
+      child: Row(
+        children: [
+          Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
+          const SizedBox(width: 8),
+          Text(
+            'Results',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(m3e.shapeSmall + 2),
+            ),
+            child: Text(
+              '$count',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // result grid
 // ─────────────────────────────────────────────────────────────
 class _ResultGrid extends StatelessWidget {
@@ -683,28 +733,36 @@ class _ResultGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final m3e = context.m3e;
     return GridView.builder(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
       ),
       itemCount: entries.length,
       itemBuilder: (context, i) {
         final entry = entries[i];
         return PressableScale(
           onTap: () => _openViewer(context, entry),
-          scale: 0.92,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image(
-              image: entry.getThumbnail(extent: 256),
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                alignment: Alignment.center,
-                child: const Icon(Icons.broken_image, size: 24),
+          scale: 0.94,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.3)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              child: Image(
+                image: entry.getThumbnail(extent: 256),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => Container(
+                  color: colors.surfaceContainerHighest,
+                  alignment: Alignment.center,
+                  child: Icon(Symbols.broken_image, size: 22, color: colors.onSurfaceVariant),
+                ),
               ),
             ),
           ),
