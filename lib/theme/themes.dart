@@ -325,6 +325,11 @@ class Themes {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: _schemeSecondLayer(colors),
+        surfaceTintColor: Colors.transparent,
+        elevation: 3,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(28)),
+        ),
         titleTextStyle: _titleTextStyle.copyWith(color: _lightTitleColor),
       ),
       listTileTheme: _listTileTheme.copyWith(
@@ -379,6 +384,11 @@ class Themes {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: _schemeSecondLayer(colors),
+        surfaceTintColor: Colors.transparent,
+        elevation: 3,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(28)),
+        ),
         titleTextStyle: _titleTextStyle.copyWith(color: _darkTitleColor),
       ),
       listTileTheme: _listTileTheme,
