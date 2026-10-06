@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/behaviour/pop/double_back.dart';
 import 'package:aves/widgets/common/behaviour/pop/scope.dart';
@@ -11,6 +12,7 @@ import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AiSearchPage extends StatefulWidget {
@@ -165,29 +167,101 @@ class _Palette extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    final isMode = commands.isNotEmpty && commands.first.trigger == '@';
+
     return Container(
-      constraints: const BoxConstraints(maxHeight: 260),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        border: Border(top: BorderSide(color: theme.dividerColor)),
+        color: colors.surfaceContainerHigh,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(m3e.shapeExtraLarge - 4)),
+        boxShadow: [
+          BoxShadow(
+            color: colors.shadow.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: commands.length,
-        itemBuilder: (context, i) {
-          final c = commands[i];
-          return ListTile(
-            dense: true,
-            leading: CircleAvatar(
-              radius: 16,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Text(c.trigger, style: theme.textTheme.titleMedium),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
+            child: Row(
+              children: [
+                Icon(Symbols.keyboard_command_key, size: 14, color: colors.onSurfaceVariant),
+                const SizedBox(width: 8),
+                Text(
+                  isMode ? 'MODES' : 'COMMANDS',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
             ),
-            title: Text(c.token, style: theme.textTheme.bodyLarge?.copyWith(fontFamily: 'monospace')),
-            subtitle: Text(c.description, style: theme.textTheme.bodySmall),
-            onTap: () => onTap(c),
-          );
-        },
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 280),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(bottom: 8),
+              itemCount: commands.length,
+              itemBuilder: (context, i) {
+                final c = commands[i];
+                return PressableScale(
+                  onTap: () => onTap(c),
+                  scale: 0.98,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: colors.primaryContainer,
+                            borderRadius: BorderRadius.circular(m3e.shapeMedium),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            c.trigger,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: colors.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                c.token,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  fontFamily: 'monospace',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                c.description,
+                                style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -215,29 +289,31 @@ class _InputRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = theme.colorScheme;
+    final m3e = context.m3e;
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 6, 8, 10),
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _RoundActionButton(
-              label: '@',
-              tooltip: 'Modes',
-              onPressed: onAt,
+              icon: Symbols.add,
+              tooltip: 'Attach',
+              onPressed: onPlus,
               colors: colors,
+              subtle: true,
             ),
             Expanded(
               child: TextField(
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
-                  hintText: 'Ask or type /find dog...',
+                  hintText: 'Ask, or type /find or @mode',
                   hintStyle: TextStyle(color: colors.onSurfaceVariant),
                   border: InputBorder.none,
                   isDense: true,
@@ -246,28 +322,57 @@ class _InputRow extends StatelessWidget {
                 onSubmitted: (_) => onSubmit(),
               ),
             ),
+            _TokenChip(label: '/', onTap: onSlash, colors: colors),
+            const SizedBox(width: 6),
+            _TokenChip(label: '@', onTap: onAt, colors: colors),
+            const SizedBox(width: 6),
             _RoundActionButton(
-              label: '/',
-              tooltip: 'Commands',
-              onPressed: onSlash,
-              colors: colors,
-            ),
-            const SizedBox(width: 2),
-            _RoundActionButton(
-              icon: Icons.add,
-              tooltip: 'Attach',
-              onPressed: onPlus,
-              colors: colors,
-            ),
-            const SizedBox(width: 2),
-            _RoundActionButton(
-              icon: Icons.send,
+              icon: Symbols.arrow_upward,
               tooltip: 'Send',
               onPressed: onSubmit,
               colors: colors,
               accent: true,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TokenChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final ColorScheme colors;
+
+  const new({
+    required this.label,
+    required this.onTap,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final m3e = context.m3e;
+    return PressableScale(
+      onTap: onTap,
+      scale: 0.88,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(m3e.shapeMedium),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: colors.onSurfaceVariant,
+          ),
         ),
       ),
     );
@@ -281,6 +386,7 @@ class _RoundActionButton extends StatelessWidget {
   final VoidCallback onPressed;
   final ColorScheme colors;
   final bool accent;
+  final bool subtle;
 
   const new({
     super.key,
@@ -290,12 +396,16 @@ class _RoundActionButton extends StatelessWidget {
     required this.onPressed,
     required this.colors,
     this.accent = false,
+    this.subtle = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final fg = accent ? colors.onPrimary : colors.onSurfaceVariant;
-    final bg = accent ? colors.primary : Colors.transparent;
+    final bg = accent
+        ? colors.primary
+        : (subtle ? colors.surfaceContainerHighest : Colors.transparent);
+    final size = accent ? 44.0 : 40.0;
     final child = icon != null
         ? Icon(icon, size: 22, color: fg)
         : Text(label ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: fg));
@@ -305,8 +415,8 @@ class _RoundActionButton extends StatelessWidget {
       child: Tooltip(
         message: tooltip,
         child: Container(
-          width: 40,
-          height: 40,
+          width: size,
+          height: size,
           decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
           alignment: Alignment.center,
           child: child,
