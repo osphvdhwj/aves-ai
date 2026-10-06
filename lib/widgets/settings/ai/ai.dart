@@ -25,8 +25,8 @@ class AiSection extends SettingsSection {
 
   @override
   Future<List<SettingsTile>> tiles(BuildContext context) => Future.value([
-    const SettingsTileAiEnable(),
-    const SettingsTileAiStatus(),
+    SettingsTileAiEnable(),
+    SettingsTileAiStatus(),
   ]);
 }
 

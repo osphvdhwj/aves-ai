@@ -86,7 +86,7 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
             selectedIndex: _getCurrentIndex(context, items),
             backgroundColor: backgroundColor,
             labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-            height: _barHeight,
+            height: AppBottomNavBar._barHeight,
             indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
           ),
         ),
