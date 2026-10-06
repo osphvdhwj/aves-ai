@@ -200,6 +200,9 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       _isBasicSectionVisibleNotifier.value = false;
       _isMetadataSectionVisibleNotifier.value = false;
       _isColorSectionVisibleNotifier.value = false;
+      // re-evaluate visibility for the new entry so sections render
+      // immediately instead of waiting for a scroll
+      _onPageInViewChanged();
     }
   }
 

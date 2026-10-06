@@ -30,8 +30,10 @@ class _ThumbnailScrollerState extends State<ThumbnailScroller> {
   late ScrollController _scrollController;
   bool _isAnimating = false, _isScrolling = false;
 
-  static const double thumbnailExtent = 64;
-  static const double separatorWidth = 6;
+  static const double thumbnailExtent = 72;
+  static const double separatorWidth = 2;
+  // visual size of non-selected thumbnails inside the (larger) slot
+  static const double _nonSelectedExtent = 48;
   static const double itemExtent = thumbnailExtent + separatorWidth;
 
   int get entryCount => widget.entryCount;
@@ -115,49 +117,77 @@ class _ThumbnailScrollerState extends State<ThumbnailScroller> {
     final pageEntry = widget.entryBuilder(index);
     if (pageEntry == null) return const SizedBox();
 
-    final primary = Theme.of(context).colorScheme.primary;
-    const radius = 14.0;
-    return Stack(
-      children: [
-        GestureDetector(
+    return ValueListenableBuilder<int?>(
+      valueListenable: indexNotifier,
+      builder: (context, currentIndex, child) {
+        final isCurrent = currentIndex == index;
+        final primary = Theme.of(context).colorScheme.primary;
+        final radius = isCurrent ? 16.0 : 10.0;
+        final visibleSize = isCurrent ? thumbnailExtent : _nonSelectedExtent;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             indexNotifier.value = index;
             widget.onTap?.call(index);
           },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
-            child: DecoratedThumbnail(
-              entry: pageEntry,
-              tileExtent: thumbnailExtent,
-              // the retrieval task queue can pile up for thumbnails of heavy pages
-              // (e.g. thumbnails of 15MP HEIF images inside 100MB+ HEIC containers)
-              // so we cancel these requests when possible
-              cancellableNotifier: _cancellableNotifier,
-              selectable: false,
-              highlightable: widget.highlightable,
-              heroTagger: () => widget.heroTagger?.call(pageEntry),
-            ),
-          ),
-        ),
-        IgnorePointer(
-          child: ValueListenableBuilder<int?>(
-            valueListenable: indexNotifier,
-            builder: (context, currentIndex, child) {
-              final isCurrent = currentIndex == index;
-              return AnimatedContainer(
-                width: thumbnailExtent,
-                height: thumbnailExtent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedContainer(
                 duration: ADurations.thumbnailScrollerShadeAnimation,
+                curve: Curves.easeOut,
+                width: visibleSize,
+                height: visibleSize,
                 decoration: BoxDecoration(
-                  color: isCurrent ? Colors.transparent : Colors.black.withValues(alpha: 0.55),
                   borderRadius: BorderRadius.circular(radius),
-                  border: isCurrent ? Border.all(color: primary, width: 3) : null,
+                  boxShadow: isCurrent
+                      ? [
+                          BoxShadow(
+                            color: primary.withValues(alpha: 0.5),
+                            blurRadius: 12,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : null,
                 ),
-              );
-            },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      DecoratedThumbnail(
+                        entry: pageEntry,
+                        tileExtent: thumbnailExtent,
+                        // the retrieval task queue can pile up for thumbnails of heavy pages
+                        // (e.g. thumbnails of 15MP HEIF images inside 100MB+ HEIC containers)
+                        // so we cancel these requests when possible
+                        cancellableNotifier: _cancellableNotifier,
+                        selectable: false,
+                        highlightable: widget.highlightable,
+                        heroTagger: () => widget.heroTagger?.call(pageEntry),
+                      ),
+                      if (!isCurrent)
+                        const ColoredBox(color: Colors.black54),
+                    ],
+                  ),
+                ),
+              ),
+              if (isCurrent)
+                IgnorePointer(
+                  child: Container(
+                    width: visibleSize,
+                    height: visibleSize,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(radius),
+                      border: Border.all(color: primary, width: 3),
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
