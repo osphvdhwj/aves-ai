@@ -1,4 +1,5 @@
 import 'package:aves/model/ai/prompt_library.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/entry/entry.dart';
@@ -9,6 +10,7 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -54,9 +56,9 @@ class AiSearchDelegate extends AvesSearchDelegate {
               children: [
                 Text(
                   'Ask AI',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: -0.5,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.25,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -114,7 +116,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           const SizedBox(height: 12),
           _PromptGrid(
             prompts: [
-              ..._dynamic.map((p) => _GridPrompt(p, Icons.auto_awesome)),
+              ..._dynamic.map((p) => _GridPrompt(p, Symbols.auto_awesome)),
               ..._rotating.map((p) => _GridPrompt(p.text, _iconForCategory(p.category))),
             ],
             onTap: (text) => _onPrompt(context, text),
@@ -123,7 +125,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           const SizedBox(height: 24),
 
           // ── quick actions ─────────────────────────────────
-          _sectionTitle(theme, 'Quick actions'),
+          _sectionTitle(theme, 'Commands & modes'),
           const SizedBox(height: 12),
           _QuickActions(onTap: (text) => _onPrompt(context, text)),
         ],
@@ -189,29 +191,29 @@ class AiSearchDelegate extends AvesSearchDelegate {
   static IconData _iconForCategory(String category) {
     switch (category) {
       case 'people':
-        return Icons.people_outline;
+        return Symbols.people;
       case 'places':
-        return Icons.place_outlined;
+        return Symbols.place;
       case 'nature':
-        return Icons.eco_outlined;
+        return Symbols.eco;
       case 'food':
-        return Icons.restaurant_outlined;
+        return Symbols.restaurant;
       case 'animals':
-        return Icons.pets_outlined;
+        return Symbols.pets;
       case 'activity':
-        return Icons.directions_run_outlined;
+        return Symbols.directions_run;
       case 'event':
-        return Icons.celebration_outlined;
+        return Symbols.celebration;
       case 'document':
-        return Icons.description_outlined;
+        return Symbols.description;
       case 'quality':
-        return Icons.high_quality_outlined;
+        return Symbols.high_quality;
       case 'time':
-        return Icons.schedule_outlined;
+        return Symbols.schedule;
       case 'mood':
-        return Icons.emoji_emotions_outlined;
+        return Symbols.mood;
       default:
-        return Icons.auto_awesome;
+        return Symbols.auto_awesome;
     }
   }
 }
@@ -232,59 +234,95 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    final ink = colors.onPrimaryContainer;
+
     return PressableScale(
       onTap: onTap,
-      child: Container(
-        height: 130,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors.primaryContainer,
-              colors.tertiaryContainer,
-            ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(m3e.shapeExtraLarge),
+        child: Container(
+          height: 148,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [colors.primaryContainer, colors.tertiaryContainer],
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
+          child: Stack(
             children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: colors.onPrimaryContainer,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colors.onPrimaryContainer.withValues(alpha: 0.8),
-                          ),
-                    ),
-                  ],
+              Positioned(
+                right: -40,
+                top: -40,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ink.withValues(alpha: 0.06),
+                  ),
                 ),
               ),
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.onPrimaryContainer.withValues(alpha: 0.12),
-                ),
-                child: Icon(
-                  Icons.auto_awesome,
-                  color: colors.onPrimaryContainer,
-                  size: 32,
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: ink,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.2,
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                subtitle,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: ink.withValues(alpha: 0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: ink.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(m3e.shapeLarge + 4),
+                          ),
+                          child: Icon(Symbols.auto_awesome, color: ink, size: 32),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Text(
+                          'Try it',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: ink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Symbols.arrow_outward, size: 18, color: ink),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -322,9 +360,9 @@ class _PromptGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 2.2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.55,
       ),
       itemCount: prompts.length,
       itemBuilder: (context, i) {
@@ -354,27 +392,49 @@ class _PromptTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final m3e = context.m3e;
+
     return PressableScale(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 6),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
+        padding: const EdgeInsets.all(12),
+        child: Stack(
           children: [
-            Icon(icon, size: 22, color: colors.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  height: 1.15,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(m3e.shapeLarge - 2),
+                  ),
+                  child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
                 ),
+                Text(
+                  text,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    height: 1.15,
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Icon(
+                Symbols.north_east,
+                size: 14,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -391,15 +451,15 @@ class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
 
   static const _actions = <(String, IconData)>[
-    ('/find', Icons.search),
-    ('/dup', Icons.copy_all_outlined),
-    ('/blur', Icons.blur_on_outlined),
-    ('/receipt', Icons.receipt_long_outlined),
-    ('@deep', Icons.psychology_outlined),
-    ('@fast', Icons.bolt_outlined),
-    ('@ocr', Icons.text_fields_outlined),
-    ('@person', Icons.person_outline),
-    ('@like', Icons.favorite_outline),
+    ('/find', Symbols.search),
+    ('/dup', Symbols.copy_all),
+    ('/blur', Symbols.blur_on),
+    ('/receipt', Symbols.receipt_long),
+    ('@deep', Symbols.psychology),
+    ('@fast', Symbols.bolt),
+    ('@ocr', Symbols.text_fields),
+    ('@person', Symbols.person),
+    ('@like', Symbols.favorite),
   ];
 
   const new({required this.onTap});
@@ -407,33 +467,37 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: _actions.map((a) {
-          final (token, icon) = a;
+    final m3e = context.m3e;
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        itemCount: _actions.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final (token, icon) = _actions[i];
+          final isMode = token.startsWith('@');
+          final tint = isMode ? colors.tertiary : colors.primary;
           return PressableScale(
             onTap: () => onTap(token),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.outlineVariant),
+                borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 16, color: colors.primary),
-                  const SizedBox(width: 6),
+                  Icon(icon, size: 18, color: tint),
+                  const SizedBox(width: 8),
                   Text(
                     token,
                     style: TextStyle(
                       fontFamily: 'monospace',
                       fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: colors.onSurface,
                     ),
                   ),
@@ -441,7 +505,7 @@ class _QuickActions extends StatelessWidget {
               ),
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -450,14 +514,43 @@ class _QuickActions extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 // face row
 // ─────────────────────────────────────────────────────────────
-class _FaceRow extends StatelessWidget {
-  static const _circleDim = 72.0;
+class _Person {
+  final String id;
+  final String label;
 
-  const new({super.key});
+  const _Person({required this.id, required this.label});
+
+  /// Fallback set shown until face-cluster data is wired through ai_service.
+  static const stubs = <_Person>[
+    _Person(id: 'me', label: 'Me'),
+    _Person(id: 'p2', label: 'Person 2'),
+    _Person(id: 'p3', label: 'Person 3'),
+    _Person(id: 'p4', label: 'Person 4'),
+    _Person(id: 'p5', label: 'Person 5'),
+    _Person(id: 'p6', label: 'Person 6'),
+    _Person(id: 'p7', label: 'Person 7'),
+    _Person(id: 'p8', label: 'Person 8'),
+  ];
+}
+
+/// Data-driven people rail. Pass [people] once face clusters are available;
+/// otherwise the stub list is rendered. Kept as [_FaceRow] so existing call
+/// sites do not need to change.
+class _FaceRow extends StatelessWidget {
+  final List<_Person>? people;
+  final ValueChanged<_Person>? onPick;
+  final VoidCallback? onSeeAll;
+
+  static const _circleDim = 76.0;
+
+  const new({super.key, this.people, this.onPick, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final list = people ?? _Person.stubs;
+
     final palette = [
       colors.primaryContainer,
       colors.secondaryContainer,
@@ -469,73 +562,113 @@ class _FaceRow extends StatelessWidget {
       colors.onTertiaryContainer,
     ];
 
-    return SizedBox(
-      height: _circleDim + 20,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        itemCount: 9,
-        separatorBuilder: (_, _) => const SizedBox(width: 14),
-        itemBuilder: (context, i) {
-          if (i == 8) {
-            return Column(
-              children: [
-                PressableScale(
-                  onTap: () => _notify(context, 'more'),
-                  child: Container(
-                    width: _circleDim,
-                    height: _circleDim,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colors.surfaceContainerHighest,
-                      border: Border.all(color: colors.outlineVariant, width: 1.5),
-                    ),
-                    child: Icon(Icons.add, color: colors.onSurfaceVariant, size: 28),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text('More', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
-              ],
-            );
-          }
-
-          final isFirst = i == 0;
-          return Column(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
             children: [
-              PressableScale(
-                onTap: () => _notify(context, isFirst ? 'me' : 'person ${i + 1}'),
-                child: Container(
-                  width: _circleDim,
-                  height: _circleDim,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: palette[i % palette.length],
-                    border: isFirst
-                        ? Border.all(color: colors.primary, width: 2.5)
-                        : null,
-                  ),
-                  child: Icon(
-                    isFirst ? Icons.person : Icons.person_outline,
-                    color: fgPalette[i % fgPalette.length],
-                    size: 32,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
               Text(
-                isFirst ? 'Me' : 'Person ${i + 1}',
-                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+                'People',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: onSeeAll ?? () => _notify(context, 'see all'),
+                child: const Text('See all'),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        ),
+        SizedBox(
+          height: _circleDim + 30,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: list.length + 1,
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
+            itemBuilder: (context, i) {
+              if (i == list.length) {
+                return _PersonCircle(
+                  label: 'Add',
+                  icon: Symbols.add,
+                  bg: colors.surfaceContainerHighest,
+                  fg: colors.onSurfaceVariant,
+                  borderColor: colors.outlineVariant,
+                  onTap: () => _notify(context, 'add person'),
+                );
+              }
+              final p = list[i];
+              final isFirst = i == 0;
+              return _PersonCircle(
+                label: p.label,
+                icon: Symbols.person,
+                bg: palette[i % palette.length],
+                fg: fgPalette[i % fgPalette.length],
+                borderColor: isFirst ? colors.primary : null,
+                borderWidth: isFirst ? 2.5 : 1.5,
+                onTap: () => (onPick ?? (_) => _notify(context, p.label)).call(p),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   void _notify(BuildContext context, String label) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 1)),
+    );
+  }
+}
+
+class _PersonCircle extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color bg;
+  final Color fg;
+  final Color? borderColor;
+  final double borderWidth;
+  final VoidCallback onTap;
+
+  const new({
+    required this.label,
+    required this.icon,
+    required this.bg,
+    required this.fg,
+    required this.onTap,
+    this.borderColor,
+    this.borderWidth = 1.5,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PressableScale(
+          onTap: onTap,
+          child: Container(
+            width: _FaceRow._circleDim,
+            height: _FaceRow._circleDim,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: bg,
+              border: borderColor == null
+                  ? null
+                  : Border.all(color: borderColor!, width: borderWidth),
+            ),
+            child: Icon(icon, color: fg, size: 32),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }
@@ -621,7 +754,7 @@ class _HistoryChips extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.history, size: 16, color: colors.onSurfaceVariant),
+                  Icon(Symbols.history, size: 16, color: colors.onSurfaceVariant),
                   const SizedBox(width: 6),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 200),
