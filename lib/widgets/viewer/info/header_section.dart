@@ -300,18 +300,18 @@ class _CaptionRowState extends State<_CaptionRow> {
           children: [
             if (title.isNotEmpty)
               ListTile(
-                leading: const Icon(Icons.copy_rounded),
+                leading: const Icon(Symbols.content_copy),
                 title: const Text('Copy title'),
                 onTap: () => Navigator.of(context).pop('copy-title'),
               ),
             if (description.isNotEmpty)
               ListTile(
-                leading: const Icon(Icons.copy_rounded),
+                leading: const Icon(Symbols.content_copy),
                 title: const Text('Copy description'),
                 onTap: () => Navigator.of(context).pop('copy-desc'),
               ),
             ListTile(
-              leading: const Icon(Icons.edit_outlined),
+              leading: const Icon(Symbols.edit),
               title: const Text('Edit'),
               onTap: () => Navigator.of(context).pop('edit'),
             ),

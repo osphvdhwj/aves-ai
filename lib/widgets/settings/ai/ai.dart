@@ -7,6 +7,8 @@ import 'package:aves/widgets/settings/common/tile_leading.dart';
 import 'package:aves/widgets/settings/common/tiles/switch_list.dart';
 import 'package:aves/widgets/settings/settings_definition.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +82,7 @@ class SettingsTileAiStatus extends SettingsTile {
           children: [
             Row(
               children: [
-                Icon(connected ? Icons.check_circle : Icons.info_outline, color: color, size: 18),
+                Icon(connected ? Symbols.check_circle : Symbols.info, color: color, size: 18),
                 const SizedBox(width: 8),
                 Text(title(context), style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
               ],
