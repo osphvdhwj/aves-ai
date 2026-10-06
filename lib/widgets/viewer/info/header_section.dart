@@ -87,6 +87,25 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildPeopleRow(BuildContext context, ThemeData theme, ColorScheme colors) {
+    void onTap() {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Face detection coming soon'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+
+    Widget circle() => Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors.surfaceContainerHighest,
+        border: Border.all(color: colors.outlineVariant, width: 1.5),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,36 +117,24 @@ class InfoHeaderSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            PressableScale(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Face detection coming soon'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              },
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.surfaceContainerHighest,
-                  border: Border.all(color: colors.outlineVariant, width: 1.5),
+        PressableScale(
+          onTap: onTap,
+          child: Row(
+            children: [
+              circle(),
+              const SizedBox(width: 8),
+              circle(),
+              const SizedBox(width: 8),
+              circle(),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  'Add someone',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                 ),
-                child: Icon(Symbols.person_add, color: colors.onSurfaceVariant, size: 24),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Add someone',
-                style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
