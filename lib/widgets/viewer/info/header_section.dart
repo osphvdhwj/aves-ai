@@ -4,6 +4,7 @@ import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
+import 'package:aves/services/common/services.dart';
 import 'package:aves/theme/format.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -77,41 +78,10 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildCaption(BuildContext context, ThemeData theme) {
-    final tokens = context.m3e;
-    final colors = theme.colorScheme;
-    final caption = entry.catalogMetadata?.xmpTitle;
-    final hasCaption = caption != null && caption.isNotEmpty;
-
-    return PressableScale(
-      onTap: () => actionDelegate.onActionSelected(context, entry, collection, EntryAction.editTitleDescription),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(tokens.shapeMedium),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              hasCaption ? Icons.notes_outlined : Icons.add_rounded,
-              size: 20,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                hasCaption ? caption : 'Add a caption...',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: hasCaption ? colors.onSurface : colors.onSurfaceVariant,
-                  fontStyle: hasCaption ? FontStyle.normal : FontStyle.italic,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return _CaptionRow(
+      entry: entry,
+      collection: collection,
+      actionDelegate: actionDelegate,
     );
   }
 
@@ -232,6 +202,137 @@ class InfoHeaderSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Caption surface: reads the XMP title from catalog metadata (sync) and the
+/// description via overlay metadata (async, live from the file). Reloads when
+/// the entry's metadata change notifier fires or when the entry changes.
+class _CaptionRow extends StatefulWidget {
+  final AvesEntry entry;
+  final CollectionLens? collection;
+  final EntryInfoActionDelegate actionDelegate;
+
+  const new({
+    required this.entry,
+    this.collection,
+    required this.actionDelegate,
+  });
+
+  @override
+  State<_CaptionRow> createState() => _CaptionRowState();
+}
+
+class _CaptionRowState extends State<_CaptionRow> {
+  String? _description;
+
+  AvesEntry get entry => widget.entry;
+
+  @override
+  void initState() {
+    super.initState();
+    entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _CaptionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.entry != widget.entry) {
+      oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+      entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+      _description = null;
+      _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+    super.dispose();
+  }
+
+  void _onMetadataChanged() {
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final fields = await metadataFetchService.getOverlayMetadata(entry, {MetadataSyntheticField.description});
+      if (!mounted) return;
+      setState(() => _description = fields.description);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _description = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tokens = context.m3e;
+    final colors = theme.colorScheme;
+    final title = (entry.catalogMetadata?.xmpTitle ?? '').trim();
+    final description = (_description ?? '').trim();
+    final hasCaption = title.isNotEmpty || description.isNotEmpty;
+
+    return PressableScale(
+      onTap: () => widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(tokens.shapeMedium),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Icon(
+                hasCaption ? Icons.notes_outlined : Icons.add_rounded,
+                size: 20,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: hasCaption
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (title.isNotEmpty)
+                          Text(
+                            title,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        if (title.isNotEmpty && description.isNotEmpty) const SizedBox(height: 2),
+                        if (description.isNotEmpty)
+                          Text(
+                            description,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    )
+                  : Text(
+                      'Add a caption...',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
