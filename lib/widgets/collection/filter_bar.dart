@@ -7,9 +7,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class FilterBar extends StatefulWidget {
-  static const _padding = EdgeInsets.only(top: 4, bottom: 8);
-  static const chipPadding = EdgeInsets.symmetric(horizontal: 4);
-  static const rowPadding = EdgeInsets.symmetric(horizontal: 4);
+  // M3E spacing rhythm — breathable vertical rhythm, wider chip gaps
+  static const _padding = EdgeInsets.only(top: 6, bottom: 10);
+  static const chipPadding = EdgeInsets.symmetric(horizontal: 6);
+  static const rowPadding = EdgeInsets.symmetric(horizontal: 8);
   static final double preferredHeight = AvesFilterChip.minChipHeight + _padding.vertical;
 
   final List<CollectionFilter> filters;
