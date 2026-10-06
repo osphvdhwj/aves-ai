@@ -19,6 +19,7 @@ import 'package:aves_model/aves_model.dart';
 import 'package:aves/widgets/map/map_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_map/aves_map.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -191,7 +192,7 @@ class _LocationSectionState extends State<LocationSection> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.add_location_alt_outlined, size: 20, color: colors.onSurfaceVariant),
+                  Icon(Symbols.add_location_alt, size: 20, color: colors.onSurfaceVariant),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(

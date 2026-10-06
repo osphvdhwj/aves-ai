@@ -12,6 +12,7 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Google Photos-style top section for the info page.
@@ -116,7 +117,7 @@ class InfoHeaderSection extends StatelessWidget {
                   color: colors.surfaceContainerHighest,
                   border: Border.all(color: colors.outlineVariant, width: 1.5),
                 ),
-                child: Icon(Icons.person_add_alt_1_outlined, color: colors.onSurfaceVariant, size: 24),
+                child: Icon(Symbols.person_add, color: colors.onSurfaceVariant, size: 24),
               ),
             ),
             const SizedBox(width: 12),
@@ -172,7 +173,7 @@ class InfoHeaderSection extends StatelessWidget {
                     errorBuilder: (context, error, stack) => Container(
                       color: colors.surfaceContainerHighest,
                       alignment: Alignment.center,
-                      child: Icon(Icons.image_outlined, color: colors.onSurfaceVariant, size: 20),
+                      child: Icon(Symbols.image, color: colors.onSurfaceVariant, size: 20),
                     ),
                   ),
                 ),
@@ -291,7 +292,7 @@ class _CaptionRowState extends State<_CaptionRow> {
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Icon(
-                hasCaption ? Icons.notes_outlined : Icons.add_rounded,
+                hasCaption ? Symbols.notes : Symbols.add,
                 size: 20,
                 color: colors.onSurfaceVariant,
               ),
