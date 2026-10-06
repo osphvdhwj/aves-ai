@@ -106,8 +106,18 @@ class ViewerTopOverlay extends StatelessWidget {
                 onTap: () => expandedNotifier.value = !expandedNotifier.value,
                 child: BlurredRect(
                   enabled: blurred,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(28),
+                    bottomRight: Radius.circular(28),
+                  ),
                   child: Container(
-                    color: Themes.overlayBackgroundColor(brightness: Theme.of(context).brightness, blurred: blurred),
+                    decoration: BoxDecoration(
+                      color: Themes.overlayBackgroundColor(brightness: Theme.of(context).brightness, blurred: blurred),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(28),
+                        bottomRight: Radius.circular(28),
+                      ),
+                    ),
                     child: SafeArea(
                       bottom: false,
                       minimum: EdgeInsets.only(
@@ -170,11 +180,7 @@ class ZoomLevelIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blurred = settings.enableBlurEffect;
-    final border = AvesBorder.border(
-      context,
-      width: AvesBorder.curvedBorderWidth(context),
-    );
-    final borderRadius = BorderRadius.circular(4);
+    final borderRadius = BorderRadius.circular(20);
     final zoomScaleFactor = MediaQuery.devicePixelRatioOf(context) * 100;
 
     return IgnorePointer(
@@ -195,11 +201,7 @@ class ZoomLevelIndicator extends StatelessWidget {
               }
               final zoom = ((viewState.scale ?? 0) * zoomScaleFactor).round();
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                foregroundDecoration: BoxDecoration(
-                  border: border,
-                  borderRadius: borderRadius,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
                   '$zoom${context.l10n.lengthUnitPercent}',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
