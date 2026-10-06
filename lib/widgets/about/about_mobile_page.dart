@@ -26,9 +26,9 @@ class AboutMobilePage extends StatelessWidget {
                   delegate: SliverChildListDelegate(
                     [
                       const AppReference(),
-                      const Divider(),
+                      const SizedBox(height: 8),
                       const AboutDataUsage(),
-                      const Divider(),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
