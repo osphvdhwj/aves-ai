@@ -186,12 +186,25 @@ class _LayoutBarState extends State<LayoutBar> {
 
   static ButtonStyle _buttonStyle(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    // M3E filled chips — surface container, no border, larger radius
     return ButtonStyle(
       foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
-        return states.contains(WidgetState.disabled) ? theme.disabledColor : theme.colorScheme.onSurface;
+        return states.contains(WidgetState.disabled) ? colors.onSurfaceVariant.withValues(alpha: 0.5) : colors.onSurface;
       }),
-      padding: WidgetStateProperty.resolveWith<EdgeInsetsGeometry>((states) => const EdgeInsets.symmetric(horizontal: 12)),
-      minimumSize: WidgetStateProperty.resolveWith<Size>((states) => const Size.square(kMinInteractiveDimension)),
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        return states.contains(WidgetState.disabled)
+            ? colors.surfaceContainerLow
+            : colors.surfaceContainerHigh;
+      }),
+      overlayColor: WidgetStateProperty.all<Color>(colors.onSurface.withValues(alpha: 0.08)),
+      side: WidgetStateProperty.all<BorderSide>(BorderSide.none),
+      shape: WidgetStateProperty.all<OutlinedBorder>(
+        const StadiumBorder(),
+      ),
+      padding: WidgetStateProperty.resolveWith<EdgeInsetsGeometry>((states) => const EdgeInsets.symmetric(horizontal: 16)),
+      minimumSize: WidgetStateProperty.resolveWith<Size>((states) => const Size(0, 48)),
+      elevation: WidgetStateProperty.all<double>(0),
     );
   }
 }
