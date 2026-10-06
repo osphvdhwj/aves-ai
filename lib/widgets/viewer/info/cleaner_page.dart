@@ -65,6 +65,7 @@ class _CleanerPageState extends State<CleanerPage> {
                 child: _BucketTile(
                   bucket: bucket,
                   count: buckets[bucket]?.length ?? 0,
+                  preview: buckets[bucket] ?? const [],
                   onTap: () => _openBucket(context, bucket, buckets[bucket] ?? const []),
                 ),
               ),
@@ -191,14 +192,16 @@ class _BucketTile extends StatelessWidget {
   final CleanerBucket bucket;
   final int count;
   final VoidCallback onTap;
+  final List<AvesEntry> preview;
 
-  const new({required this.bucket, required this.count, required this.onTap});
+  const new({required this.bucket, required this.count, required this.onTap, this.preview = const []});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final enabled = count > 0;
+    final previews = preview.take(6).toList();
     return PressableScale(
       enabled: enabled,
       onTap: enabled ? onTap : null,
@@ -208,35 +211,66 @@ class _BucketTile extends StatelessWidget {
           color: colors.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(bucket.icon, size: 22, color: enabled ? colors.primary : colors.onSurfaceVariant),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    bucket.title,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: enabled ? colors.onSurface : colors.onSurfaceVariant,
-                    ),
+            Row(
+              children: [
+                Icon(bucket.icon, size: 22, color: enabled ? colors.primary : colors.onSurfaceVariant),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        bucket.title,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: enabled ? colors.onSurface : colors.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        bucket.subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                      ),
+                    ],
                   ),
-                  Text(
-                    bucket.subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                ),
+                Text(
+                  '$count',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: enabled ? colors.primary : colors.onSurfaceVariant,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Text(
-              '$count',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: enabled ? colors.primary : colors.onSurfaceVariant,
+            if (previews.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: previews.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 6),
+                  itemBuilder: (context, i) {
+                    final e = previews[i];
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Image(
+                          image: e.getThumbnail(extent: 80),
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => ColoredBox(color: colors.surfaceContainerHighest),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
