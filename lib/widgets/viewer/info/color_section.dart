@@ -6,9 +6,7 @@ import 'dart:typed_data';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/basic/color_indicator.dart';
-import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:flex_color_picker/flex_color_picker.dart' as flex;
 import 'package:material_ui/material_ui.dart';
@@ -45,43 +43,55 @@ class _ColorSectionSliverState extends State<ColorSectionSliver> {
           if (colors == null || colors.isEmpty) return const SizedBox();
 
           final durations = context.watch<DurationsData>();
-          return Wrap(
-            alignment: .center,
-            children: AnimationConfiguration.toStaggeredList(
-              duration: durations.staggeredAnimation,
-              delay: durations.staggeredAnimationDelay * timeDilation,
-              childAnimationBuilder: (child) => SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: child,
-                ),
-              ),
-              children: [
-                const SectionRow(
-                  icon: AIcons.palette,
-                  padding: EdgeInsets.only(top: 8, bottom: 16),
-                ),
-                ...colors.map(
-                  (v) => Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      mainAxisSize: .min,
-                      children: [
-                        ColorIndicator(value: v),
-                        const SizedBox(width: 8),
-                        Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: SelectableText(
-                            '#${v.hex}',
-                            style: const TextStyle(fontFamily: 'monospace'),
-                          ),
-                        ),
-                      ],
-                    ),
+          final theme = Theme.of(context);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                child: Text(
+                  'Color',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Wrap(
+                alignment: .center,
+                children: AnimationConfiguration.toStaggeredList(
+                  duration: durations.staggeredAnimation,
+                  delay: durations.staggeredAnimationDelay * timeDilation,
+                  childAnimationBuilder: (child) => SlideAnimation(
+                    verticalOffset: 50.0,
+                    child: FadeInAnimation(
+                      child: child,
+                    ),
+                  ),
+                  children: [
+                        ...colors.map(
+                      (v) => Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisSize: .min,
+                          children: [
+                            ColorIndicator(value: v),
+                            const SizedBox(width: 8),
+                            Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: SelectableText(
+                                '#${v.hex}',
+                                style: const TextStyle(fontFamily: 'monospace'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
         },
       ),
