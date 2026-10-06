@@ -6,7 +6,7 @@ import 'package:aves/model/settings/enums/coordinate_format.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
-import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -98,7 +98,7 @@ class _LocationSectionState extends State<LocationSection> {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          if (widget.showTitle) const SectionRow(icon: AIcons.location),
+          if (widget.showTitle) _buildSectionHeading(context),
           MapTheme(
             interactive: false,
             showCoordinateFilter: false,
@@ -158,13 +158,27 @@ class _LocationSectionState extends State<LocationSection> {
     );
   }
 
+  Widget _buildSectionHeading(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: Text(
+        'Location',
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+
   Widget _buildAddLocationCta(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Column(
       crossAxisAlignment: .start,
       children: [
-        if (widget.showTitle) const SectionRow(icon: AIcons.location),
+        if (widget.showTitle) _buildSectionHeading(context),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: PressableScale(
@@ -173,7 +187,7 @@ class _LocationSectionState extends State<LocationSection> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
               ),
               child: Row(
                 children: [
