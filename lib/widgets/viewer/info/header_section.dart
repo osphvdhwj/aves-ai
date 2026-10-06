@@ -6,6 +6,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/theme/format.dart';
+import 'package:aves/theme/text.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
@@ -61,7 +62,8 @@ class InfoHeaderSection extends StatelessWidget {
     final date = entry.bestDate;
     final locale = settings.avesLocale;
     final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
-    final dateText = date != null ? formatDateTime(date, locale, use24hour) : '';
+    // Google Photos style: "Fri, Jan 10, 2025 · 9:36 AM"
+    final dateText = date != null ? '${locale.MMMEd(date)}, ${locale.y(date)}${AText.separator}${formatTime(date, locale, use24hour)}' : '';
 
     final baseWeight = theme.textTheme.headlineSmall?.fontWeight ?? FontWeight.w400;
     final steps = (tokens.emphasizedWeightDelta / 100).round();
