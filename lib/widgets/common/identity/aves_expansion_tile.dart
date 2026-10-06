@@ -1,6 +1,4 @@
 import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/themes.dart';
-import 'package:aves/widgets/common/basic/divider.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
