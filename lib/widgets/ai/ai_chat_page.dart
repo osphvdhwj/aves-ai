@@ -6,6 +6,8 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 class AiChatPage extends StatefulWidget {
@@ -134,7 +136,7 @@ class _AiChatPageState extends State<AiChatPage> {
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
         ),
         child: Text(text, style: theme.textTheme.bodyMedium),
       ),

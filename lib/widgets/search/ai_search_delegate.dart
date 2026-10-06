@@ -10,6 +10,8 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -582,7 +584,7 @@ class _ResultGrid extends StatelessWidget {
           onTap: () => _openViewer(context, entry),
           scale: 0.92,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
             child: Image(
               image: entry.getThumbnail(extent: 256),
               fit: BoxFit.cover,
