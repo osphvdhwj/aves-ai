@@ -17,6 +17,7 @@ import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
+import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
@@ -80,6 +81,11 @@ class InfoAppBar extends StatelessWidget {
                   onPressed: () => showExtractTextDialog(context, entry),
                   tooltip: 'Extract text',
                 ),
+              IconButton(
+                icon: const Icon(Symbols.shield_lock),
+                onPressed: () => showSecureShareDialog(context, entry),
+                tooltip: 'Secure share',
+              ),
               IconButton(
                 icon: const Icon(AIcons.search),
                 onPressed: () => _goToSearch(context),
