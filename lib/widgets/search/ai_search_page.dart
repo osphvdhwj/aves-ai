@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:aves/model/ai/ai_command.dart';
+import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/behaviour/pop/double_back.dart';
@@ -94,6 +95,7 @@ class _AiSearchPageState extends State<AiSearchPage> {
         return;
       }
     }
+    settings.addAiSearchHistory(text);
     widget.delegate.showResults(context);
   }
 

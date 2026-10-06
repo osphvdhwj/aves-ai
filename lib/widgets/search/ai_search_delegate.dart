@@ -84,6 +84,31 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
           const SizedBox(height: 24),
 
+          // ── history ───────────────────────────────────────
+          if (settings.aiSearchHistory.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _sectionTitle(theme, 'Recent')),
+                TextButton(
+                  onPressed: () {
+                    settings.aiSearchHistory = const [];
+                    // force rebuild
+                    final v = query;
+                    query = v.isEmpty ? ' ' : v;
+                    query = v;
+                  },
+                  child: const Text('Clear'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _HistoryChips(
+              queries: settings.aiSearchHistory,
+              onTap: (text) => _onPrompt(context, text),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           // ── try asking ────────────────────────────────────
           _sectionTitle(theme, 'Try asking'),
           const SizedBox(height: 12),
@@ -560,6 +585,58 @@ class _ResultGrid extends StatelessWidget {
       MaterialPageRoute(
         settings: const RouteSettings(name: EntryViewerPage.routeName),
         builder: (_) => EntryViewerPage(initialEntry: entry),
+      ),
+    );
+  }
+}
+
+class _HistoryChips extends StatelessWidget {
+  final List<String> queries;
+  final ValueChanged<String> onTap;
+
+  const new({
+    super.key,
+    required this.queries,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: queries.map((q) {
+          return PressableScale(
+            onTap: () => onTap(q),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colors.outlineVariant),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.history, size: 16, color: colors.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 200),
+                    child: Text(
+                      q,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 13, color: colors.onSurface),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

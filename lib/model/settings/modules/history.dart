@@ -20,6 +20,22 @@ mixin HistorySettings on SettingsAccess {
 
   set searchHistory(List<CollectionFilter> newValue) => set(SettingKeys.searchHistoryKey, newValue.map((filter) => filter.toJsonString()).toList());
 
+  // AI search history — plain-text queries, most recent first, capped.
+  static const int aiSearchHistoryMax = 30;
+
+  List<String> get aiSearchHistory => getStringList(SettingKeys.aiSearchHistoryKey) ?? [];
+
+  set aiSearchHistory(List<String> newValue) => set(SettingKeys.aiSearchHistoryKey, newValue.take(aiSearchHistoryMax).toList());
+
+  void addAiSearchHistory(String query) {
+    final q = query.trim();
+    if (q.isEmpty) return;
+    final list = aiSearchHistory
+      ..remove(q)
+      ..insert(0, q);
+    aiSearchHistory = list;
+  }
+
   List<String> get recentSettingKeys => getStringList(SettingKeys.recentSettingKeysKey) ?? [];
 
   set recentSettingKeys(List<String> newValue) => set(SettingKeys.recentSettingKeysKey, newValue);
