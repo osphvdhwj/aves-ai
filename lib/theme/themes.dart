@@ -221,6 +221,11 @@ class Themes {
   static PopupMenuThemeData _popupMenuTheme(ColorScheme colors, TextTheme textTheme) {
     return PopupMenuThemeData(
       color: _schemeSecondLayer(colors),
+      surfaceTintColor: Colors.transparent,
+      elevation: 3,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         // adapted from M3 defaults
         final TextStyle style = textTheme.labelLarge!;
