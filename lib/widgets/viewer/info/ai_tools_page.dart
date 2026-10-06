@@ -6,6 +6,7 @@ import 'package:aves/widgets/viewer/info/cleaner_page.dart';
 import 'package:aves/widgets/viewer/info/duplicates_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/info/objects_page.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/viewer/info/sync_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -69,6 +70,17 @@ class AiToolsPage extends StatelessWidget {
                   ),
                 );
               },
+            ),
+            _Tile(
+              icon: Symbols.forum,
+              title: 'Ask AI about this photo',
+              subtitle: 'Open a chat about this image',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: AiChatPage.routeName),
+                  builder: (context) => const AiChatPage(),
+                ),
+              ),
             ),
             _Tile(
               icon: Symbols.shield_lock,
