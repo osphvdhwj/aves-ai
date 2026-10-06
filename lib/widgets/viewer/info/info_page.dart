@@ -255,6 +255,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       showTitle: !locationAtTop,
       isScrollingNotifier: widget.isScrollingNotifier,
       onFilterSelection: _onFilterSelection,
+      actionDelegate: _actionDelegate,
     );
     final basicAndLocationSliver = locationAtTop
         ? SliverToBoxAdapter(

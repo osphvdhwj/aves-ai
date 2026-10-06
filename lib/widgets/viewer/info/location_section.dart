@@ -9,10 +9,12 @@ import 'package:aves/services/common/services.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/map/geo_map.dart';
 import 'package:aves/widgets/common/map/map_action_delegate.dart';
 import 'package:aves/widgets/common/providers/map_theme_provider.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
+import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/map/map_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_map/aves_map.dart';
@@ -25,6 +27,7 @@ class LocationSection extends StatefulWidget {
   final bool showTitle;
   final ValueNotifier<bool> isScrollingNotifier;
   final AFilterCallback onFilterSelection;
+  final EntryInfoActionDelegate actionDelegate;
 
   const new({
     super.key,
@@ -33,6 +36,7 @@ class LocationSection extends StatefulWidget {
     required this.showTitle,
     required this.isScrollingNotifier,
     required this.onFilterSelection,
+    required this.actionDelegate,
   });
 
   @override
@@ -76,7 +80,9 @@ class _LocationSectionState extends State<LocationSection> {
 
   @override
   Widget build(BuildContext context) {
-    if (!entry.hasGps) return const SizedBox();
+    if (!entry.hasGps) {
+      return _buildAddLocationCta(context);
+    }
 
     final canNavigate = context.select<ValueNotifier<AppMode>, bool>((v) => v.value.canNavigate);
     return NotificationListener(
@@ -147,6 +153,42 @@ class _LocationSectionState extends State<LocationSection> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAddLocationCta(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        if (widget.showTitle) const SectionRow(icon: AIcons.location),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: PressableScale(
+            onTap: () => widget.actionDelegate.onActionSelected(context, entry, collection, EntryAction.editLocation),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.add_location_alt_outlined, size: 20, color: colors.onSurfaceVariant),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Add a location',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
