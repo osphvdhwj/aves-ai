@@ -209,8 +209,9 @@ class AvesFloatingBar extends StatefulWidget {
   final Widget Function(BuildContext context, Color backgroundColor, Widget? child) builder;
   final Widget? child;
 
-  static const margin = EdgeInsets.all(8);
-  static const borderRadius = BorderRadius.all(Radius.circular(8));
+  // M3E floating surface — bigger radius, slightly larger inset
+  static const margin = EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+  static const borderRadius = BorderRadius.all(Radius.circular(28));
 
   const new({
     super.key,
@@ -274,13 +275,18 @@ class _AvesFloatingBarState extends State<AvesFloatingBar> with RouteAware {
       builder: (context, isBlurAllowed, child) {
         final blurred = isBlurAllowed && context.select<Settings, bool>((v) => v.enableBlurEffect);
         return Container(
-          foregroundDecoration: BoxDecoration(
-            border: Border.all(
-              color: theme.dividerColor,
-            ),
-            borderRadius: AvesFloatingBar.borderRadius,
-          ),
           margin: AvesFloatingBar.margin,
+          decoration: BoxDecoration(
+            borderRadius: AvesFloatingBar.borderRadius,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 12,
+                spreadRadius: 0,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: BlurredRRect(
             enabled: blurred,
             borderRadius: AvesFloatingBar.borderRadius,
