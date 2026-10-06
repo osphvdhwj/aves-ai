@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/chat_message.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
@@ -19,8 +20,10 @@ class _AiChatPageState extends State<AiChatPage> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
 
-  static const _presets = ['/find', '/dup', '/blur', '/receipt'];
-  static const _modifiers = ['@deep', '@fast', '@ocr', '@person', '@like'];
+  static List<String> get _presets =>
+      AiCommands.all.where((c) => c.trigger == '/').map((c) => c.token).toList();
+  static List<String> get _modifiers =>
+      AiCommands.all.where((c) => c.trigger == '@').map((c) => c.token).toList();
 
   @override
   void dispose() {

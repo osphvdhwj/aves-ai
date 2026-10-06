@@ -1,3 +1,4 @@
+import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
@@ -390,17 +391,27 @@ class _PromptTile extends StatelessWidget {
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
 
-  static const _actions = <(String, IconData)>[
-    ('/find', Icons.search),
-    ('/dup', Icons.copy_all_outlined),
-    ('/blur', Icons.blur_on_outlined),
-    ('/receipt', Icons.receipt_long_outlined),
-    ('@deep', Icons.psychology_outlined),
-    ('@fast', Icons.bolt_outlined),
-    ('@ocr', Icons.text_fields_outlined),
-    ('@person', Icons.person_outline),
-    ('@like', Icons.favorite_outline),
-  ];
+  /// Derived from [AiCommands.all] so the palette stays in sync with the
+  /// command registry.
+  static List<(String, IconData)> get _actions =>
+      AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
+
+  static IconData _iconForCommand(String token) => switch (token) {
+    '/find' => Icons.search,
+    '/dup' => Icons.copy_all_outlined,
+    '/blur' => Icons.blur_on_outlined,
+    '/receipt' => Icons.receipt_long_outlined,
+    '/clean' => Icons.cleaning_services_outlined,
+    '/translate' => Icons.translate,
+    '/objects' => Icons.category_outlined,
+    '/faces' => Icons.face_outlined,
+    '@deep' => Icons.psychology_outlined,
+    '@fast' => Icons.bolt_outlined,
+    '@ocr' => Icons.text_fields_outlined,
+    '@person' => Icons.person_outline,
+    '@like' => Icons.favorite_outline,
+    _ => Icons.auto_awesome,
+  };
 
   const new({required this.onTap});
 
