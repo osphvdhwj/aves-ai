@@ -21,7 +21,7 @@ class HighlightTitle extends StatelessWidget {
     super.key,
     required this.title,
     this.color,
-    this.fontSize = 18,
+    this.fontSize = 15,
     this.enabled = true,
     this.showHighlight = true,
   });
@@ -38,34 +38,25 @@ class HighlightTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // M3E section title — tighter, heavier weight, no outline, no small-caps
+    final effectiveColor = enabled
+        ? (color ?? Theme.of(context).colorScheme.primary)
+        : Theme.of(context).colorScheme.onSurfaceVariant;
     final style = TextStyle(
-      shadows: shadows(context),
       fontSize: fontSize,
-      letterSpacing: canHaveLetterSpacing(context.localeName) ? 1 : 0,
-      fontFeatures: const [FontFeature.enable('smcp')],
+      fontWeight: FontWeight.w600,
+      letterSpacing: -0.2,
+      color: effectiveColor,
     );
-
-    final colors = context.watch<AvesColorsData>();
     return Align(
       alignment: .centerStart,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
-        decoration: showHighlight && context.select<Settings, bool>((v) => v.themeColorMode == AvesThemeColorMode.polychrome)
-            ? HighlightDecoration(
-                color: enabled ? color ?? colors.fromString(title) : disabledColor,
-              )
-            : null,
         margin: const EdgeInsets.symmetric(vertical: 4.0),
-        child: OutlinedText(
-          textSpans: [
-            TextSpan(
-              text: title,
-              style: style,
-            ),
-          ],
-          outlineColor: Themes.firstLayerColor(context),
+        child: Text(
+          title,
+          style: style,
           softWrap: false,
-          overflow: .fade,
+          overflow: TextOverflow.fade,
           maxLines: 1,
         ),
       ),
