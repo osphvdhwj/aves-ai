@@ -16,10 +16,12 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
+import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 class InfoAppBar extends StatelessWidget {
@@ -72,6 +74,12 @@ class InfoAppBar extends StatelessWidget {
       actions: useTvLayout
           ? []
           : [
+              if (entry.isImage)
+                IconButton(
+                  icon: const Icon(Symbols.text_fields),
+                  onPressed: () => showExtractTextDialog(context, entry),
+                  tooltip: 'Extract text',
+                ),
               IconButton(
                 icon: const Icon(AIcons.search),
                 onPressed: () => _goToSearch(context),
