@@ -12,24 +12,22 @@ class const SettingsTileLeading({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // M3E — solid filled circle, no outline. Icon in onColor for contrast.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final onColor = isDark ? Colors.black : Colors.white;
     return AnimatedContainer(
-      padding: const EdgeInsets.all(6),
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Themes.firstLayerColor(context),
-        border: Border.fromBorderSide(
-          BorderSide(
-            color: color,
-            width: AvesFilterChip.outlineWidth,
-          ),
-        ),
+        color: color.withValues(alpha: 0.9),
         shape: BoxShape.circle,
       ),
       duration: ADurations.themeColorModeAnimation,
       child: Icon(
         icon,
-        size: 18,
-        color: DefaultTextStyle.of(context).style.color,
-        shadows: Theme.of(context).isDark ? AStyles.embossShadows : null,
+        size: 22,
+        color: onColor,
       ),
     );
   }
