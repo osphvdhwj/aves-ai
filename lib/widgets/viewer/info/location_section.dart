@@ -100,20 +100,26 @@ class _LocationSectionState extends State<LocationSection> {
         crossAxisAlignment: .start,
         children: [
           if (widget.showTitle) _buildSectionHeading(context),
-          MapTheme(
-            interactive: false,
-            showCoordinateFilter: false,
-            navigationButton: canNavigate ? MapNavigationButton.map : MapNavigationButton.none,
-            visualDensity: VisualDensity.compact,
-            mapHeight: 200,
-            child: GeoMap(
-              controller: _mapController,
-              entries: [entry],
-              availableSize: MediaQuery.sizeOf(context),
-              isAnimatingNotifier: widget.isScrollingNotifier,
-              onUserZoomChange: (zoom) => settings.infoMapZoom = zoom.roundToDouble(),
-              onMarkerTap: collection != null && canNavigate ? (location, entry) => _openMapPage(context) : null,
-              openMapPage: collection != null ? _openMapPage : null,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+              child: MapTheme(
+                interactive: false,
+                showCoordinateFilter: false,
+                navigationButton: canNavigate ? MapNavigationButton.map : MapNavigationButton.none,
+                visualDensity: VisualDensity.compact,
+                mapHeight: 200,
+                child: GeoMap(
+                  controller: _mapController,
+                  entries: [entry],
+                  availableSize: MediaQuery.sizeOf(context),
+                  isAnimatingNotifier: widget.isScrollingNotifier,
+                  onUserZoomChange: (zoom) => settings.infoMapZoom = zoom.roundToDouble(),
+                  onMarkerTap: collection != null && canNavigate ? (location, entry) => _openMapPage(context) : null,
+                  openMapPage: collection != null ? _openMapPage : null,
+                ),
+              ),
             ),
           ),
           ListenableBuilder(
