@@ -23,6 +23,9 @@ class const DecoratedThumbnail({
 
   static double borderWidth(BuildContext context) => AvesBorder.straightBorderWidth(context);
 
+  // M3E tile corner radius — bigger than the old square look
+  static const double cornerRadius = 14.0;
+
   @override
   Widget build(BuildContext context) {
     final double thumbnailHeight = tileExtent;
@@ -66,10 +69,12 @@ class const DecoratedThumbnail({
       ],
     );
 
+    final radius = BorderRadius.circular(cornerRadius);
     return Container(
       // `decoration` with sub logical pixel width yields scintillating borders
       // so we use `foregroundDecoration` instead
       foregroundDecoration: BoxDecoration(
+        borderRadius: radius,
         border: Border.fromBorderSide(
           BorderSide(
             color: borderColor(context),
@@ -79,7 +84,10 @@ class const DecoratedThumbnail({
       ),
       width: thumbnailWidth,
       height: thumbnailHeight,
-      child: child,
+      child: ClipRRect(
+        borderRadius: radius,
+        child: child,
+      ),
     );
   }
 }
