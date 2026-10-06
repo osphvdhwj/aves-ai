@@ -11,12 +11,14 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/app_bar/app_bar_title.dart';
 import 'package:aves/widgets/common/app_bar/sliver_app_bar_title.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/popup/menu_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
+import 'package:aves/widgets/viewer/info/text_select_page.dart';
 import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
@@ -76,10 +78,13 @@ class InfoAppBar extends StatelessWidget {
           ? []
           : [
               if (entry.isImage)
-                IconButton(
-                  icon: const Icon(Symbols.text_fields),
-                  onPressed: () => showExtractTextDialog(context, entry),
-                  tooltip: 'Extract text',
+                PressableScale(
+                  onLongPress: () => showTextSelectPage(context, entry),
+                  child: IconButton(
+                    icon: const Icon(Symbols.text_fields),
+                    onPressed: () => showExtractTextDialog(context, entry),
+                    tooltip: 'Extract text (long-press for select mode)',
+                  ),
                 ),
               IconButton(
                 icon: const Icon(Symbols.shield_lock),
