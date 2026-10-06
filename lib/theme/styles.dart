@@ -2,9 +2,9 @@ import 'package:flutter/painting.dart';
 
 class AStyles {
   static const knownTitleText = TextStyle(
-    fontSize: 20,
-    fontWeight: .w300,
-    fontFeatures: [FontFeature.enable('smcp')],
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.2,
   );
 
   static TextStyle unknownTitleText = knownTitleText;

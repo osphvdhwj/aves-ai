@@ -18,7 +18,9 @@ class AppBottomNavBar extends StatefulWidget {
   // collection loaded in the `CollectionPage`, if any
   final CollectionLens? currentCollection;
 
-  static double get height => kBottomNavigationBarHeight + AvesFloatingBar.margin.vertical;
+  // M3 NavigationBar default height
+  static const double _barHeight = 76.0;
+  static double get height => _barHeight + AvesFloatingBar.margin.vertical;
 
   const new({
     super.key,
@@ -71,21 +73,21 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
       childHeight: AppBottomNavBar.height + context.select<MediaQueryData, double>((mq) => mq.effectiveBottomPadding),
       child: SafeArea(
         child: AvesFloatingBar(
-          builder: (context, backgroundColor, child) => BottomNavigationBar(
-            items: items.map((item) {
+          builder: (context, backgroundColor, child) => NavigationBar(
+            destinations: items.map((item) {
               final label = item.getText(context);
-              return BottomNavigationBarItem(
+              return NavigationDestination(
                 icon: item.getIcon(context),
                 label: label,
                 tooltip: label,
               );
             }).toList(),
-            onTap: (index) => _goTo(context, items, index),
-            currentIndex: _getCurrentIndex(context, items),
-            type: BottomNavigationBarType.fixed,
+            onDestinationSelected: (index) => _goTo(context, items, index),
+            selectedIndex: _getCurrentIndex(context, items),
             backgroundColor: backgroundColor,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+            height: _barHeight,
+            indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
           ),
         ),
       ),
