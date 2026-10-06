@@ -20,6 +20,7 @@ import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
 import 'package:aves/widgets/viewer/info/text_select_page.dart';
 import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
+import 'package:aves/widgets/viewer/info/ai_tools_page.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
@@ -90,6 +91,11 @@ class InfoAppBar extends StatelessWidget {
                 icon: const Icon(Symbols.shield_lock),
                 onPressed: () => showSecureShareDialog(context, entry),
                 tooltip: 'Secure share',
+              ),
+              IconButton(
+                icon: const Icon(Symbols.auto_awesome),
+                onPressed: () => showAiToolsPage(context, entry, collection: collection),
+                tooltip: 'AI tools',
               ),
               IconButton(
                 icon: const Icon(AIcons.search),
