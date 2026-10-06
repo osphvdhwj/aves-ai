@@ -185,7 +185,7 @@ class _LocationSectionState extends State<LocationSection> {
           child: PressableScale(
             onTap: () => widget.actionDelegate.onActionSelected(context, entry, collection, EntryAction.editLocation),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
