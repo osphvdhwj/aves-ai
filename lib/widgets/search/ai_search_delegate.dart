@@ -11,6 +11,7 @@ import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 class AiSearchDelegate extends AvesSearchDelegate {
@@ -115,7 +116,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           const SizedBox(height: 12),
           _PromptGrid(
             prompts: [
-              ..._dynamic.map((p) => _GridPrompt(p, Icons.auto_awesome)),
+              ..._dynamic.map((p) => _GridPrompt(p, Symbols.auto_awesome)),
               ..._rotating.map((p) => _GridPrompt(p.text, _iconForCategory(p.category))),
             ],
             onTap: (text) => _onPrompt(context, text),
@@ -190,35 +191,35 @@ class AiSearchDelegate extends AvesSearchDelegate {
   static IconData _iconForCategory(String category) {
     switch (category) {
       case 'people':
-        return Icons.people_outline;
+        return Symbols.people;
       case 'places':
-        return Icons.place_outlined;
+        return Symbols.place;
       case 'nature':
-        return Icons.eco_outlined;
+        return Symbols.eco;
       case 'food':
-        return Icons.restaurant_outlined;
+        return Symbols.restaurant;
       case 'animals':
-        return Icons.pets_outlined;
+        return Symbols.pets;
       case 'activity':
-        return Icons.directions_run_outlined;
+        return Symbols.directions_run;
       case 'event':
-        return Icons.celebration_outlined;
+        return Symbols.celebration;
       case 'document':
-        return Icons.description_outlined;
+        return Symbols.description;
       case 'quality':
-        return Icons.high_quality_outlined;
+        return Symbols.high_quality;
       case 'time':
-        return Icons.schedule_outlined;
+        return Symbols.schedule;
       case 'mood':
-        return Icons.emoji_emotions_outlined;
+        return Symbols.emoji_emotions;
       case 'translate':
-        return Icons.translate;
+        return Symbols.translate;
       case 'objects':
-        return Icons.category_outlined;
+        return Symbols.category;
       case 'clean':
-        return Icons.cleaning_services_outlined;
+        return Symbols.cleaning_services;
       default:
-        return Icons.auto_awesome;
+        return Symbols.auto_awesome;
     }
   }
 }
@@ -289,7 +290,7 @@ class _HeroCard extends StatelessWidget {
                   color: colors.onPrimaryContainer.withValues(alpha: 0.12),
                 ),
                 child: Icon(
-                  Icons.auto_awesome,
+                  Symbols.auto_awesome,
                   color: colors.onPrimaryContainer,
                   size: 32,
                 ),
@@ -403,20 +404,20 @@ class _QuickActions extends StatelessWidget {
       AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
 
   static IconData _iconForCommand(String token) => switch (token) {
-    '/find' => Icons.search,
-    '/dup' => Icons.copy_all_outlined,
-    '/blur' => Icons.blur_on_outlined,
-    '/receipt' => Icons.receipt_long_outlined,
-    '/clean' => Icons.cleaning_services_outlined,
-    '/translate' => Icons.translate,
-    '/objects' => Icons.category_outlined,
-    '/faces' => Icons.face_outlined,
-    '@deep' => Icons.psychology_outlined,
-    '@fast' => Icons.bolt_outlined,
-    '@ocr' => Icons.text_fields_outlined,
-    '@person' => Icons.person_outline,
-    '@like' => Icons.favorite_outline,
-    _ => Icons.auto_awesome,
+    '/find' => Symbols.search,
+    '/dup' => Symbols.file_copy,
+    '/blur' => Symbols.blur_on,
+    '/receipt' => Symbols.receipt_long,
+    '/clean' => Symbols.cleaning_services,
+    '/translate' => Symbols.translate,
+    '/objects' => Symbols.category,
+    '/faces' => Symbols.face,
+    '@deep' => Symbols.psychology,
+    '@fast' => Symbols.bolt,
+    '@ocr' => Symbols.text_fields,
+    '@person' => Symbols.person,
+    '@like' => Symbols.favorite,
+    _ => Symbols.auto_awesome,
   };
 
   const new({required this.onTap});
@@ -507,7 +508,7 @@ class _FaceRow extends StatelessWidget {
                       color: colors.surfaceContainerHighest,
                       border: Border.all(color: colors.outlineVariant, width: 1.5),
                     ),
-                    child: Icon(Icons.add, color: colors.onSurfaceVariant, size: 28),
+                    child: Icon(Symbols.add, color: colors.onSurfaceVariant, size: 28),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -532,7 +533,7 @@ class _FaceRow extends StatelessWidget {
                         : null,
                   ),
                   child: Icon(
-                    isFirst ? Icons.person : Icons.person_outline,
+                    isFirst ? Symbols.person : Symbols.person_outline,
                     color: fgPalette[i % fgPalette.length],
                     size: 32,
                   ),
@@ -588,7 +589,7 @@ class _ResultGrid extends StatelessWidget {
               errorBuilder: (context, error, stack) => Container(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 alignment: Alignment.center,
-                child: const Icon(Icons.broken_image, size: 24),
+                child: const Icon(Symbols.broken_image, size: 24),
               ),
             ),
           ),
@@ -638,7 +639,7 @@ class _HistoryChips extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.history, size: 16, color: colors.onSurfaceVariant),
+                  Icon(Symbols.history, size: 16, color: colors.onSurfaceVariant),
                   const SizedBox(width: 6),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 200),

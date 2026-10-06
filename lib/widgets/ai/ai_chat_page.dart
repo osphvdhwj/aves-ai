@@ -4,6 +4,8 @@ import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/chat_message.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 class AiChatPage extends StatefulWidget {
@@ -79,7 +81,7 @@ class _AiChatPageState extends State<AiChatPage> {
             IconButton(
               tooltip: 'Clear',
               onPressed: () => setState(_messages.clear),
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Symbols.delete),
             ),
         ],
       ),
