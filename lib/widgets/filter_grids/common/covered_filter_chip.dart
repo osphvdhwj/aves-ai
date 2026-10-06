@@ -23,6 +23,7 @@ import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/thumbnail/image.dart';
+import 'package:aves/widgets/filter_grids/common/cover_collage.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -179,11 +180,7 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
                     );
                   },
                 )
-              : ThumbnailImage(
-                  entry: entry,
-                  extent: thumbnailExtent,
-                  devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-                ),
+              : _buildCover(context, entry, source, _filter),
         ),
       ),
       banner: banner,
@@ -192,6 +189,25 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
       heroType: heroType,
       onTap: onTap,
       onLongPress: null,
+    );
+  }
+
+  Widget _buildCover(BuildContext context, AvesEntry cover, CollectionSource source, T filter) {
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    // Only stored albums, dynamic albums, tag filters get collages.
+    // Groups and locations keep the single-cover look.
+    final wantsCollage = filter is StoredAlbumFilter || filter is DynamicAlbumFilter || filter is TagFilter;
+    if (!wantsCollage) {
+      return ThumbnailImage(entry: cover, extent: thumbnailExtent, devicePixelRatio: dpr);
+    }
+    final entries = source.coverEntries(filter, count: 4);
+    if (entries.length < 4) {
+      return ThumbnailImage(entry: cover, extent: thumbnailExtent, devicePixelRatio: dpr);
+    }
+    return CoverCollage(
+      entries: entries,
+      extent: thumbnailExtent,
+      devicePixelRatio: dpr,
     );
   }
 
