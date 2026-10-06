@@ -52,6 +52,25 @@ class Themes {
 
   static final _typography = Typography.material2021(platform: TargetPlatform.android);
 
+  /// Material 3 Expressive typography — tighter tracking on large text,
+  /// slightly heavier weight on titles. Applied on top of the base 2021 set.
+  static TextTheme _emphasized(TextTheme base) {
+    TextStyle title(TextStyle? s, {double tracking = -0.4, FontWeight weight = FontWeight.w600}) {
+      if (s == null) return const TextStyle();
+      return s.copyWith(fontWeight: weight, letterSpacing: tracking);
+    }
+
+    return base.copyWith(
+      headlineLarge: title(base.headlineLarge, tracking: -1.0, weight: FontWeight.w500),
+      headlineMedium: title(base.headlineMedium, tracking: -0.75, weight: FontWeight.w500),
+      headlineSmall: title(base.headlineSmall, tracking: -0.5, weight: FontWeight.w500),
+      titleLarge: title(base.titleLarge),
+      titleMedium: title(base.titleMedium, tracking: -0.2),
+      titleSmall: title(base.titleSmall, tracking: -0.1),
+      labelLarge: base.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+    );
+  }
+
   static ThemeData _baseTheme(ColorScheme colors, bool deviceInitialized) {
     return ThemeData(
       // M3E TOKENS
@@ -67,7 +86,7 @@ class Themes {
       iconTheme: _iconTheme(colors),
       typography: _typography,
       // COMPONENT THEMES
-      bottomNavigationBarTheme: _bottomNavigationBarTheme(colors),
+      navigationBarTheme: _navigationBarTheme(colors),
       checkboxTheme: _checkboxTheme(colors),
       drawerTheme: _drawerTheme(colors),
       floatingActionButtonTheme: _floatingActionButtonTheme(colors),
@@ -82,15 +101,47 @@ class Themes {
       sliderTheme: _sliderTheme(colors),
       tabBarTheme: TabBarThemeData(indicatorColor: colors.primary),
       tooltipTheme: _tooltipTheme,
+      // M3E additions
+      cardTheme: CardThemeData(
+        color: _schemeCardLayer(colors),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        clipBehavior: Clip.antiAlias,
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        side: BorderSide.none,
+        elevation: 0,
+        pressElevation: 0,
+        backgroundColor: _schemeSecondLayer(colors),
+        selectedColor: colors.secondaryContainer,
+        labelStyle: TextStyle(color: colors.onSurface, fontWeight: FontWeight.w500),
+      ),
+      dividerTheme: DividerThemeData(
+        color: colors.outlineVariant.withValues(alpha: 0.5),
+        space: 1,
+        thickness: 1,
+      ),
     );
   }
 
-  static BottomNavigationBarThemeData _bottomNavigationBarTheme(ColorScheme colors) {
+  static NavigationBarThemeData _navigationBarTheme(ColorScheme colors) {
     final iconTheme = _iconTheme(colors);
-    return BottomNavigationBarThemeData(
+    return NavigationBarThemeData(
       elevation: 0,
-      selectedIconTheme: iconTheme.copyWith(color: colors.primary),
-      unselectedIconTheme: iconTheme.copyWith(color: _unselectedWidgetColor(colors)),
+      backgroundColor: _schemeFirstLayer(colors),
+      indicatorColor: colors.secondaryContainer,
+      labelTextStyle: WidgetStateProperty.all(
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return iconTheme.copyWith(color: colors.onSecondaryContainer);
+        }
+        return iconTheme.copyWith(color: _unselectedWidgetColor(colors));
+      }),
+      height: 72,
     );
   }
 
@@ -195,7 +246,7 @@ class Themes {
       onSecondary: onAccent,
       onSurface: _lightOnSurface,
     );
-    final textTheme = _lightThemeTypo;
+    final textTheme = _emphasized(_lightThemeTypo);
     return _baseTheme(colors, deviceInitialized).copyWith(
       // TYPOGRAPHY & ICONOGRAPHY
       textTheme: textTheme,
@@ -249,7 +300,7 @@ class Themes {
   }
 
   static ThemeData _baseDarkTheme(ColorScheme colors, bool deviceInitialized) {
-    final textTheme = _darkThemeTypo;
+    final textTheme = _emphasized(_darkThemeTypo);
     return _baseTheme(colors, deviceInitialized).copyWith(
       // TYPOGRAPHY & ICONOGRAPHY
       textTheme: textTheme,
