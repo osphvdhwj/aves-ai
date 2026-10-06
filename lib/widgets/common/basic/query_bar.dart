@@ -26,7 +26,8 @@ class QueryBar extends StatefulWidget {
   @override
   State<QueryBar> createState() => _QueryBarState();
 
-  static double getPreferredHeight(TextScaler textScaler) => textScaler.scale(kToolbarHeight);
+  // M3E pill input — slightly taller than legacy toolbar
+  static double getPreferredHeight(TextScaler textScaler) => textScaler.scale(64);
 }
 
 class _QueryBarState extends State<QueryBar> {
@@ -67,23 +68,37 @@ class _QueryBarState extends State<QueryBar> {
           crossAxisAlignment: .center,
           children: [
             Expanded(
-              child: TextField(
-                controller: _controller,
-                focusNode: widget.focusNode,
-                decoration: InputDecoration(
-                  icon: Padding(
-                    padding: widget.leadingPadding ?? const EdgeInsetsDirectional.only(start: 16),
-                    // set theme at this level because `InputDecoration` defines its own `IconTheme` with a fixed size
-                    child: FontSizeIconTheme(
-                      child: Icon(widget.icon ?? AIcons.titleFilter),
-                    ),
-                  ),
-                  hintText: widget.hintText ?? MaterialLocalizations.of(context).searchFieldLabel,
-                  hintStyle: Theme.of(context).inputDecorationTheme.hintStyle,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(28),
                 ),
-                textInputAction: TextInputAction.search,
-                onChanged: (s) => _debouncer(() => queryNotifier.value = s.trim()),
-                enabled: widget.editable,
+                child: TextField(
+                  controller: _controller,
+                  focusNode: widget.focusNode,
+                  decoration: InputDecoration(
+                    icon: Padding(
+                      padding: widget.leadingPadding ?? const EdgeInsetsDirectional.only(start: 16),
+                      // set theme at this level because `InputDecoration` defines its own `IconTheme` with a fixed size
+                      child: FontSizeIconTheme(
+                        child: Icon(
+                          widget.icon ?? AIcons.titleFilter,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    hintText: widget.hintText ?? MaterialLocalizations.of(context).searchFieldLabel,
+                    hintStyle: Theme.of(context).inputDecorationTheme.hintStyle,
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                  textInputAction: TextInputAction.search,
+                  onChanged: (s) => _debouncer(() => queryNotifier.value = s.trim()),
+                  enabled: widget.editable,
+                ),
               ),
             ),
             ConstrainedBox(
