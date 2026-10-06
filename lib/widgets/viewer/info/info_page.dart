@@ -83,6 +83,13 @@ class _InfoPageState extends State<InfoPage> {
                       scrollController: _scrollController,
                       split: MediaQuery.sizeOf(context).width > splitScreenWidthThreshold,
                       goToViewer: _goToViewer,
+                      onEntrySelected: (newEntry) {
+                        widget.entryNotifier.value = newEntry;
+                        // jump info scroll back to top so new entry is visible
+                        if (_scrollController.hasClients) {
+                          _scrollController.jumpTo(0);
+                        }
+                      },
                     ),
                   );
                 }
@@ -140,6 +147,7 @@ class _InfoPageContent extends StatefulWidget {
   final ScrollController scrollController;
   final bool split;
   final VoidCallback goToViewer;
+  final ValueChanged<AvesEntry>? onEntrySelected;
 
   const new({
     required this.collection,
@@ -149,6 +157,7 @@ class _InfoPageContent extends StatefulWidget {
     required this.scrollController,
     required this.split,
     required this.goToViewer,
+    this.onEntrySelected,
   });
 
   @override
@@ -330,6 +339,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
             _InfoBottomThumbnail(
               collection: collection,
               currentEntry: entry,
+              onEntrySelected: widget.onEntrySelected,
             ),
         ],
       ),
@@ -356,11 +366,13 @@ class _InfoPageContentState extends State<_InfoPageContent> {
 class _InfoBottomThumbnail extends StatelessWidget {
   final CollectionLens? collection;
   final AvesEntry currentEntry;
+  final ValueChanged<AvesEntry>? onEntrySelected;
 
   const new({
     super.key,
     required this.collection,
     required this.currentEntry,
+    this.onEntrySelected,
   });
 
   @override
@@ -374,11 +386,18 @@ class _InfoBottomThumbnail extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: ViewerThumbnailPreview(
           entries: entries,
           displayedIndex: index,
           availableWidth: width,
+          onTapOverride: onEntrySelected == null
+              ? null
+              : (i) {
+                  if (i >= 0 && i < entries.length) {
+                    onEntrySelected!.call(entries[i]);
+                  }
+                },
         ),
       ),
     );

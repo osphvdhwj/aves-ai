@@ -7,12 +7,17 @@ class ViewerThumbnailPreview extends StatefulWidget {
   final List<AvesEntry> entries;
   final int displayedIndex;
   final double availableWidth;
+  /// When set, overrides the default action (dispatch `ShowEntryNotification`)
+  /// on tap. Used by the info page, which does not listen for that notification.
+  /// Also suppresses the auto-navigation on scroll.
+  final void Function(int index)? onTapOverride;
 
   const new({
     super.key,
     required this.entries,
     required this.displayedIndex,
     required this.availableWidth,
+    this.onTapOverride,
   });
 
   @override
@@ -57,12 +62,20 @@ class _ViewerThumbnailPreviewState extends State<ViewerThumbnailPreview> {
       entryCount: entryCount,
       entryBuilder: (index) => 0 <= index && index < entryCount ? entries[index] : null,
       indexNotifier: _entryIndexNotifier,
-      onTap: (index) => ShowEntryNotification(animate: false, index: index).dispatch(context),
+      onTap: (index) {
+        final override = widget.onTapOverride;
+        if (override != null) {
+          override(index);
+        } else {
+          ShowEntryNotification(animate: false, index: index).dispatch(context);
+        }
+      },
     );
   }
 
   void _onScrollerIndexChanged() {
     if (!mounted) return;
+    if (widget.onTapOverride != null) return;
     ShowEntryNotification(animate: false, index: _entryIndexNotifier.value).dispatch(context);
   }
 }
