@@ -256,7 +256,7 @@ class _BucketTile extends StatelessWidget {
                   itemBuilder: (context, i) {
                     final e = previews[i];
                     return ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(context.m3e.shapeExtraSmall),
                       child: SizedBox(
                         width: 40,
                         height: 40,

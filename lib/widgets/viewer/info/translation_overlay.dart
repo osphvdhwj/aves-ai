@@ -101,7 +101,7 @@ class _Overlay extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                         decoration: BoxDecoration(
                           color: colors.surfaceContainerHighest.withValues(alpha: 0.85),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
                           border: Border.all(color: colors.outlineVariant, width: 1),
                         ),
                         alignment: Alignment.center,
