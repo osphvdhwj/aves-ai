@@ -1,5 +1,6 @@
 import 'package:aves/app_mode.dart';
 import 'package:aves/locale/aves_locale.dart';
+import 'package:aves/locale/calendar/calendar_utils.dart';
 import 'package:aves/model/dynamic_albums.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
@@ -17,6 +18,7 @@ import 'package:aves/model/filters/weekday.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/colors.dart';
+import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/rate_button.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/tag_button.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';

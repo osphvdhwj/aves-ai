@@ -15,6 +15,7 @@ import 'package:aves/widgets/common/map/map_action_delegate.dart';
 import 'package:aves/widgets/common/providers/map_theme_provider.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves_model/aves_model.dart';
 import 'package:aves/widgets/map/map_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_map/aves_map.dart';
