@@ -65,16 +65,17 @@ class InfoHeaderSection extends StatelessWidget {
     // Google Photos style: "Fri, Jan 10, 2025 · 9:36 AM"
     final dateText = date != null ? '${locale.MMMEd(date)}, ${locale.y(date)}${AText.separator}${formatTime(date, locale, use24hour)}' : '';
 
-    final baseWeight = theme.textTheme.headlineSmall?.fontWeight ?? FontWeight.w400;
+    final baseStyle = theme.textTheme.headlineMedium ?? theme.textTheme.headlineSmall;
+    final baseWeight = baseStyle?.fontWeight ?? FontWeight.w400;
     final steps = (tokens.emphasizedWeightDelta / 100).round();
     final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
     final emphasizedWeight = FontWeight.values[emphasizedIndex];
 
     return Text(
       dateText.isEmpty ? 'Undated' : dateText,
-      style: theme.textTheme.headlineSmall?.copyWith(
+      style: baseStyle?.copyWith(
         fontWeight: emphasizedWeight,
-        letterSpacing: -0.4,
+        letterSpacing: -0.5,
         color: theme.colorScheme.onSurface,
       ),
     );
