@@ -147,6 +147,7 @@ class InfoHeaderSection extends StatelessWidget {
     final album = entry.directory;
     if (album == null) return const SizedBox.shrink();
 
+    final tokens = context.m3e;
     final source = collection?.source;
     final albumName = source?.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
     final itemCount = source?.albumEntryCount(StoredAlbumFilter(album, null));
@@ -173,7 +174,7 @@ class InfoHeaderSection extends StatelessWidget {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(tokens.shapeSmall),
                 child: SizedBox(
                   width: 56,
                   height: 56,
