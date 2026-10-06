@@ -121,6 +121,37 @@ class Themes {
         linearMinHeight: 6,
         refreshBackgroundColor: colors.surfaceContainerHigh,
       ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: _schemeSecondLayer(colors),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        modalElevation: 0,
+        modalBackgroundColor: _schemeSecondLayer(colors),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        showDragHandle: true,
+        dragHandleColor: colors.onSurfaceVariant.withValues(alpha: 0.4),
+        dragHandleSize: const Size(32, 4),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: _schemeSecondLayer(colors),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.primary, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
       // M3E additions
       cardTheme: CardThemeData(
         color: _schemeCardLayer(colors),
@@ -241,6 +272,13 @@ class Themes {
   static SnackBarThemeData _snackBarTheme(ColorScheme colors) => SnackBarThemeData(
     actionTextColor: colors.primary,
     behavior: SnackBarBehavior.floating,
+    backgroundColor: _schemeSecondLayer(colors),
+    contentTextStyle: TextStyle(color: colors.onSurface),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(16)),
+    ),
+    elevation: 3,
+    insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
   );
 
   static const _tooltipTheme = TooltipThemeData(
