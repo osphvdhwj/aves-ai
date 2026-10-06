@@ -5,6 +5,7 @@ import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/viewer/info/cleaner_page.dart';
 import 'package:aves/widgets/viewer/info/duplicates_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
+import 'package:aves/widgets/viewer/info/objects_page.dart';
 import 'package:aves/widgets/viewer/info/sync_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -54,14 +55,7 @@ class AiToolsPage extends StatelessWidget {
               icon: Symbols.category,
               title: 'Objects',
               subtitle: 'Browse by recognised object category',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Object recognition requires the AI companion.'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              onTap: () => showObjectsPage(context),
             ),
             _Tile(
               icon: Symbols.translate,
