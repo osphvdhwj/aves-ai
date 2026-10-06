@@ -173,8 +173,14 @@ class InfoHeaderSection extends StatelessWidget {
             final displayName = source?.getStoredAlbumDisplayName(context, album) ?? album;
             SelectFilterNotification(StoredAlbumFilter(album, displayName)).dispatch(context);
           },
-          child: Row(
-            children: [
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(tokens.shapeMedium),
+            ),
+            child: Row(
+              children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(tokens.shapeSmall),
                 child: SizedBox(
@@ -191,28 +197,29 @@ class InfoHeaderSection extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      albumName,
-                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        albumName,
+                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
