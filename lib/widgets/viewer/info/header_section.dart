@@ -16,6 +16,8 @@ import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter/services.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 /// Google Photos-style top section for the info page.
@@ -289,6 +291,50 @@ class _CaptionRowState extends State<_CaptionRow> {
     }
   }
 
+  Future<void> _showCaptionMenu(BuildContext context, String title, String description) async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.copy_rounded),
+                title: const Text('Copy title'),
+                onTap: () => Navigator.of(context).pop('copy-title'),
+              ),
+            if (description.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.copy_rounded),
+                title: const Text('Copy description'),
+                onTap: () => Navigator.of(context).pop('copy-desc'),
+              ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit'),
+              onTap: () => Navigator.of(context).pop('edit'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    switch (action) {
+      case 'copy-title':
+        await Clipboard.setData(ClipboardData(text: title));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title copied'), duration: Duration(seconds: 1)));
+      case 'copy-desc':
+        await Clipboard.setData(ClipboardData(text: description));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Description copied'), duration: Duration(seconds: 1)));
+      case 'edit':
+        if (!mounted) return;
+        widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -300,6 +346,7 @@ class _CaptionRowState extends State<_CaptionRow> {
 
     return PressableScale(
       onTap: () => widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription),
+      onLongPress: hasCaption ? () => _showCaptionMenu(context, title, description) : null,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
