@@ -194,7 +194,20 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
     );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: colorScheme.primary,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colorScheme.primary,
+            colorScheme.primaryContainer,
+          ],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
+      ),
       child: SafeArea(
         bottom: false,
         child: OutlinedButtonTheme(
@@ -203,7 +216,7 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
               foregroundColor: WidgetStateProperty.all<Color>(onPrimary),
               overlayColor: WidgetStateProperty.all<Color>(onPrimary.withValues(alpha: .12)),
               iconColor: WidgetStateProperty.all<Color>(onPrimary),
-              side: WidgetStateProperty.all<BorderSide>(BorderSide(width: 1, color: onPrimary.withValues(alpha: .24))),
+              side: WidgetStateProperty.all<BorderSide>(BorderSide(width: 1, color: onPrimary.withValues(alpha: .3))),
             ),
           ),
           child: Column(
@@ -222,11 +235,10 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                         TextSpan(
                           text: l10n.appName,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 38,
-                            fontWeight: .w300,
-                            letterSpacing: canHaveLetterSpacing(context.localeName) ? 1 : 0,
-                            fontFeatures: const [FontFeature.enable('smcp')],
+                            color: colorScheme.onPrimary,
+                            fontSize: 34,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ],
