@@ -1,6 +1,7 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -37,10 +38,9 @@ class _AiTagsSectionState extends State<AiTagsSection> {
   }
 
   Future<List<String>> _load() async {
-    // The companion exposes tags through /find's response, but no
-    // dedicated method exists yet. Return empty until it does — keeps
-    // the UI final and reviewable.
-    return const <String>[];
+    // Local heuristic suggestions from the album path. Companion-derived
+    // tags will be merged here once the AI service exposes them.
+    return TagSuggester.suggest(widget.entry);
   }
 
   @override
@@ -59,7 +59,7 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                 Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
                 const SizedBox(width: 6),
                 Text(
-                  'AI tags',
+                  'Suggested tags',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.onSurface,
@@ -81,7 +81,7 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                     borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
                   ),
                   child: Text(
-                    'AI tags will appear here once the companion returns recognised keywords.',
+                    'Suggestions are drawn from the album name. Tap to add once the delegate is wired.',
                     style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                   ),
                 );
