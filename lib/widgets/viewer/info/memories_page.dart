@@ -1,5 +1,6 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
+import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
