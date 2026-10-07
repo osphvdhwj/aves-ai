@@ -42,6 +42,7 @@ class SettingKeys {
   static const recentDestinationAlbumsKey = 'recent_destination_albums';
   static const recentTagsKey = 'recent_tags';
   static const aiSearchHistoryKey = 'ai_search_history';
+  static const savedSearchesKey = 'saved_searches';
 
   // debug
   static const debugShowViewerTilesKey = 'debug_show_viewer_tiles';
