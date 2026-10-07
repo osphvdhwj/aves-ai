@@ -7,6 +7,7 @@ import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/ref/mime_types.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/services/gphotos_backup_service.dart';
 import 'package:aves/theme/format.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/utils/file_utils.dart';
@@ -94,26 +95,33 @@ class _DetailsSectionState extends State<DetailsSection> {
             color: colors.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
           ),
-          child: FutureBuilder<String?>(
-            future: _ownerPackageLoader,
-            builder: (context, snapshot) {
-              final ownerPackage = snapshot.data;
-              return FutureBuilder<void>(
-                future: _appNameLoader,
+          child: FutureBuilder<BackupStatus>(
+            future: gphotosBackupService.statusOf(entry),
+            builder: (context, backupSnapshot) {
+              final backup = backupSnapshot.data ?? BackupStatus.unknown;
+              return FutureBuilder<String?>(
+                future: _ownerPackageLoader,
                 builder: (context, snapshot) {
-                  return InfoRowGroup(
-                    info: {
-                      l10n.viewerInfoLabelTitle: title,
-                      l10n.viewerInfoLabelDate: dateText,
-                      if (entry.isVideo) ..._buildVideoRows(context),
-                      if (showResolution) l10n.viewerInfoLabelResolution: context.applyDirectionality(getRasterResolutionText(locale)),
-                      l10n.viewerInfoLabelSize: context.applyDirectionality(sizeText),
-                      if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
-                      l10n.viewerInfoLabelPath: ?path,
-                      l10n.viewerInfoLabelOwner: ?ownerPackage,
-                    },
-                    spanBuilders: {
-                      l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
+                  final ownerPackage = snapshot.data;
+                  return FutureBuilder<void>(
+                    future: _appNameLoader,
+                    builder: (context, snapshot) {
+                      return InfoRowGroup(
+                        info: {
+                          l10n.viewerInfoLabelTitle: title,
+                          l10n.viewerInfoLabelDate: dateText,
+                          if (entry.isVideo) ..._buildVideoRows(context),
+                          if (showResolution) l10n.viewerInfoLabelResolution: context.applyDirectionality(getRasterResolutionText(locale)),
+                          l10n.viewerInfoLabelSize: context.applyDirectionality(sizeText),
+                          if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
+                          l10n.viewerInfoLabelPath: ?path,
+                          l10n.viewerInfoLabelOwner: ?ownerPackage,
+                          if (backup != BackupStatus.unknown) 'Google Photos': backup.label,
+                        },
+                        spanBuilders: {
+                          l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
+                        },
+                      );
                     },
                   );
                 },
