@@ -58,6 +58,10 @@ class AiHealth {
     this.error,
   });
 
+  /// Whether the companion advertised the given capability id, e.g.
+  /// `'nsfw'`, `'ocr'`, `'person'`, `'objects'`, `'translate'`.
+  bool has(String capability) => capabilities.contains(capability);
+
   @override
   String toString() => 'AiHealth(installed: $installed, connected: $connected, apiVersion: $apiVersion, capabilities: $capabilities, error: $error)';
 }

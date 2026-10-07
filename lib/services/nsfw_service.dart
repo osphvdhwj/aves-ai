@@ -1,66 +1,63 @@
 import 'package:aves/model/entry/entry.dart';
-import 'package:aves/services/common/channel.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
-import 'package:flutter/services.dart';
 
-/// On-device NSFW classification.
+/// NSFW classification routed through the shared AI companion
+/// (`deckers.thibault/aves/ai`) using the `@nsfw` command.
 ///
-/// The Dart side is complete; the native side (Kotlin) is a stub until
-/// someone implements it with a real model. The bridge contract is:
+/// Aves never talks to a dedicated classifier channel; the companion
+/// advertises `nsfw` in its `AiHealth.capabilities` when it can score.
+/// If it cannot, this service resolves to [NsfwResult.unknown] and no
+/// NSFW tag is proposed.
 ///
-///   method channel: `deckers.thibault/aves/nsfw`
-///   method:         `classify`
-///   args:           { 'entry': <platform entry map> }
-///   returns:        Map with:
-///                     'available': bool   — model loaded & ready
-///                     'score':     double — 0.0 (safe) .. 1.0 (NSFW)
-///                     'labels':    List<String> — e.g. ['nudity', 'suggestive']
-///
-/// Implementation notes for the native side:
-///   1. Ship a TFLite model under `android/app/src/main/assets/models/`.
-///   2. Load once, cache the interpreter.
-///   3. Decode a 224x224 thumbnail of the entry (ImageProvider already
-///      exists in `deckers.thibault.aves.model.provider`).
-///   4. Run inference, return the score.
-///
-/// Until the native side returns `available: true`, this service resolves
-/// to [NsfwResult.unknown] and callers must treat NSFW status as unknown.
+/// The companion is expected to reply with a single line containing the
+/// score, e.g. `0.87` or `nsfw:0.87:nudity,suggestive`. The parser below
+/// accepts both forms plus a plain JSON object in `AiChatReply.text`.
 class NsfwService {
-  static const _platform = AvesMethodChannel('deckers.thibault/aves/nsfw');
-
   Future<NsfwResult> classify(AvesEntry entry) async {
     try {
-      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('classify', {
-        'entry': entry.toPlatformEntryMap(),
-      });
-      if (result == null) return const NsfwResult.unknown();
-      final map = result.cast<String, dynamic>();
-      final available = map['available'] == true;
-      if (!available) return const NsfwResult.unknown();
-      final score = (map['score'] as num?)?.toDouble();
-      final labels = (map['labels'] as List?)?.cast<String>() ?? const <String>[];
-      if (score == null) return const NsfwResult.unknown();
-      return NsfwResult(available: true, score: score, labels: labels);
-    } on MissingPluginException {
-      return const NsfwResult.unknown();
-    } on PlatformException catch (e, stack) {
+      final reply = await aiService.chat('@nsfw', entryIds: [entry.id]);
+      final error = reply.error;
+      if (error != null && error.isNotEmpty) {
+        return NsfwResult(available: false, score: null, labels: const [], error: error);
+      }
+      return _parse(reply.text);
+    } catch (e, stack) {
       await reportService.recordError(e, stack);
-      return NsfwResult(available: false, score: null, labels: const [], error: e.message);
+      return NsfwResult(available: false, score: null, labels: const [], error: e.toString());
     }
+  }
+
+  NsfwResult _parse(String raw) {
+    final text = raw.trim();
+    if (text.isEmpty) return const NsfwResult.unknown();
+
+    // Form 1: `nsfw:<score>[:<label>,<label>...]`
+    if (text.startsWith('nsfw:')) {
+      final parts = text.substring(5).split(':');
+      final score = double.tryParse(parts[0].trim());
+      if (score == null) return const NsfwResult.unknown();
+      final labels = parts.length > 1 && parts[1].trim().isNotEmpty
+          ? parts[1].split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList()
+          : const <String>[];
+      return NsfwResult(available: true, score: score.clamp(0.0, 1.0), labels: labels);
+    }
+
+    // Form 2: plain number, e.g. `0.87`
+    final asNumber = double.tryParse(text);
+    if (asNumber != null) {
+      return NsfwResult(available: true, score: asNumber.clamp(0.0, 1.0), labels: const []);
+    }
+
+    // Anything else: treat as unavailable
+    return const NsfwResult.unknown();
   }
 }
 
 class NsfwResult {
-  /// Whether the classifier could run. `false` when the native side is a
-  /// stub or the model failed to load.
   final bool available;
-
-  /// 0.0 = safe, 1.0 = NSFW. `null` when unavailable.
   final double? score;
-
-  /// Free-form labels the classifier attached, e.g. ['nudity'].
   final List<String> labels;
-
   final String? error;
 
   const NsfwResult({
@@ -72,7 +69,6 @@ class NsfwResult {
 
   const NsfwResult.unknown() : available = false, score = null, labels = const [], error = null;
 
-  /// Suggested tag when score is high enough. Callers decide the threshold.
   String? tagFor({double threshold = 0.75}) {
     if (!available || score == null) return null;
     if (score! < threshold) return null;
@@ -80,7 +76,6 @@ class NsfwResult {
     return 'nsfw';
   }
 
-  /// Confidence bucket for UI — 'safe', 'uncertain', 'nsfw', 'unknown'.
   String get bucket {
     if (!available || score == null) return 'unknown';
     if (score! < 0.3) return 'safe';
