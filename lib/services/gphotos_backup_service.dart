@@ -23,33 +23,69 @@ import 'package:flutter/services.dart';
 class GPhotosBackupService {
   static const _platform = AvesMethodChannel('com.avesplus.tools/bridge');
 
+  // Session cache. Google Photos only changes a given entry's backup
+  // state on its own schedule, so a few minutes of staleness is fine.
+  static const _cacheTtl = Duration(minutes: 5);
+  final Map<int, _CacheEntry> _cache = {};
+  final Set<int> _inFlight = {};
+
   /// Bulk lookup. Returns a map keyed by MediaStore id. Entries not
   /// present in the reply are treated as unknown by [statusOf].
-  Future<Map<int, BackupStatus>> lookup(Iterable<int> mediaStoreIds) async {
-    final ids = mediaStoreIds.toList();
+  ///
+  /// Results are cached for [_cacheTtl]. The companion is queried only
+  /// for ids that are missing or stale.
+  Future<Map<int, BackupStatus>> lookup(Iterable<int> mediaStoreIds, {bool forceRefresh = false}) async {
+    final ids = mediaStoreIds.toSet().toList();
     if (ids.isEmpty) return const {};
+
+    final now = DateTime.now();
+    final out = <int, BackupStatus>{};
+    final toFetch = <int>[];
+
+    for (final id in ids) {
+      final hit = _cache[id];
+      if (!forceRefresh && hit != null && now.difference(hit.at) < _cacheTtl) {
+        out[id] = hit.status;
+      } else if (!_inFlight.contains(id)) {
+        toFetch.add(id);
+      }
+    }
+
+    if (toFetch.isEmpty) return out;
+
+    _inFlight.addAll(toFetch);
     try {
       final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('gphotos.backup_status', {
-        'mediaStoreIds': ids,
+        'mediaStoreIds': toFetch,
       });
-      if (result == null) return const {};
-      final raw = result['statuses'];
-      if (raw is! Map) return const {};
-      final out = <int, BackupStatus>{};
-      raw.forEach((k, v) {
-        final id = int.tryParse(k.toString());
-        if (id == null) return;
-        out[id] = BackupStatus.fromName(v?.toString());
-      });
-      return out;
+      final raw = result?['statuses'];
+      final fetched = <int, BackupStatus>{};
+      if (raw is Map) {
+        raw.forEach((k, v) {
+          final id = int.tryParse(k.toString());
+          if (id == null) return;
+          fetched[id] = BackupStatus.fromName(v?.toString());
+        });
+      }
+      for (final id in toFetch) {
+        final status = fetched[id] ?? BackupStatus.unknown;
+        _cache[id] = _CacheEntry(status, now);
+        out[id] = status;
+      }
     } on MissingPluginException {
-      // Companion not installed — silently no-op.
-      return const {};
+      // Companion not installed — cache unknown so we stop retrying.
+      for (final id in toFetch) {
+        _cache[id] = _CacheEntry(BackupStatus.unknown, now);
+      }
     } on PlatformException catch (e, stack) {
-      // Log and degrade; never throw into the UI.
       await reportService.recordError(e, stack);
-      return const {};
+      for (final id in toFetch) {
+        _cache[id] = _CacheEntry(BackupStatus.unknown, now);
+      }
+    } finally {
+      _inFlight.removeAll(toFetch);
     }
+    return out;
   }
 
   /// Convenience single-entry lookup. Resolves to
@@ -60,6 +96,9 @@ class GPhotosBackupService {
     final map = await lookup([id]);
     return map[id] ?? BackupStatus.unknown;
   }
+
+  /// Drop cached values so the next lookup re-queries the companion.
+  void invalidate() => _cache.clear();
 
   /// True when the companion's `provider.ping` succeeded at least once
   /// this session. Cached so the UI can gate itself without an IPC hop.
@@ -116,3 +155,11 @@ enum BackupStatus {
 }
 
 final gphotosBackupService = GPhotosBackupService();
+
+class _CacheEntry {
+  final BackupStatus status;
+  final DateTime at;
+
+  const _CacheEntry(this.status, this.at);
+}
+
