@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
@@ -41,15 +44,90 @@ class DuplicatesPage extends StatelessWidget {
   }
 
   List<_DuplicateGroup> _groupDuplicates(List<AvesEntry> entries) {
-    final byKey = <String, List<AvesEntry>>{};
+    // stage 1: cheap fingerprint (size + mime)
+    final byFingerprint = <String, List<AvesEntry>>{};
     for (final e in entries) {
       final size = e.sizeBytes ?? 0;
       if (size <= 0) continue;
-      final key = '${e.mimeTypeAnySubtype}:${size}:${e.width}x${e.height}';
-      byKey.putIfAbsent(key, () => []).add(e);
+      final key = '${e.mimeTypeAnySubtype}:$size';
+      byFingerprint.putIfAbsent(key, () => []).add(e);
     }
-    return byKey.entries.where((kv) => kv.value.length > 1).map((kv) => _DuplicateGroup(entries: kv.value)).toList();
+
+    // stage 2: content hash for same-fingerprint entries with accessible paths
+    final groups = <_DuplicateGroup>[];
+    for (final candidates in byFingerprint.values) {
+      if (candidates.length < 2) continue;
+      final byHash = <String, List<AvesEntry>>{};
+      for (final e in candidates) {
+        final hash = _contentHash(e);
+        byHash.putIfAbsent(hash, () => []).add(e);
+      }
+      for (final g in byHash.values) {
+        if (g.length > 1) groups.add(_DuplicateGroup(entries: g));
+      }
+    }
+    return groups;
   }
+
+  /// BLAKE-ish rolling hash over the first and last 64 KB of the file.
+  /// Full-file hashing is expensive; head+tail is enough to distinguish
+  /// real duplicates from size collisions while staying fast.
+  String _contentHash(AvesEntry e) {
+    final path = e.path;
+    if (path == null || path.isEmpty) {
+      // fall back to the cheap fingerprint for entries without a path
+      return 'nopath:${e.mimeTypeAnySubtype}:${e.sizeBytes}:${e.width}x${e.height}';
+    }
+    try {
+      final file = File(path);
+      if (!file.existsSync()) return 'missing:$path';
+      final raf = file.openSync();
+      try {
+        const window = 64 * 1024;
+        final size = raf.lengthSync();
+        final head = Uint8List.fromList(raf.readSync(window));
+        Uint8List tail = Uint8List(0);
+        if (size > window) {
+          raf.setPositionSync(size - window);
+          tail = Uint8List.fromList(raf.readSync(window));
+        }
+        // FNV-1a over head+tail — cheap, adequate for equality checks
+        var h = 0xcbf29ce484222325;
+        for (final b in head) {
+          h ^= b;
+          h = (h * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
+        }
+        for (final b in tail) {
+          h ^= b;
+          h = (h * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
+        }
+        return h.toRadixString(16).padLeft(16, '0');
+      } finally {
+        raf.closeSync();
+      }
+    } catch (_) {
+      return 'err:$path';
+    }
+  }
+}
+
+/// Keeps the "best" entry and marks the rest for deletion suggestion.
+/// Preference order:
+///   1. higher resolution
+///   2. earlier EXIF capture date (original, not re-encoded)
+///   3. shorter path (heuristic for canonical location)
+AvesEntry bestOf(List<AvesEntry> entries) {
+  final sorted = [...entries];
+  sorted.sort((a, b) {
+    final pa = (a.width * a.height);
+    final pb = (b.width * b.height);
+    if (pa != pb) return pb.compareTo(pa);
+    final da = a.bestDate;
+    final db = b.bestDate;
+    if (da != null && db != null && da != db) return da.compareTo(db);
+    return (a.path ?? '').length.compareTo((b.path ?? '').length);
+  });
+  return sorted.first;
 }
 
 class _DuplicateGroup {
@@ -70,6 +148,7 @@ class _GroupCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final entries = group.entries;
     final totalBytes = entries.map((e) => e.sizeBytes ?? 0).fold<int>(0, (a, b) => a + b);
+    final keep = bestOf(entries);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -106,17 +185,38 @@ class _GroupCard extends StatelessWidget {
                 separatorBuilder: (context, _) => const SizedBox(width: 8),
                 itemBuilder: (context, i) {
                   final e = entries[i];
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
-                    child: SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: Image(
-                        image: e.getThumbnail(extent: 160),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, _, _) => ColoredBox(color: colors.surfaceContainerHighest),
+                  final isKeep = identical(e, keep);
+                  return Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+                        child: SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Image(
+                            image: e.getThumbnail(extent: 160),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, _, _) => ColoredBox(color: colors.surfaceContainerHighest),
+                          ),
+                        ),
                       ),
-                    ),
+                      if (isKeep)
+                        Positioned(
+                          left: 4,
+                          bottom: 4,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: colors.primary,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Keep',
+                              style: theme.textTheme.labelSmall?.copyWith(color: colors.onPrimary, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
