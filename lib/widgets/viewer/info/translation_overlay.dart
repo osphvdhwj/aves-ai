@@ -6,6 +6,48 @@ import 'package:material_ui/material_ui.dart';
 /// A single block of recognised text with its position on the media,
 /// expressed as a normalized rect in `[0, 1] × [0, 1]` relative to the
 /// displayed media bounds, plus its translation.
+/// Parses a `@ocr.structured` reply into positioned text blocks.
+///
+/// The companion returns one block per line, with a normalized rect in
+/// `[0,1]x[0,1]` followed by a tab and the recognised text:
+///
+///   `0.10	0.20	0.30	0.05\tHello world`
+///   `0.10	0.30	0.40	0.06\tSecond line`
+///
+/// Order of the four numbers is left, top, width, height. Malformed
+/// lines are skipped. When [translation] is null the source text is
+/// used as the translation — useful for a first render before the
+/// translate step runs.
+List<TranslatedTextBlock> parseOcrBlocks(String reply, {String Function(String source)? translate}) {
+  final out = <TranslatedTextBlock>[];
+  for (final rawLine in reply.split('\n')) {
+    final line = rawLine.trim();
+    if (line.isEmpty) continue;
+    final tab = line.indexOf('\t');
+    if (tab <= 0) continue;
+    final nums = line.substring(0, tab).split(',');
+    if (nums.length != 4) continue;
+    final l = double.tryParse(nums[0]);
+    final t = double.tryParse(nums[1]);
+    final w = double.tryParse(nums[2]);
+    final h = double.tryParse(nums[3]);
+    if (l == null || t == null || w == null || h == null) continue;
+    final source = line.substring(tab + 1).trim();
+    if (source.isEmpty) continue;
+    out.add(TranslatedTextBlock(
+      source: source,
+      translation: translate != null ? translate(source) : source,
+      rect: Rect.fromLTWH(
+        l.clamp(0.0, 1.0),
+        t.clamp(0.0, 1.0),
+        w.clamp(0.0, 1.0),
+        h.clamp(0.0, 1.0),
+      ),
+    ));
+  }
+  return out;
+}
+
 class TranslatedTextBlock {
   /// Original text as recognised by OCR.
   final String source;
