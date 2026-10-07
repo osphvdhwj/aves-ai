@@ -13,6 +13,7 @@ import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
+import 'package:aves/widgets/viewer/info/ai_tags_section.dart';
 import 'package:aves/widgets/viewer/info/color_section.dart';
 import 'package:aves/widgets/viewer/info/details_section.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
@@ -315,6 +316,22 @@ class _InfoPageContentState extends State<_InfoPageContent> {
                   ? SliverPadding(
                       padding: _horizontalPadding + const EdgeInsets.only(top: 8),
                       sliver: detailsAndLocationSliver,
+                    )
+                  : const SliverToBoxAdapter(child: SizedBox());
+            },
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _isBasicSectionVisibleNotifier,
+            builder: (context, visible, child) {
+              return visible
+                  ? SliverPadding(
+                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
+                      sliver: SliverToBoxAdapter(
+                        child: AiTagsSection(
+                          entry: entry,
+                          actionDelegate: _actionDelegate,
+                        ),
+                      ),
                     )
                   : const SliverToBoxAdapter(child: SizedBox());
             },

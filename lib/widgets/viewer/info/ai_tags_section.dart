@@ -3,6 +3,8 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
 import 'package:aves/model/nsfw_tags.dart';
+import 'package:aves/widgets/viewer/info/nsfw_tag_picker.dart';
+import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -14,8 +16,9 @@ import 'package:material_ui/material_ui.dart';
 /// entry. Until then, an empty state is shown that explains why.
 class AiTagsSection extends StatefulWidget {
   final AvesEntry entry;
+  final EntryInfoActionDelegate actionDelegate;
 
-  const new({super.key, required this.entry});
+  const new({super.key, required this.entry, required this.actionDelegate});
 
   @override
   State<AiTagsSection> createState() => _AiTagsSectionState();
@@ -67,6 +70,23 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                PressableScale(
+                  onTap: () => showNsfwTagPicker(context, entry: widget.entry, actionDelegate: widget.actionDelegate),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Symbols.add, size: 16, color: colors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'NSFW',
+                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
