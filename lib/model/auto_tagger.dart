@@ -24,7 +24,7 @@ class AutoTagger {
   /// Rules must be cheap (no I/O) and deterministic. They may consult the
   /// entry's tags, album path, filename, mime type, dimensions, dates, and
   /// GPS location.
-  final List<TagProposal Function(AvesEntry)> rules;
+  final List<List<TagProposal> Function(AvesEntry)> rules;
 
   const AutoTagger({this.rules = defaultRules});
 
@@ -51,7 +51,7 @@ class AutoTagger {
     return propose(entry).where((p) => !existing.contains(p.tag.toLowerCase())).toList();
   }
 
-  static const defaultRules = <TagProposal Function(AvesEntry)>[
+  static const defaultRules = <List<TagProposal> Function(AvesEntry)>[
     _albumSegments,
     _pathTokens,
     _filenameTokens,
