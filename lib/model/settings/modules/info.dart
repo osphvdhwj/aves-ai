@@ -13,4 +13,8 @@ mixin InfoSettings on SettingsAccess {
   UnitSystem get unitSystem => getEnumOrDefault(SettingKeys.unitSystemKey, SettingsDefaults.unitSystem, UnitSystem.values);
 
   set unitSystem(UnitSystem newValue) => set(SettingKeys.unitSystemKey, newValue.name);
+
+  bool get showGooglePhotosBackup => getBool(SettingKeys.showGooglePhotosBackupKey) ?? SettingsDefaults.showGooglePhotosBackup;
+
+  set showGooglePhotosBackup(bool newValue) => set(SettingKeys.showGooglePhotosBackupKey, newValue);
 }

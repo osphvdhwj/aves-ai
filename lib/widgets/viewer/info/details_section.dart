@@ -116,7 +116,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                           if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
                           l10n.viewerInfoLabelPath: ?path,
                           l10n.viewerInfoLabelOwner: ?ownerPackage,
-                          if (backup != BackupStatus.unknown) 'Google Photos': backup.label,
+                          if (settings.showGooglePhotosBackup && backup != BackupStatus.unknown) 'Google Photos': backup.label,
                         },
                         spanBuilders: {
                           l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),

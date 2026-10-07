@@ -149,6 +149,7 @@ class SettingKeys {
   static const infoMapZoomKey = 'info_map_zoom';
   static const coordinateFormatKey = 'coordinates_format';
   static const unitSystemKey = 'unit_system';
+  static const showGooglePhotosBackupKey = 'show_google_photos_backup';
 
   // tag editor
 
