@@ -4,6 +4,7 @@ import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
 import 'package:aves/model/nsfw_tags.dart';
 import 'package:aves/widgets/viewer/info/nsfw_tag_picker.dart';
+import 'package:aves/widgets/viewer/info/auto_tag_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -73,6 +74,27 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                   ),
                 ),
                 const Spacer(),
+                PressableScale(
+                  onTap: () => showAutoTagPage(
+                    context,
+                    entry: widget.entry,
+                    actionDelegate: widget.actionDelegate,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Symbols.auto_fix_high, size: 16, color: colors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Auto',
+                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
                 PressableScale(
                   onTap: () => showNsfwTagPicker(context, entry: widget.entry, actionDelegate: widget.actionDelegate),
                   child: Padding(
