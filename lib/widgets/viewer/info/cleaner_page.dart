@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:ui' as ui;
+
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/viewer/info/image_quality.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -14,6 +18,7 @@ enum CleanerBucket {
   largeFiles('Large files', 'Over 5 MB', Symbols.storage),
   screenshots('Screenshots', 'Likely screenshots to clear', Symbols.screenshot_monitor),
   blurry('Blurry', 'Low clarity shots (heuristic)', Symbols.blur_on),
+  dark('Dark', 'Underexposed or near-black frames', Symbols.brightness_low),
   duplicates('Duplicates', 'Same content, different files', Symbols.content_copy),
   oldMedia('Very old', 'Older than 3 years', Symbols.history);
 
@@ -37,10 +42,31 @@ class CleanerPage extends StatefulWidget {
 }
 
 class _CleanerPageState extends State<CleanerPage> {
+  Future<Map<CleanerBucket, List<AvesEntry>>>? _classificationFuture;
+  List<AvesEntry> _cachedEntries = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleClassification();
+  }
+
+  @override
+  void didUpdateWidget(covariant CleanerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.collection != widget.collection || oldWidget.entry != widget.entry) {
+      _scheduleClassification();
+    }
+  }
+
+  void _scheduleClassification() {
+    _cachedEntries = widget.collection?.sortedEntries ?? [widget.entry];
+    _classificationFuture = _classify(_cachedEntries);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final entries = widget.collection?.sortedEntries ?? [widget.entry];
-    final buckets = _classify(entries);
+    final entries = _cachedEntries;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,40 +77,53 @@ class _CleanerPageState extends State<CleanerPage> {
         title: const Text('Cleaner'),
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          children: [
-            Text(
-              '${entries.length} items in this view',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 16),
-            for (final bucket in CleanerBucket.values)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _BucketTile(
-                  bucket: bucket,
-                  count: buckets[bucket]?.length ?? 0,
-                  preview: buckets[bucket] ?? const [],
-                  onTap: () => _openBucket(context, bucket, buckets[bucket] ?? const []),
+        child: FutureBuilder<Map<CleanerBucket, List<AvesEntry>>>(
+          future: _classificationFuture,
+          builder: (context, snapshot) {
+            final buckets = snapshot.data;
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              children: [
+                Text(
+                  '${entries.length} items in this view',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-              ),
-          ],
+                const SizedBox(height: 16),
+                if (buckets == null)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  for (final bucket in CleanerBucket.values)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _BucketTile(
+                        bucket: bucket,
+                        count: buckets[bucket]?.length ?? 0,
+                        preview: buckets[bucket] ?? const [],
+                        onTap: () => _openBucket(context, bucket, buckets[bucket] ?? const []),
+                      ),
+                    ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Map<CleanerBucket, List<AvesEntry>> _classify(List<AvesEntry> entries) {
+  Future<Map<CleanerBucket, List<AvesEntry>>> _classify(List<AvesEntry> entries) async {
     final now = DateTime.now();
     final threeYearsAgo = now.subtract(const Duration(days: 3 * 365));
     final result = <CleanerBucket, List<AvesEntry>>{
       for (final b in CleanerBucket.values) b: <AvesEntry>[],
     };
 
-    // Very lightweight hash for a "duplicate" heuristic: same size + same
-    // mime + same rough dimensions is treated as likely duplicate.
     final fingerprints = <String, List<AvesEntry>>{};
+    // image-analysis candidates (bounded count to avoid long scans)
+    final analysisCandidates = <AvesEntry>[];
+    const maxAnalyze = 120;
 
     for (final e in entries) {
       final size = e.sizeBytes ?? 0;
@@ -93,16 +132,6 @@ class _CleanerPageState extends State<CleanerPage> {
       final dir = e.directory ?? '';
       if (dir.toLowerCase().contains('screenshot')) {
         result[CleanerBucket.screenshots]!.add(e);
-      }
-
-      // Blurry heuristic: panorama / RAW excluded; treat very small images
-      // as not blurry candidates; otherwise flag entries under 1 MP as
-      // low quality (conservative, no ML available here).
-      if (e.isImage && e.isSized) {
-        final mp = (e.width * e.height) / 1000000;
-        if (mp > 0 && mp < 1) {
-          result[CleanerBucket.blurry]!.add(e);
-        }
       }
 
       final date = e.bestDate;
@@ -114,6 +143,18 @@ class _CleanerPageState extends State<CleanerPage> {
         final key = '${e.mimeTypeAnySubtype}:${size}:${e.width}x${e.height}';
         fingerprints.putIfAbsent(key, () => []).add(e);
       }
+
+      if (e.isImage && e.isSized && analysisCandidates.length < maxAnalyze) {
+        analysisCandidates.add(e);
+      }
+    }
+
+    // Real image analysis: Laplacian variance + mean luma on downsampled RGBA.
+    for (final e in analysisCandidates) {
+      final stats = await _analyze(e);
+      if (stats == null) continue;
+      if (stats.blurry) result[CleanerBucket.blurry]!.add(e);
+      if (stats.dark) result[CleanerBucket.dark]!.add(e);
     }
 
     for (final list in fingerprints.values) {
@@ -123,6 +164,47 @@ class _CleanerPageState extends State<CleanerPage> {
     }
 
     return result;
+  }
+
+  Future<_QualityStats?> _analyze(AvesEntry e) async {
+    try {
+      final provider = e.getThumbnail(extent: 256);
+      final image = await _decode(provider);
+      if (image == null) return null;
+      final w = image.width;
+      final h = image.height;
+      final data = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      image.dispose();
+      if (data == null) return null;
+      final bytes = data.buffer.asUint8List();
+      final variance = ImageQuality.laplacianVariance(bytes, w, h);
+      final mean = ImageQuality.meanLuma(bytes, w, h);
+      // thresholds tuned conservatively; expect companion to refine later
+      return _QualityStats(
+        blurry: variance > 0 && variance < 60,
+        dark: mean < 30,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<ui.Image?> _decode(ImageProvider provider) async {
+    final stream = provider.resolve(ImageConfiguration.empty);
+    final completer = Completer<ui.Image?>();
+    late ImageStreamListener listener;
+    listener = ImageStreamListener(
+      (info, _) {
+        stream.removeListener(listener);
+        completer.complete(info.image);
+      },
+      onError: (e, s) {
+        stream.removeListener(listener);
+        completer.complete(null);
+      },
+    );
+    stream.addListener(listener);
+    return completer.future;
   }
 
   void _openBucket(BuildContext context, CleanerBucket bucket, List<AvesEntry> entries) {
@@ -139,6 +221,13 @@ class _CleanerPageState extends State<CleanerPage> {
       ),
     );
   }
+}
+
+class _QualityStats {
+  final bool blurry;
+  final bool dark;
+
+  const _QualityStats({required this.blurry, required this.dark});
 }
 
 class CleanerBucketPage extends StatelessWidget {
