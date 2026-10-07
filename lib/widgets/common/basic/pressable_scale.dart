@@ -1,4 +1,4 @@
-import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/motion/spring_transition.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Material 3 Expressive press feedback.
@@ -53,8 +53,6 @@ class _PressableScaleState extends State<PressableScale> {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = context.m3e;
-    final duration = widget.duration ?? tokens.durationShort3;
     final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     return GestureDetector(
@@ -69,10 +67,8 @@ class _PressableScaleState extends State<PressableScale> {
             }
           : null,
       onTapCancel: _interactive ? () => _setPressed(false) : null,
-      child: AnimatedScale(
+      child: SpringScale(
         scale: (disableAnimations || !_pressed) ? 1.0 : widget.scale,
-        duration: duration,
-        curve: Curves.easeOut,
         child: widget.child,
       ),
     );
