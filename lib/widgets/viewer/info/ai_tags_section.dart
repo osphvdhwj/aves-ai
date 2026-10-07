@@ -3,6 +3,7 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
 import 'package:aves/model/nsfw_tags.dart';
+import 'package:aves/model/filters/covered/tag.dart';
 import 'package:aves/widgets/viewer/info/nsfw_tag_picker.dart';
 import 'package:aves/widgets/viewer/info/auto_tag_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
@@ -27,6 +28,8 @@ class AiTagsSection extends StatefulWidget {
 
 class _AiTagsSectionState extends State<AiTagsSection> {
   late Future<List<String>> _loader;
+  final Set<String> _applied = {};
+  bool _busy = false;
 
   @override
   void initState() {
@@ -127,7 +130,7 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                     borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
                   ),
                   child: Text(
-                    'Suggestions are drawn from the album name. Tap to add once the delegate is wired.',
+                    'No album-derived tags to suggest for this entry.',
                     style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                   ),
                 );
@@ -137,17 +140,36 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                 runSpacing: 8,
                 children: tags
                     .map(
-                      (t) => PressableScale(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+                      (t) {
+                        final applied = _applied.contains(t.toLowerCase());
+                        return PressableScale(
+                          enabled: !applied && !_busy,
+                          onTap: applied ? null : () => _apply(t),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: applied ? colors.secondaryContainer : colors.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  t,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: applied ? colors.onSecondaryContainer : colors.onSurface,
+                                    fontWeight: applied ? FontWeight.w600 : FontWeight.w500,
+                                  ),
+                                ),
+                                if (applied) ...[
+                                  const SizedBox(width: 6),
+                                  Icon(Symbols.check, size: 14, color: colors.onSecondaryContainer),
+                                ],
+                              ],
+                            ),
                           ),
-                          child: Text(t, style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurface)),
-                        ),
-                      ),
+                        );
+                      },
                     )
                     .toList(),
               );
@@ -156,5 +178,21 @@ class _AiTagsSectionState extends State<AiTagsSection> {
         ],
       ),
     );
+  }
+
+  Future<void> _apply(String tag) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final messenger = ScaffoldMessenger.of(context);
+      await widget.actionDelegate.quickTag(context, widget.entry, TagFilter(tag));
+      if (!mounted) return;
+      setState(() => _applied.add(tag.toLowerCase()));
+      messenger.showSnackBar(
+        SnackBar(content: Text('Added "$tag"'), duration: const Duration(seconds: 1)),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 }
