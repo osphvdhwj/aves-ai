@@ -1,12 +1,12 @@
 import 'package:flutter/services.dart';
 
-/// Bundled vocabulary of existing tags (`assets/tags.txt`, one per line).
+/// Bundled vocabulary of NSFW tags (`assets/nsfw_tags.txt`, one per line).
 ///
-/// Loaded once and cached. Used for autocomplete in the tag editor and as
-/// a filter for the local tag suggester, so suggestions stick to tags the
-/// user already uses instead of inventing new ones.
-class TagVocabulary {
-  static const assetPath = 'assets/tags.txt';
+/// Loaded once and cached. Used by the tag suggester so album-name
+/// derived suggestions stick to tags the user has already classified as
+/// NSFW, and as an input for future content-warning / filter features.
+class NsfwTags {
+  static const assetPath = 'assets/nsfw_tags.txt';
 
   static List<String>? _cache;
   static Set<String>? _lowerCache;

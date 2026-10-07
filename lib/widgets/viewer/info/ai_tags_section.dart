@@ -2,7 +2,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
-import 'package:aves/model/tag_vocabulary.dart';
+import 'package:aves/model/nsfw_tags.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -43,7 +43,7 @@ class _AiTagsSectionState extends State<AiTagsSection> {
     // tags will be merged here once the AI service exposes them. We
     // preload the bundled vocabulary so suggestions stick to tags the
     // user already uses.
-    await TagVocabulary.load();
+    await NsfwTags.load();
     return TagSuggester.suggestExisting(widget.entry);
   }
 
