@@ -1,5 +1,6 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/covered/tag.dart';
+import 'package:aves/model/tag_vocabulary.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:flutter/widgets.dart';
 
@@ -62,6 +63,15 @@ class TagSuggester {
         .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m[1]} ${m[2]}')
         .replaceAll(RegExp(r'[^A-Za-z0-9]+'), ' ');
     return spaced.split(' ').where((t) => t.isNotEmpty).toList();
+  }
+
+  /// Variant that keeps only candidates present in the bundled tag
+  /// vocabulary. Falls back to the unfiltered suggestions if the
+  /// vocabulary has not been loaded yet.
+  static List<String> suggestExisting(AvesEntry entry, {int max = 6}) {
+    final raw = suggest(entry, max: max * 3);
+    if (TagVocabulary.cached == null) return raw.take(max).toList();
+    return raw.where(TagVocabulary.contains).take(max).toList();
   }
 }
 
