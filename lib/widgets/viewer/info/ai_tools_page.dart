@@ -6,6 +6,7 @@ import 'package:aves/widgets/viewer/info/cleaner_page.dart';
 import 'package:aves/widgets/viewer/info/duplicates_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/info/objects_page.dart';
+import 'package:aves/widgets/viewer/info/memories_page.dart';
 import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/viewer/info/sync_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -29,6 +30,12 @@ class AiToolsPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           children: [
+            _Tile(
+              icon: Symbols.auto_awesome,
+              title: 'Memories',
+              subtitle: 'Auto-curated collections from your library',
+              onTap: () => showMemoriesPage(context, entry, collection: collection),
+            ),
             _Tile(
               icon: Symbols.cleaning_services,
               title: 'Cleaner',
