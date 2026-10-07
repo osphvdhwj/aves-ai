@@ -99,7 +99,7 @@ class AutoTagger {
     'internal', 'storage', 'emulated', '0', 'sdcard', 'android',
     'whatsapp', 'telegram', 'signal', 'instagram', 'facebook', 'messenger',
     'snapchat', 'tiktok', 'twitter', 'reddit', 'pinterest',
-    'img', 'image', 'vid', 'video', 'photo', 'pic', 'thumbnails',
+    'img', 'image', 'vid', 'photo', 'pic', 'thumbnails',
     'original', 'edited', 'export', 'exports', 'shared', 'sent', 'received',
     'backup', 'backups', 'restore', 'recovered', 'trash', 'temp', 'tmp',
   };
