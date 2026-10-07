@@ -29,7 +29,24 @@ class AiSection extends SettingsSection {
   Future<List<SettingsTile>> tiles(BuildContext context) => Future.value([
     SettingsTileAiEnable(),
     SettingsTileAiStatus(),
+    SettingsTileShowGooglePhotosBackup(),
   ]);
+}
+
+class SettingsTileShowGooglePhotosBackup extends SettingsTile {
+  @override
+  List<String> get settingKeys => [SettingKeys.showGooglePhotosBackupKey];
+
+  @override
+  String title(BuildContext context) => 'Google Photos backup status';
+
+  @override
+  Widget build(BuildContext context) => SettingsSwitchListTile(
+    selector: (context, s) => s.showGooglePhotosBackup,
+    onChanged: (v) => settings.showGooglePhotosBackup = v,
+    title: title,
+    subtitle: (_) => 'Show a "Backed up" row in the info page when the companion reports Google Photos status',
+  );
 }
 
 class SettingsTileAiEnable extends SettingsTile {
