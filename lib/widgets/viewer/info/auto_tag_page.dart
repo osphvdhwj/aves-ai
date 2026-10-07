@@ -3,6 +3,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/covered/tag.dart';
 import 'package:aves/model/nsfw_tags.dart';
 import 'package:aves/services/nsfw_service.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -66,11 +67,15 @@ class _AutoTagPageState extends State<AutoTagPage> {
       }
     } else {
       collect(tagger.proposeNew(widget.entry));
-      // Pixel-level NSFW scoring from the native classifier.
-      final nsfw = await nsfwService.classify(widget.entry);
-      final tag = nsfw.tagFor(threshold: 0.75);
-      if (tag != null) {
-        collect([TagProposal(tag: tag, source: 'nsfw-classifier', confidence: nsfw.score!.clamp(0.0, 1.0))]);
+      // Pixel-level NSFW scoring through the AI companion. Skip entirely
+      // when the companion does not advertise `nsfw` — saves an IPC hop.
+      final health = await aiService.health();
+      if (health.has('nsfw')) {
+        final nsfw = await nsfwService.classify(widget.entry);
+        final tag = nsfw.tagFor(threshold: 0.75);
+        if (tag != null) {
+          collect([TagProposal(tag: tag, source: 'nsfw-classifier', confidence: nsfw.score!.clamp(0.0, 1.0))]);
+        }
       }
     }
 
