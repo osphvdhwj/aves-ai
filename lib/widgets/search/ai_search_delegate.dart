@@ -88,6 +88,30 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
           const SizedBox(height: 24),
 
+          // ── saved ─────────────────────────────────────────
+          if (settings.savedSearches.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _sectionTitle(theme, 'Saved')),
+                TextButton(
+                  onPressed: () {
+                    settings.savedSearches = const [];
+                    final v = query;
+                    query = v.isEmpty ? ' ' : v;
+                    query = v;
+                  },
+                  child: const Text('Clear'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _HistoryChips(
+              queries: settings.savedSearches,
+              onTap: (text) => _onPrompt(context, text),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           // ── history ───────────────────────────────────────
           if (settings.aiSearchHistory.isNotEmpty) ...[
             Row(
