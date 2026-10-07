@@ -26,7 +26,7 @@ class AutoTagger {
   /// GPS location.
   final List<List<TagProposal> Function(AvesEntry)> rules;
 
-  const AutoTagger({this.rules = defaultRules});
+  AutoTagger({List<List<TagProposal> Function(AvesEntry)>? rules}) : rules = rules ?? defaultRules;
 
   /// Proposes tags for [entry], deduplicated by tag name with the highest
   /// confidence kept.
@@ -51,22 +51,22 @@ class AutoTagger {
     return propose(entry).where((p) => !existing.contains(p.tag.toLowerCase())).toList();
   }
 
-  static const defaultRules = <List<TagProposal> Function(AvesEntry)>[
-    _albumSegments,
-    _pathTokens,
-    _filenameTokens,
-    _nsfwVocabulary,
-    _mimeCategory,
-    _orientation,
-    _aspectRatio,
-    _videoDuration,
-    _imageSize,
-    _timeOfDay,
-    _weekday,
-    _season,
-    _decade,
-    _location,
-  ];
+  static List<List<TagProposal> Function(AvesEntry)> get defaultRules => const [
+        _albumSegments,
+        _pathTokens,
+        _filenameTokens,
+        _nsfwVocabulary,
+        _mimeCategory,
+        _orientation,
+        _aspectRatio,
+        _videoDuration,
+        _imageSize,
+        _timeOfDay,
+        _weekday,
+        _season,
+        _decade,
+        _location,
+      ];
 
   // ── helpers ────────────────────────────────────────────────────────
 
