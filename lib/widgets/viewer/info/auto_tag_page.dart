@@ -2,6 +2,7 @@ import 'package:aves/model/auto_tagger.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/covered/tag.dart';
 import 'package:aves/model/nsfw_tags.dart';
+import 'package:aves/services/nsfw_service.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -49,19 +50,32 @@ class _AutoTagPageState extends State<AutoTagPage> {
   Future<List<TagProposal>> _load() async {
     await NsfwTags.load();
     final tagger = AutoTagger();
+    final proposals = <TagProposal>[];
+    final seen = <String>{};
+
+    void collect(Iterable<TagProposal> ps) {
+      for (final p in ps) {
+        if (seen.add(p.tag.toLowerCase())) proposals.add(p);
+      }
+    }
+
     if (_collectionMode) {
       final entries = widget.collection?.sortedEntries ?? [widget.entry];
-      final seen = <String>{};
-      final out = <TagProposal>[];
       for (final e in entries) {
-        for (final p in tagger.proposeNew(e)) {
-          if (seen.add(p.tag.toLowerCase())) out.add(p);
-        }
+        collect(tagger.proposeNew(e));
       }
-      out.sort((a, b) => b.confidence.compareTo(a.confidence));
-      return out;
+    } else {
+      collect(tagger.proposeNew(widget.entry));
+      // Pixel-level NSFW scoring from the native classifier.
+      final nsfw = await nsfwService.classify(widget.entry);
+      final tag = nsfw.tagFor(threshold: 0.75);
+      if (tag != null) {
+        collect([TagProposal(tag: tag, source: 'nsfw-classifier', confidence: nsfw.score!.clamp(0.0, 1.0))]);
+      }
     }
-    return tagger.proposeNew(widget.entry);
+
+    proposals.sort((a, b) => b.confidence.compareTo(a.confidence));
+    return proposals;
   }
 
   Future<void> _apply(TagProposal p) async {
