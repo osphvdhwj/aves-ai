@@ -1,8 +1,13 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/widgets/search/ai_search_delegate.dart';
+import 'package:aves/widgets/common/search/route.dart';
+import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 
 /// Shows the OCR result for [entry] in a dialog with a copy action.
@@ -126,6 +131,59 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
                   : null,
               icon: const Icon(Symbols.translate, size: 18),
               label: const Text('Translate'),
+            );
+          },
+        ),
+        FutureBuilder<AiChatReply>(
+          future: _future,
+          builder: (context, snapshot) {
+            final text = snapshot.data?.text.trim() ?? '';
+            final enabled = text.isNotEmpty;
+            return TextButton.icon(
+              onPressed: enabled
+                  ? () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final saved = await storageService.createFile(
+                        basename: 'ocr-${widget.entry.id}',
+                        mimeType: 'text/plain',
+                        bytes: Uint8List.fromList(text.codeUnits),
+                        reportErrors: true,
+                      );
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(saved == true ? 'Saved' : 'Not saved'),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  : null,
+              icon: const Icon(Symbols.save_alt, size: 18),
+              label: const Text('Save .txt'),
+            );
+          },
+        ),
+        FutureBuilder<AiChatReply>(
+          future: _future,
+          builder: (context, snapshot) {
+            final text = snapshot.data?.text.trim() ?? '';
+            final enabled = text.isNotEmpty;
+            return TextButton.icon(
+              onPressed: enabled
+                  ? () {
+                      Navigator.of(context).maybePop();
+                      Navigator.of(context).push(
+                        SearchPageRoute(
+                          delegate: AiSearchDelegate(
+                            searchFieldLabel: 'Find in text',
+                            searchFieldStyle: Themes.searchFieldStyle(context),
+                            initialText: text,
+                          ),
+                        ),
+                      );
+                    }
+                  : null,
+              icon: const Icon(Symbols.search, size: 18),
+              label: const Text('Find'),
             );
           },
         ),
