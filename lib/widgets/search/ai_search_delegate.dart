@@ -190,7 +190,12 @@ class AiSearchDelegate extends AvesSearchDelegate {
         if (entries.isEmpty) {
           return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
         }
-        return _ResultGrid(entries: entries);
+        return Column(
+          children: [
+            _SaveQueryBar(query: currentQuery),
+            Expanded(child: _ResultGrid(entries: entries)),
+          ],
+        );
       },
     );
   }
@@ -681,6 +686,54 @@ class _HistoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _SaveQueryBar extends StatelessWidget {
+  final String query;
+
+  const _SaveQueryBar({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isSaved = settings.isSavedSearch(query);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              query,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          PressableScale(
+            onTap: () => settings.toggleSavedSearch(query),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                children: [
+                  Icon(
+                    isSaved ? Symbols.bookmark : Symbols.bookmark_add,
+                    size: 18,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    isSaved ? 'Saved' : 'Save',
+                    style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
