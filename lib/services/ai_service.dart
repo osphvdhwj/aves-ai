@@ -5,7 +5,25 @@ import 'package:flutter/services.dart';
 class AiService {
   static const _platform = AvesMethodChannel('deckers.thibault/aves/ai');
 
-  Future<AiHealth> health() async {
+  // Session cache: the companion's health does not change during a
+  // session, so one probe per app launch is enough. Use forceRefresh
+  // after installing/updating the companion.
+  Future<AiHealth>? _healthFuture;
+
+  Future<AiHealth> health({bool forceRefresh = false}) {
+    if (forceRefresh || _healthFuture == null) {
+      _healthFuture = _probeHealth();
+    }
+    return _healthFuture!;
+  }
+
+  /// Convenience check. Same caching as [health].
+  Future<bool> hasCapability(String capability) async {
+    final h = await health();
+    return h.connected && h.has(capability);
+  }
+
+  Future<AiHealth> _probeHealth() async {
     try {
       final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('health');
       if (result == null) return const AiHealth(installed: false, connected: false);

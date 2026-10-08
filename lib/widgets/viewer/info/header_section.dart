@@ -7,12 +7,14 @@ import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/theme/format.dart';
 import 'package:aves/theme/text.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
+import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -94,56 +96,68 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildPeopleRow(BuildContext context, ThemeData theme, ColorScheme colors) {
-    void onTap() {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Face detection coming soon'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-    }
-
-    Widget circle() => Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colors.surfaceContainerHighest,
-        border: Border.all(color: colors.outlineVariant, width: 1.5),
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'People',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 10),
-        PressableScale(
-          onTap: onTap,
-          child: Row(
-            children: [
-              circle(),
-              const SizedBox(width: 8),
-              circle(),
-              const SizedBox(width: 8),
-              circle(),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  'Add someone',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-                ),
+    // Face clustering lives in the AVES+ Tools companion. Until it
+    // advertises `person`, the row is display-only.
+    return FutureBuilder<AiHealth>(
+      future: aiService.health(),
+      builder: (context, snap) {
+        final supported = snap.data?.connected == true && snap.data!.has('person');
+        void onTap() {
+          if (!supported) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Face recognition needs the AVES+ Tools companion.'),
+                duration: Duration(seconds: 2),
               ),
-            ],
+            );
+            return;
+          }
+          showPeoplePage(context);
+        }
+
+        Widget circle() => Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: colors.surfaceContainerHighest,
+            border: Border.all(color: colors.outlineVariant, width: 1.5),
           ),
-        ),
-      ],
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'People',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 10),
+            PressableScale(
+              onTap: onTap,
+              child: Row(
+                children: [
+                  circle(),
+                  const SizedBox(width: 8),
+                  circle(),
+                  const SizedBox(width: 8),
+                  circle(),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      'Add someone',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
