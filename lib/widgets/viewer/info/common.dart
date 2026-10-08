@@ -1,50 +1,10 @@
 import 'dart:math';
 
 import 'package:aves/widgets/common/basic/link_chip.dart';
-import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/rendering.dart';
-
-class SectionRow extends StatelessWidget {
-  final IconData icon;
-  final EdgeInsets padding;
-
-  const new({
-    super.key,
-    required this.icon,
-    this.padding = const EdgeInsets.symmetric(vertical: 16),
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    const dim = 32.0;
-    Widget buildDivider() => const SizedBox(
-      width: dim,
-      child: Divider(
-        thickness: AvesFilterChip.outlineWidth,
-      ),
-    );
-    return Padding(
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: .center,
-        children: [
-          buildDivider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Icon(
-              icon,
-              size: dim,
-            ),
-          ),
-          buildDivider(),
-        ],
-      ),
-    );
-  }
-}
 
 class InfoRowGroup extends StatefulWidget {
   final Map<String, String> info;
