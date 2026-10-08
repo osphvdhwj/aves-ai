@@ -1,7 +1,9 @@
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';
+import 'package:aves/widgets/viewer/info/translation_overlay.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
@@ -131,6 +133,32 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
                   : null,
               icon: const Icon(Symbols.translate, size: 18),
               label: const Text('Translate'),
+            );
+          },
+        ),
+        FutureBuilder<AiChatReply>(
+          future: _future,
+          builder: (context, snapshot) {
+            final text = snapshot.data?.text.trim() ?? '';
+            final enabled = text.isNotEmpty;
+            return TextButton.icon(
+              onPressed: enabled
+                  ? () {
+                      final blocks = parseOcrBlocks(text);
+                      Navigator.of(context).maybePop();
+                      showTranslationOverlay(
+                        context,
+                        entry: widget.entry,
+                        media: Image(
+                          image: widget.entry.getThumbnail(extent: 1024),
+                          fit: BoxFit.contain,
+                        ),
+                        blocks: blocks,
+                      );
+                    }
+                  : null,
+              icon: const Icon(Symbols.text_increase, size: 18),
+              label: const Text('In place'),
             );
           },
         ),
