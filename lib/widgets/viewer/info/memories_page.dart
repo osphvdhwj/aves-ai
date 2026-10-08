@@ -2,6 +2,10 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/model/source/collection_lens.dart';
+import 'package:aves/model/filters/filters.dart';
+import 'package:aves/model/filters/favourite.dart';
+import 'package:aves/model/filters/rating.dart';
+import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -82,7 +86,7 @@ class MemoriesPage extends StatelessWidget {
     // Favourites
     final favourites = pick((e) => e.isFavourite, max: 40);
     if (favourites.length >= 3) {
-      result.add(_Memory(title: 'Favourites', subtitle: '${favourites.length} starred', entries: favourites));
+      result.add(_Memory(title: 'Favourites', subtitle: '${favourites.length} starred', entries: favourites, filter: FavouriteFilter.instance));
     }
 
     // Recent (last 30 days)
@@ -98,7 +102,7 @@ class MemoriesPage extends StatelessWidget {
     // Top rated
     final top = pick((e) => e.rating >= 4, max: 40);
     if (top.length >= 3) {
-      result.add(_Memory(title: 'Top rated', subtitle: '${top.length} highly rated', entries: top));
+      result.add(_Memory(title: 'Top rated', subtitle: '${top.length} highly rated', entries: top, filter: RatingFilter(4, op: RatingFilter.opOrGreater)));
     }
 
     return result;
@@ -109,8 +113,14 @@ class _Memory {
   final String title;
   final String subtitle;
   final List<AvesEntry> entries;
+  final CollectionFilter? filter;
 
-  const _Memory({required this.title, required this.subtitle, required this.entries});
+  const _Memory({
+    required this.title,
+    required this.subtitle,
+    required this.entries,
+    this.filter,
+  });
 }
 
 class _MemoryCard extends StatelessWidget {
@@ -127,7 +137,13 @@ class _MemoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: PressableScale(
-        onTap: () {},
+        onTap: () {
+          final filter = memory.filter;
+          if (filter != null) {
+            SelectFilterNotification(filter).dispatch(context);
+            Navigator.of(context).maybePop();
+          }
+        },
         child: Container(
           decoration: BoxDecoration(
             color: colors.surfaceContainerHigh,

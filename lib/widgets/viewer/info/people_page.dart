@@ -1,6 +1,7 @@
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:aves/widgets/viewer/info/person_detail_page.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// People / Faces browsing surface.
@@ -65,7 +66,7 @@ class _Grid extends StatelessWidget {
       itemBuilder: (context, index) {
         final c = clusters[index];
         return PressableScale(
-          onTap: () {},
+          onTap: () => showPersonDetailPage(context, cluster: c),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

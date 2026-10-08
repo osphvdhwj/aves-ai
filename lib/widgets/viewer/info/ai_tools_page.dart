@@ -8,6 +8,7 @@ import 'package:aves/widgets/viewer/info/duplicates_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/info/objects_page.dart';
 import 'package:aves/widgets/viewer/info/memories_page.dart';
+import 'package:aves/widgets/viewer/info/query_composer_page.dart';
 import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/viewer/info/sync_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -92,6 +93,12 @@ class _AiToolsPageState extends State<AiToolsPage> {
         title: 'Duplicates',
         subtitle: 'Find and review repeated items',
         onTap: () => showDuplicatesPage(context, entry, collection: collection),
+      ),
+      _Tile(
+        icon: Symbols.filter_alt,
+        title: 'Compose query',
+        subtitle: 'Build a filter from mime, rating, attributes',
+        onTap: () => showQueryComposerPage(context),
       ),
       _Tile(
         icon: Symbols.face_6,
