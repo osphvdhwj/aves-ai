@@ -47,14 +47,38 @@ class _DetailsSectionState extends State<DetailsSection> {
   @override
   void initState() {
     super.initState();
-    if (!entry.trashed && entry.isMediaStoreMediaContent) {
-      _ownerPackageLoader = metadataFetchService.hasContentResolverProp(ownerPackageNamePropKey).then((exists) {
-        return exists ? metadataFetchService.getContentResolverProp(entry, ownerPackageNamePropKey) : SynchronousFuture(null);
-      });
-      final isViewerMode = context.read<ValueNotifier<AppMode>>().value == .view;
-      if (isViewerMode && settings.isInstalledAppAccessAllowed) {
-        _appNameLoader = appInventory.initAppNames();
-      }
+    widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+    _loadOwner();
+  }
+
+  @override
+  void didUpdateWidget(covariant DetailsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.entry != widget.entry) {
+      oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+      widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+      _loadOwner();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+    super.dispose();
+  }
+
+  void _onMetadataChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _loadOwner() {
+    if (entry.trashed || !entry.isMediaStoreMediaContent) return;
+    _ownerPackageLoader = metadataFetchService.hasContentResolverProp(ownerPackageNamePropKey).then((exists) {
+      return exists ? metadataFetchService.getContentResolverProp(entry, ownerPackageNamePropKey) : SynchronousFuture(null);
+    });
+    final isViewerMode = context.read<ValueNotifier<AppMode>>().value == .view;
+    if (isViewerMode && settings.isInstalledAppAccessAllowed) {
+      _appNameLoader = appInventory.initAppNames();
     }
   }
 
