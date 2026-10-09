@@ -33,29 +33,9 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
               padding: EdgeInsets.all(8),
               child: HighlightTitle(title: 'AI Companion'),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: FutureBuilder<AiHealth>(
-                future: aiService.health(),
-                builder: (context, snap) {
-                  final h = snap.data;
-                  if (snap.connectionState != ConnectionState.done) {
-                    return const Text('querying companion...');
-                  }
-                  if (h == null) {
-                    return const Text('no result');
-                  }
-                  return InfoRowGroup(
-                    info: {
-                      'installed': '${h.installed}',
-                      'connected': '${h.connected}',
-                      'apiVersion': '${h.apiVersion}',
-                      'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
-                      if (h.error != null) 'error': h.error!,
-                    },
-                  );
-                },
-              ),
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: _AiDiagnostics(),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -192,4 +172,136 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _AiDiagnostics extends StatefulWidget {
+  const _AiDiagnostics();
+
+  @override
+  State<_AiDiagnostics> createState() => _AiDiagnosticsState();
+}
+
+class _AiDiagnosticsState extends State<_AiDiagnostics> {
+  late Future<AiHealth> _healthFuture;
+  final TextEditingController _cmd = TextEditingController(text: '@ocr');
+  String _lastResult = '';
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _healthFuture = aiService.health();
+  }
+
+  @override
+  void dispose() {
+    _cmd.dispose();
+    super.dispose();
+  }
+
+  Future<void> _recheck() async {
+    setState(() {
+      _healthFuture = aiService.health(forceRefresh: true);
+    });
+  }
+
+  Future<void> _run() async {
+    if (_busy) return;
+    final text = _cmd.text.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _busy = true;
+      _lastResult = 'running...';
+    });
+    try {
+      final reply = await aiService.chat(text);
+      if (!mounted) return;
+      final buf = StringBuffer()
+        ..writeln('text:  ${reply.text}')
+        ..writeln('ids:   ${reply.entryIds}')
+        ..writeln('error: ${reply.error}')
+        ..writeln('code:  ${reply.errorCode}');
+      setState(() => _lastResult = buf.toString());
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _lastResult = 'threw: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FutureBuilder<AiHealth>(
+          future: _healthFuture,
+          builder: (context, snap) {
+            if (snap.connectionState != ConnectionState.done) {
+              return const Text('querying companion...');
+            }
+            final h = snap.data;
+            if (h == null) return const Text('no result');
+            return InfoRowGroup(
+              info: {
+                'installed': '${h.installed}',
+                'connected': '${h.connected}',
+                'apiVersion': '${h.apiVersion}',
+                'package': h.companionPackage ?? '-',
+                'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
+                if (h.error != null) 'error': h.error!,
+              },
+            );
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Row(
+            children: [
+              ElevatedButton(
+                onPressed: _recheck,
+                child: const Text('Recheck'),
+              ),
+              const SizedBox(width: 8),
+              const Text('fires health(forceRefresh: true)'),
+            ],
+          ),
+        ),
+        const Divider(),
+        const Padding(
+          padding: EdgeInsets.only(top: 4, bottom: 4),
+          child: Text('Chat probe (no entry media attached):'),
+        ),
+        TextField(
+          controller: _cmd,
+          decoration: const InputDecoration(
+            hintText: '@ocr, /find dog, ...',
+            border: OutlineInputBorder(),
+            isDense: true,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Row(
+            children: [
+              ElevatedButton(
+                onPressed: _busy ? null : _run,
+                child: Text(_busy ? 'running...' : 'Run'),
+              ),
+              const SizedBox(width: 8),
+              const Text('raw reply printed below'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: SelectableText(
+            _lastResult.isEmpty ? '(no result yet)' : _lastResult,
+            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
 }
