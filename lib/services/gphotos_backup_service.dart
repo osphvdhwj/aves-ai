@@ -2,6 +2,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/services/common/channel.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:flutter/services.dart';
+import 'package:aves/services/ai_service.dart';
 
 /// Per-entry Google Photos backup status.
 ///
@@ -12,16 +13,18 @@ import 'package:flutter/services.dart';
 /// companion is not installed, every lookup resolves to
 /// [BackupStatus.unknown] and the info page stays quiet.
 ///
-/// Channel: `com.avesplus.tools/bridge`
-/// Method:  `gphotos.backup_status`
+/// Channel: `deckers.thibault/aves/ai`
+/// Method:  `gphotosBackupStatus`
 /// Args:    { "mediaStoreIds": [int, ...] }
 /// Returns: { "statuses": { "<id>": "uploaded" | "not_uploaded" | "unknown" } }
 ///
-/// The ids sent are MediaStore `_id` values, which Aves carries as
-/// `AvesEntry.contentId`. Google Photos' own `local_media` table keys
-/// its rows by the same MediaStore `_id`.
+/// Routes through the same Kotlin AiHandler that carries `chat`,
+/// which binds the AVESPlusTools companion over AIDL and asks it to
+/// read Google Photos' own SQLite DBs. The ids sent are MediaStore
+/// `_id` values, which Aves carries as `AvesEntry.contentId` — that
+/// is what GP's `local_media.media_store_id` column stores.
 class GPhotosBackupService {
-  static const _platform = AvesMethodChannel('com.avesplus.tools/bridge');
+  static const _platform = AvesMethodChannel('deckers.thibault/aves/ai');
 
   // Session cache. Google Photos only changes a given entry's backup
   // state on its own schedule, so a few minutes of staleness is fine.
@@ -55,7 +58,7 @@ class GPhotosBackupService {
 
     _inFlight.addAll(toFetch);
     try {
-      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('gphotos.backup_status', {
+      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('gphotosBackupStatus', {
         'mediaStoreIds': toFetch,
       });
       final raw = result?['statuses'];
@@ -107,8 +110,10 @@ class GPhotosBackupService {
 
   Future<bool> probe() async {
     try {
-      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('provider.ping');
-      _available = result != null;
+      // provider.ping now lives on the AIDL bridge as part of the health
+      // probe; delegate to that to avoid a second channel.
+      final h = await aiService.health();
+      _available = h.connected;
     } on MissingPluginException {
       _available = false;
     } on PlatformException {
