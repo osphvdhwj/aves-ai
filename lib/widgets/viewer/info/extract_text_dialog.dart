@@ -68,6 +68,12 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
             final reply = snapshot.data;
             final error = reply?.error;
             final text = reply?.text.trim() ?? '';
+            if (reply?.isModelMissing == true) {
+              return _message(theme, colors, 'The AVES+ Tools companion does not have its OCR model installed yet.');
+            }
+            if (reply?.isUnsupported == true) {
+              return _message(theme, colors, 'This companion build does not support OCR. Update AVES+ Tools.');
+            }
             if (error != null && error.isNotEmpty) {
               return _message(theme, colors, 'Text extraction failed: $error');
             }
