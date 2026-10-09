@@ -38,6 +38,7 @@ class DetailsSection extends StatefulWidget {
 class _DetailsSectionState extends State<DetailsSection> {
   Future<String?> _ownerPackageLoader = SynchronousFuture(null);
   Future<void> _appNameLoader = SynchronousFuture(null);
+  Future<BackupStatus>? _backupFuture;
 
   AvesEntry get entry => widget.entry;
 
@@ -72,6 +73,7 @@ class _DetailsSectionState extends State<DetailsSection> {
   }
 
   void _loadOwner() {
+    _backupFuture = gphotosBackupService.statusOf(entry);
     if (entry.trashed || !entry.isMediaStoreMediaContent) return;
     _ownerPackageLoader = metadataFetchService.hasContentResolverProp(ownerPackageNamePropKey).then((exists) {
       return exists ? metadataFetchService.getContentResolverProp(entry, ownerPackageNamePropKey) : SynchronousFuture(null);
@@ -120,7 +122,7 @@ class _DetailsSectionState extends State<DetailsSection> {
             borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
           ),
           child: FutureBuilder<BackupStatus>(
-            future: gphotosBackupService.statusOf(entry),
+            future: _backupFuture,
             builder: (context, backupSnapshot) {
               final backup = backupSnapshot.data ?? BackupStatus.unknown;
               return FutureBuilder<String?>(
