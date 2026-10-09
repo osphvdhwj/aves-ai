@@ -35,6 +35,7 @@ class AiService {
         apiVersion: map['apiVersion'] as int?,
         capabilities: (map['capabilities'] as List?)?.cast<String>() ?? const [],
         error: map['error'] as String?,
+        companionPackage: map['companionPackage'] as String?,
       );
     } on PlatformException catch (e, s) {
       await reportService.recordError(e, s);
@@ -87,12 +88,18 @@ class AiHealth {
   final List<String> capabilities;
   final String? error;
 
+  /// Which package provided the answering service. Kotlin enumerates a
+  /// preference list of candidate companions; this reports which one
+  /// won. Null when nothing was found.
+  final String? companionPackage;
+
   const AiHealth({
     required this.installed,
     required this.connected,
     this.apiVersion,
     this.capabilities = const [],
     this.error,
+    this.companionPackage,
   });
 
   /// Whether the companion advertised the given capability id, e.g.
@@ -100,7 +107,7 @@ class AiHealth {
   bool has(String capability) => capabilities.contains(capability);
 
   @override
-  String toString() => 'AiHealth(installed: $installed, connected: $connected, apiVersion: $apiVersion, capabilities: $capabilities, error: $error)';
+  String toString() => 'AiHealth(installed: $installed, connected: $connected, apiVersion: $apiVersion, capabilities: $capabilities, error: $error, companionPackage: $companionPackage)';
 }
 
 class AiChatReply {

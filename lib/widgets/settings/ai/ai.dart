@@ -116,10 +116,11 @@ class _AiStatusTileBodyState extends State<_AiStatusTileBody> {
           final installed = h.installed;
           final connected = h.connected;
           final color = connected ? theme.colorScheme.primary : theme.colorScheme.error;
+          final pkg = h.companionPackage;
           final status = connected
-              ? 'Connected  ·  v${h.apiVersion ?? '?'}  ·  ${h.capabilities.join(', ')}'
+              ? 'Connected  ·  v${h.apiVersion ?? '?'}  ·  ${h.capabilities.join(', ')}${pkg != null ? '\n$pkg' : ''}'
               : installed
-                  ? 'Installed but not connected'
+                  ? 'Installed but not connected${pkg != null ? '  ·  $pkg' : ''}'
                   : 'Companion not installed';
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
