@@ -34,6 +34,7 @@ class _AiTagsSectionState extends State<AiTagsSection> {
   @override
   void initState() {
     super.initState();
+    widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
     _loader = _load();
   }
 
@@ -41,8 +42,27 @@ class _AiTagsSectionState extends State<AiTagsSection> {
   void didUpdateWidget(covariant AiTagsSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.entry != widget.entry) {
+      oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+      widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+      _applied.clear();
       _loader = _load();
     }
+  }
+
+  @override
+  void dispose() {
+    widget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+    super.dispose();
+  }
+
+  void _onMetadataChanged() {
+    if (!mounted) return;
+    // An external edit may have added/removed tags; re-derive suggestions
+    // and drop applied markers so the row reflects current state.
+    setState(() {
+      _applied.clear();
+      _loader = _load();
+    });
   }
 
   Future<List<String>> _load() async {
