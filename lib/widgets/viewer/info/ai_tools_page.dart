@@ -135,7 +135,7 @@ class _AiToolsPageState extends State<AiToolsPage> {
             ? () => Navigator.of(context).push(
                   MaterialPageRoute(
                     settings: const RouteSettings(name: AiChatPage.routeName),
-                    builder: (context) => const AiChatPage(),
+                    builder: (context) => AiChatPage(entry: entry),
                   ),
                 )
             : null,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:aves/model/ai/ai_command.dart';
+import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/ai/chat_message.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
@@ -13,7 +14,12 @@ import 'package:material_ui/material_ui.dart';
 class AiChatPage extends StatefulWidget {
   static const routeName = '/ai_chat';
 
-  const new({super.key});
+  /// When provided, every message carries this entry's media so the
+  /// companion can act on the photo the user was looking at. When
+  /// null (opened from the drawer), chat is text-only.
+  final AvesEntry? entry;
+
+  const new({super.key, this.entry});
 
   @override
   State<AiChatPage> createState() => _AiChatPageState();
@@ -58,7 +64,12 @@ class _AiChatPageState extends State<AiChatPage> {
     _scrollToBottom();
 
     () async {
-      final reply = await aiService.chat(content);
+      final entry = widget.entry;
+      final reply = await aiService.chat(
+        content,
+        entryIds: entry != null ? [entry.id] : const [],
+        entries: entry != null ? AiService.entriesPayload([entry]) : const [],
+      );
       if (!mounted) return;
       setState(() {
         _messages.removeLast();
