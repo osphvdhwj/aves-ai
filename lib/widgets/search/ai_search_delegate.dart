@@ -179,6 +179,22 @@ class AiSearchDelegate extends AvesSearchDelegate {
         if (reply == null) {
           return const Center(child: Text('No reply'));
         }
+        if (reply.isModelMissing) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('The AVES+ Tools companion needs a model it does not have yet.'),
+            ),
+          );
+        }
+        if (reply.isUnsupported) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('This companion build does not support AI search. Update AVES+ Tools.'),
+            ),
+          );
+        }
         if (reply.error != null) {
           return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('Error: ${reply.error}')));
         }

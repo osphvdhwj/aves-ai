@@ -73,9 +73,16 @@ class _AiChatPageState extends State<AiChatPage> {
       if (!mounted) return;
       setState(() {
         _messages.removeLast();
+        final body = reply.isModelMissing
+            ? 'The companion is missing a required model. Install it in AVES+ Tools.'
+            : reply.isUnsupported
+                ? 'This companion build does not support that command. Update AVES+ Tools.'
+                : reply.error != null
+                    ? 'Error: ${reply.error}'
+                    : (reply.text.isEmpty ? '(empty reply)' : reply.text);
         _messages.add(ChatMessage(
           role: ChatRole.ai,
-          text: reply.error != null ? 'Error: ${reply.error}' : (reply.text.isEmpty ? '(empty reply)' : reply.text),
+          text: body,
           entryIds: reply.entryIds,
         ));
       });

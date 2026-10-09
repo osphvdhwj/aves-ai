@@ -98,6 +98,12 @@ class _TextSelectPageState extends State<TextSelectPage> {
                   final reply = snapshot.data;
                   final error = reply?.error;
                   final text = reply?.text.trim() ?? '';
+                  if (reply?.isModelMissing == true) {
+                    return _msg(context, 'The AVES+ Tools companion does not have its OCR model installed yet.');
+                  }
+                  if (reply?.isUnsupported == true) {
+                    return _msg(context, 'This companion build does not support OCR. Update AVES+ Tools.');
+                  }
                   if (error != null && error.isNotEmpty) {
                     return _msg(context, 'Text recognition failed: $error');
                   }
