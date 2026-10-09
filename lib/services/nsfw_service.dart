@@ -21,9 +21,15 @@ class NsfwService {
         entryIds: [entry.id],
         entries: AiService.entriesPayload([entry]),
       );
+      if (reply.isModelMissing) {
+        return const NsfwResult(available: false, score: null, labels: [], error: 'NSFW model not installed on the companion', code: 2);
+      }
+      if (reply.isUnsupported) {
+        return const NsfwResult(available: false, score: null, labels: [], error: 'Companion build does not support NSFW scoring', code: 1);
+      }
       final error = reply.error;
       if (error != null && error.isNotEmpty) {
-        return NsfwResult(available: false, score: null, labels: const [], error: error);
+        return NsfwResult(available: false, score: null, labels: const [], error: error, code: reply.errorCode);
       }
       return _parse(reply.text);
     } catch (e, stack) {
@@ -64,14 +70,21 @@ class NsfwResult {
   final List<String> labels;
   final String? error;
 
+  /// Companion error code (2 = MODEL_MISSING, 1 = UNSUPPORTED, ...)
+  final int? code;
+
   const NsfwResult({
     required this.available,
     required this.score,
     this.labels = const [],
     this.error,
+    this.code,
   });
 
-  const NsfwResult.unknown() : available = false, score = null, labels = const [], error = null;
+  const NsfwResult.unknown() : available = false, score = null, labels = const [], error = null, code = null;
+
+  bool get isModelMissing => code == 2;
+  bool get isUnsupported => code == 1;
 
   String? tagFor({double threshold = 0.75}) {
     if (!available || score == null) return null;
