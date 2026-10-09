@@ -16,6 +16,7 @@ import 'package:aves/widgets/common/basic/popup/menu_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
 import 'package:aves/widgets/viewer/info/text_select_page.dart';
@@ -79,13 +80,43 @@ class InfoAppBar extends StatelessWidget {
           ? []
           : [
               if (entry.isImage)
-                PressableScale(
-                  onLongPress: () => showTextSelectPage(context, entry),
-                  child: IconButton(
-                    icon: const Icon(Symbols.text_fields),
-                    onPressed: () => showExtractTextDialog(context, entry),
-                    tooltip: 'Extract text (long-press for select mode)',
-                  ),
+                FutureBuilder<bool>(
+                  future: aiService.hasCapability('ocr'),
+                  builder: (context, snap) {
+                    final supported = snap.data ?? false;
+                    void onTap() {
+                      if (supported) {
+                        showExtractTextDialog(context, entry);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('OCR needs the AVES+ Tools companion.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                    void onLongPress() {
+                      if (supported) {
+                        showTextSelectPage(context, entry);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Text selection needs the AVES+ Tools companion.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                    return PressableScale(
+                      onLongPress: onLongPress,
+                      child: IconButton(
+                        icon: const Icon(Symbols.text_fields),
+                        onPressed: onTap,
+                        tooltip: 'Extract text (long-press for select mode)',
+                      ),
+                    );
+                  },
                 ),
               IconButton(
                 icon: const Icon(Symbols.shield_lock),
