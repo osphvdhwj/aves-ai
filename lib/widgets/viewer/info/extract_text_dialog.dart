@@ -40,7 +40,11 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
   @override
   void initState() {
     super.initState();
-    _future = aiService.chat('@ocr', entryIds: [widget.entry.id]);
+    _future = aiService.chat(
+      '@ocr',
+      entryIds: [widget.entry.id],
+      entries: AiService.entriesPayload([widget.entry]),
+    );
   }
 
   @override

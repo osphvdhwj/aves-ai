@@ -16,7 +16,11 @@ import 'package:aves/services/common/services.dart';
 class NsfwService {
   Future<NsfwResult> classify(AvesEntry entry) async {
     try {
-      final reply = await aiService.chat('@nsfw', entryIds: [entry.id]);
+      final reply = await aiService.chat(
+        '@nsfw',
+        entryIds: [entry.id],
+        entries: AiService.entriesPayload([entry]),
+      );
       final error = reply.error;
       if (error != null && error.isNotEmpty) {
         return NsfwResult(available: false, score: null, labels: const [], error: error);

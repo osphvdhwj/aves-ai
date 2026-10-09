@@ -32,7 +32,11 @@ class _TextSelectPageState extends State<TextSelectPage> {
   @override
   void initState() {
     super.initState();
-    _future = aiService.chat('@ocr', entryIds: [widget.entry.id]);
+    _future = aiService.chat(
+      '@ocr',
+      entryIds: [widget.entry.id],
+      entries: AiService.entriesPayload([widget.entry]),
+    );
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:aves/services/common/channel.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:flutter/services.dart';
+import 'package:aves/model/entry/entry.dart';
 
 class AiService {
   static const _platform = AvesMethodChannel('deckers.thibault/aves/ai');
@@ -41,11 +42,16 @@ class AiService {
     }
   }
 
-  Future<AiChatReply> chat(String text, {List<int> entryIds = const []}) async {
+  Future<AiChatReply> chat(
+    String text, {
+    List<int> entryIds = const [],
+    List<Map<String, dynamic>> entries = const [],
+  }) async {
     try {
       final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('chat', {
         'text': text,
         'entryIds': entryIds,
+        'entries': entries,
       });
       if (result == null) return const AiChatReply(text: '', error: 'no reply');
       final map = result.cast<String, dynamic>();
@@ -58,6 +64,19 @@ class AiService {
       await reportService.recordError(e, s);
       return AiChatReply(text: '', error: e.message ?? e.code);
     }
+  }
+
+  /// Builds the `entries` payload the companion expects. Every media
+  /// operation needs `path` or `uri`; `id` and `contentId` let the
+  /// companion echo results back without a second lookup.
+  static List<Map<String, dynamic>> entriesPayload(Iterable<AvesEntry> entries) {
+    return entries.map((e) => <String, dynamic>{
+      'id': e.id,
+      'contentId': e.contentId,
+      'uri': e.uri,
+      'path': e.path,
+      'mimeType': e.mimeType,
+    }).toList();
   }
 }
 
