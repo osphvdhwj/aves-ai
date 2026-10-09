@@ -8,6 +8,7 @@ import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/viewer/info/image_quality.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -260,7 +261,12 @@ class CleanerBucketPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final e = entries[index];
             return PressableScale(
-              onTap: () {},
+              onTap: () => Navigator.maybeOf(context)?.push(
+                MaterialPageRoute(
+                  settings: const RouteSettings(name: EntryViewerPage.routeName),
+                  builder: (_) => EntryViewerPage(initialEntry: e),
+                ),
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
                 child: Image(

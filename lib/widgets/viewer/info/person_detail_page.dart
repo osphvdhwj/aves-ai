@@ -2,6 +2,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -119,7 +120,12 @@ class _PersonDetailPageState extends State<PersonDetailPage> {
                 itemBuilder: (context, i) {
                   final e = photos[i];
                   return PressableScale(
-                    onTap: () {},
+                    onTap: () => Navigator.maybeOf(context)?.push(
+                      MaterialPageRoute(
+                        settings: const RouteSettings(name: EntryViewerPage.routeName),
+                        builder: (_) => EntryViewerPage(initialEntry: e),
+                      ),
+                    ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(context.m3e.shapeExtraSmall),
                       child: Image(
