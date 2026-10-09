@@ -104,15 +104,44 @@ class _AutoTagPageState extends State<AutoTagPage> {
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _busy = true);
     try {
-      for (final p in proposals) {
-        if (_dismissed.contains(p.tag.toLowerCase())) continue;
-        await widget.actionDelegate.quickTag(context, widget.entry, TagFilter(p.tag));
-        if (!mounted) return;
-        _applied.add(p.tag.toLowerCase());
+      final dismissed = _dismissed;
+      var appliedCount = 0;
+
+      if (_collectionMode) {
+        // In collection mode the visible list is a union of tags across
+        // every entry. Applying them all to a single entry is wrong, so
+        // re-derive per entry and apply only its own matching tags.
+        final tagger = AutoTagger();
+        final entries = widget.collection?.sortedEntries ?? [widget.entry];
+        for (final e in entries) {
+          for (final p in tagger.proposeNew(e)) {
+            final key = p.tag.toLowerCase();
+            if (dismissed.contains(key)) continue;
+            await widget.actionDelegate.quickTag(context, e, TagFilter(p.tag));
+            if (!mounted) return;
+            _applied.add(key);
+            appliedCount++;
+          }
+        }
+      } else {
+        for (final p in proposals) {
+          final key = p.tag.toLowerCase();
+          if (dismissed.contains(key)) continue;
+          await widget.actionDelegate.quickTag(context, widget.entry, TagFilter(p.tag));
+          if (!mounted) return;
+          _applied.add(key);
+          appliedCount++;
+        }
       }
+
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text('Applied ${_applied.length} tags'), duration: const Duration(seconds: 2)),
+        SnackBar(
+          content: Text(_collectionMode
+              ? 'Applied $appliedCount tags across the collection'
+              : 'Applied $appliedCount tags'),
+          duration: const Duration(seconds: 2),
+        ),
       );
     } finally {
       if (mounted) setState(() => _busy = false);
