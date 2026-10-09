@@ -202,8 +202,13 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
-    final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
-    return aiService.chat(q, entryIds: ids);
+    final sample = source.visibleEntries.take(200).toList();
+    final ids = sample.map((e) => e.id).toList();
+    return aiService.chat(
+      q,
+      entryIds: ids,
+      entries: AiService.entriesPayload(sample),
+    );
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
