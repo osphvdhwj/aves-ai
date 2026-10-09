@@ -56,10 +56,12 @@ class AiService {
       });
       if (result == null) return const AiChatReply(text: '', error: 'no reply');
       final map = result.cast<String, dynamic>();
+      final code = map['errorCode'];
       return AiChatReply(
         text: (map['text'] as String?) ?? '',
         entryIds: (map['entryIds'] as List?)?.cast<int>() ?? const [],
         error: map['errorMessage'] as String?,
+        errorCode: code is int ? code : (code is num ? code.toInt() : null),
       );
     } on PlatformException catch (e, s) {
       await reportService.recordError(e, s);
@@ -115,11 +117,21 @@ class AiChatReply {
   final List<int> entryIds;
   final String? error;
 
+  /// Numeric code from the companion's error contract (0 OK, 1
+  /// UNSUPPORTED, 2 MODEL_MISSING, 3 OOM, 4 PERMISSION, 5 INTERNAL,
+  /// 6 CANCELLED). Null on success or when the call never reached the
+  /// companion.
+  final int? errorCode;
+
   const AiChatReply({
     required this.text,
     this.entryIds = const [],
     this.error,
+    this.errorCode,
   });
+
+  bool get isModelMissing => errorCode == 2;
+  bool get isUnsupported => errorCode == 1;
 }
 
 final aiService = AiService();
