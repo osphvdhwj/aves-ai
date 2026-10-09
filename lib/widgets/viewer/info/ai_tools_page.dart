@@ -29,16 +29,8 @@ class AiToolsPage extends StatefulWidget {
 }
 
 class _AiToolsPageState extends State<AiToolsPage> {
-  late Future<AiHealth> _healthFuture;
-
   AvesEntry get entry => widget.entry;
   CollectionLens? get collection => widget.collection;
-
-  @override
-  void initState() {
-    super.initState();
-    _healthFuture = aiService.health();
-  }
 
   bool _has(AiHealth? h, String capability) => h?.connected == true && h!.has(capability);
 
@@ -48,7 +40,10 @@ class _AiToolsPageState extends State<AiToolsPage> {
       appBar: AppBar(title: const Text('AI tools')),
       body: SafeArea(
         child: FutureBuilder<AiHealth>(
-          future: _healthFuture,
+          // aiService.health() returns a cached future, so calling it
+          // here on each build is cheap and picks up a Recheck from
+          // settings without needing initState to be re-run.
+          future: aiService.health(),
           builder: (context, healthSnapshot) {
             final health = healthSnapshot.data;
             final connected = health?.connected == true;
