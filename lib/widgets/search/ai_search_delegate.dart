@@ -1,3 +1,4 @@
+import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -86,6 +87,30 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
           const SizedBox(height: 24),
 
+          // ── saved ─────────────────────────────────────────
+          if (settings.savedSearches.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _sectionTitle(theme, 'Saved')),
+                TextButton(
+                  onPressed: () {
+                    settings.savedSearches = const [];
+                    final v = query;
+                    query = v.isEmpty ? ' ' : v;
+                    query = v;
+                  },
+                  child: const Text('Clear'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _HistoryChips(
+              queries: settings.savedSearches,
+              onTap: (text) => _onPrompt(context, text),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           // ── history ───────────────────────────────────────
           if (settings.aiSearchHistory.isNotEmpty) ...[
             Row(
@@ -156,6 +181,18 @@ class AiSearchDelegate extends AvesSearchDelegate {
             onRetry: () => _retry(context),
           );
         }
+        if (reply.isModelMissing) {
+          return _ErrorState(
+            message: 'The AVES+ Tools companion needs a model it does not have yet.',
+            onRetry: () => _retry(context),
+          );
+        }
+        if (reply.isUnsupported) {
+          return _ErrorState(
+            message: 'This companion build does not support AI search. Update AVES+ Tools.',
+            onRetry: () => _retry(context),
+          );
+        }
         if (reply.error != null) {
           return _ErrorState(
             message: reply.error!,
@@ -177,6 +214,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _ResultsHeader(count: entries.length),
+            _SaveQueryBar(query: currentQuery),
             Expanded(child: _ResultGrid(entries: entries)),
           ],
         );
@@ -186,8 +224,13 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
-    final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
-    return aiService.chat(q, entryIds: ids);
+    final sample = source.visibleEntries.take(200).toList();
+    final ids = sample.map((e) => e.id).toList();
+    return aiService.chat(
+      q,
+      entryIds: ids,
+      entries: AiService.entriesPayload(sample),
+    );
   }
 
   void _retry(BuildContext context) {
@@ -232,7 +275,13 @@ class AiSearchDelegate extends AvesSearchDelegate {
       case 'time':
         return Symbols.schedule;
       case 'mood':
-        return Symbols.mood;
+        return Symbols.emoji_emotions;
+      case 'translate':
+        return Symbols.translate;
+      case 'objects':
+        return Symbols.category;
+      case 'clean':
+        return Symbols.cleaning_services;
       default:
         return Symbols.auto_awesome;
     }
@@ -471,17 +520,25 @@ class _PromptTile extends StatelessWidget {
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
 
-  static const _actions = <(String, IconData)>[
-    ('/find', Symbols.search),
-    ('/dup', Symbols.copy_all),
-    ('/blur', Symbols.blur_on),
-    ('/receipt', Symbols.receipt_long),
-    ('@deep', Symbols.psychology),
-    ('@fast', Symbols.bolt),
-    ('@ocr', Symbols.text_fields),
-    ('@person', Symbols.person),
-    ('@like', Symbols.favorite),
-  ];
+  static List<(String, IconData)> get _actions =>
+      AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
+
+  static IconData _iconForCommand(String token) => switch (token) {
+    '/find' => Symbols.search,
+    '/dup' => Symbols.copy_all,
+    '/blur' => Symbols.blur_on,
+    '/receipt' => Symbols.receipt_long,
+    '/clean' => Symbols.cleaning_services,
+    '/translate' => Symbols.translate,
+    '/objects' => Symbols.category,
+    '/faces' => Symbols.face,
+    '@deep' => Symbols.psychology,
+    '@fast' => Symbols.bolt,
+    '@ocr' => Symbols.text_fields,
+    '@person' => Symbols.person,
+    '@like' => Symbols.favorite,
+    _ => Symbols.auto_awesome,
+  };
 
   const new({required this.onTap});
 
@@ -1037,6 +1094,50 @@ class _HistoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _SaveQueryBar extends StatelessWidget {
+  final String query;
+
+  const _SaveQueryBar({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isSaved = settings.isSavedSearch(query);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              query,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          PressableScale(
+            onTap: () => settings.toggleSavedSearch(query),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                children: [
+                  Icon(isSaved ? Symbols.bookmark : Symbols.bookmark_add, size: 18, color: colors.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    isSaved ? 'Saved' : 'Save',
+                    style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
