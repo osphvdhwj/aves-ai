@@ -104,7 +104,7 @@ class ViewerTopOverlay extends StatelessWidget {
             if (showInfo)
               GestureDetector(
                 onTap: () => expandedNotifier.value = !expandedNotifier.value,
-                child: BlurredRect(
+                child: BlurredRRect(
                   enabled: blurred,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(28),
