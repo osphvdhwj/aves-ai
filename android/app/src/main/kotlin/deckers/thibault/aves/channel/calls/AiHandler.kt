@@ -242,7 +242,9 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
         }
     }
 
-    private suspend fun withMain(block: () -> Unit) = withContext(Dispatchers.Main) { block() }
+    private fun withMain(block: () -> Unit) {
+        android.os.Handler(android.os.Looper.getMainLooper()).post(block)
+    }
 
     /// Converts a Dart map into a Bundle the companion can read.
     /// Only JSON-ish primitives are supported — anything else stringifies.
