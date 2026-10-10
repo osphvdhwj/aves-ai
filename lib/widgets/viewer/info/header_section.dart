@@ -1,22 +1,34 @@
+import 'dart:async';
+
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
+import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
+import 'package:aves/services/common/services.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/theme/format.dart';
+import 'package:aves/theme/text.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/viewer/controls/notifications.dart';
+import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter/services.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 /// Google Photos-style top section for the info page.
 ///
-/// Replaces the old bare rows at the top with:
-///   - large date header
+/// M3E-styled header:
+///   - large emphasized date header
 ///   - editable caption line ("Add a caption" when empty)
-///   - album row with a thumbnail preview
 ///   - People row (placeholder until face clustering ships)
+///   - Album row with thumbnail, name, and item count
 class InfoHeaderSection extends StatelessWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
@@ -52,102 +64,100 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildDateHeader(BuildContext context, ThemeData theme) {
+    final tokens = context.m3e;
     final date = entry.bestDate;
     final locale = settings.avesLocale;
     final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
-    final dateText = date != null ? formatDateTime(date, locale, use24hour) : '';
+    // Google Photos style: "Fri, Jan 10, 2025 · 9:36 AM"
+    final dateText = date != null ? '${locale.MMMEd(date)}, ${locale.y(date)}${AText.separator}${formatTime(date, locale, use24hour)}' : '';
+
+    final baseStyle = theme.textTheme.headlineMedium ?? theme.textTheme.headlineSmall;
+    final baseWeight = baseStyle?.fontWeight ?? FontWeight.w400;
+    final steps = (tokens.emphasizedWeightDelta / 100).round();
+    final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
+    final emphasizedWeight = FontWeight.values[emphasizedIndex];
 
     return Text(
       dateText.isEmpty ? 'Undated' : dateText,
-      style: theme.textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.w500,
-        letterSpacing: -0.4,
+      style: baseStyle?.copyWith(
+        fontWeight: emphasizedWeight,
+        letterSpacing: -0.5,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
 
   Widget _buildCaption(BuildContext context, ThemeData theme) {
-    final colors = theme.colorScheme;
-    final caption = entry.catalogMetadata?.xmpTitle;
-    final hasCaption = caption != null && caption.isNotEmpty;
-
-    return PressableScale(
-      onTap: () => actionDelegate.onActionSelected(context, entry, collection, EntryAction.editTitleDescription),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              hasCaption ? Icons.notes_outlined : Icons.add_rounded,
-              size: 20,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                hasCaption ? caption : 'Add a caption...',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: hasCaption ? colors.onSurface : colors.onSurfaceVariant,
-                  fontStyle: hasCaption ? FontStyle.normal : FontStyle.italic,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return _CaptionRow(
+      entry: entry,
+      collection: collection,
+      actionDelegate: actionDelegate,
     );
   }
 
   Widget _buildPeopleRow(BuildContext context, ThemeData theme, ColorScheme colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'People',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colors.onSurface,
+    // Face clustering lives in the AVES+ Tools companion. Until it
+    // advertises `person`, the row is display-only.
+    return FutureBuilder<AiHealth>(
+      future: aiService.health(),
+      builder: (context, snap) {
+        final supported = snap.data?.connected == true && snap.data!.has('person');
+        void onTap() {
+          if (!supported) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Face recognition needs the AVES+ Tools companion.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          showPeoplePage(context);
+        }
+
+        Widget circle() => Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: colors.surfaceContainerHighest,
+            border: Border.all(color: colors.outlineVariant, width: 1.5),
           ),
-        ),
-        const SizedBox(height: 10),
-        Row(
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PressableScale(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Face detection coming soon'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              },
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.surfaceContainerHighest,
-                  border: Border.all(color: colors.outlineVariant, width: 1.5),
-                ),
-                child: Icon(Icons.person_add_alt_1_outlined, color: colors.onSurfaceVariant, size: 24),
+            Text(
+              'People',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colors.onSurface,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Add someone',
-                style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            const SizedBox(height: 10),
+            PressableScale(
+              onTap: onTap,
+              child: Row(
+                children: [
+                  circle(),
+                  const SizedBox(width: 8),
+                  circle(),
+                  const SizedBox(width: 8),
+                  circle(),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      'Add someone',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -155,7 +165,13 @@ class InfoHeaderSection extends StatelessWidget {
     final album = entry.directory;
     if (album == null) return const SizedBox.shrink();
 
-    final albumName = collection?.source.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
+    final tokens = context.m3e;
+    final source = collection?.source;
+    final albumName = source?.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
+    final itemCount = source?.albumEntryCount(StoredAlbumFilter(album, null));
+    final subtitle = itemCount != null
+        ? (itemCount == 1 ? '1 item' : '$itemCount items')
+        : album;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,12 +186,19 @@ class InfoHeaderSection extends StatelessWidget {
         const SizedBox(height: 10),
         PressableScale(
           onTap: () {
-            // future: jump to album's collection view
+            final displayName = source?.getStoredAlbumDisplayName(context, album) ?? album;
+            SelectFilterNotification(StoredAlbumFilter(album, displayName)).dispatch(context);
           },
-          child: Row(
-            children: [
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(tokens.shapeMedium),
+            ),
+            child: Row(
+              children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(tokens.shapeSmall),
                 child: SizedBox(
                   width: 56,
                   height: 56,
@@ -185,36 +208,213 @@ class InfoHeaderSection extends StatelessWidget {
                     errorBuilder: (context, error, stack) => Container(
                       color: colors.surfaceContainerHighest,
                       alignment: Alignment.center,
-                      child: Icon(Icons.image_outlined, color: colors.onSurfaceVariant, size: 20),
+                      child: Icon(Symbols.image, color: colors.onSurfaceVariant, size: 20),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      albumName,
-                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      album,
-                      style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        albumName,
+                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Caption surface: reads the XMP title from catalog metadata (sync) and the
+/// description via overlay metadata (async, live from the file). Reloads when
+/// the entry's metadata change notifier fires or when the entry changes.
+class _CaptionRow extends StatefulWidget {
+  final AvesEntry entry;
+  final CollectionLens? collection;
+  final EntryInfoActionDelegate actionDelegate;
+
+  const new({
+    required this.entry,
+    this.collection,
+    required this.actionDelegate,
+  });
+
+  @override
+  State<_CaptionRow> createState() => _CaptionRowState();
+}
+
+class _CaptionRowState extends State<_CaptionRow> {
+  String? _description;
+
+  AvesEntry get entry => widget.entry;
+
+  @override
+  void initState() {
+    super.initState();
+    entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+    unawaited(_load());
+  }
+
+  @override
+  void didUpdateWidget(covariant _CaptionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.entry != widget.entry) {
+      oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+      entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+      _description = null;
+      unawaited(_load());
+    }
+  }
+
+  @override
+  void dispose() {
+    entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+    super.dispose();
+  }
+
+  void _onMetadataChanged() {
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    try {
+      final fields = await metadataFetchService.getOverlayMetadata(entry, {MetadataSyntheticField.description});
+      if (!mounted) return;
+      setState(() => _description = fields.description);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _description = null);
+    }
+  }
+
+  Future<void> _showCaptionMenu(BuildContext context, String title, String description) async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title.isNotEmpty)
+              ListTile(
+                leading: const Icon(Symbols.content_copy),
+                title: const Text('Copy title'),
+                onTap: () => Navigator.of(context).pop('copy-title'),
+              ),
+            if (description.isNotEmpty)
+              ListTile(
+                leading: const Icon(Symbols.content_copy),
+                title: const Text('Copy description'),
+                onTap: () => Navigator.of(context).pop('copy-desc'),
+              ),
+            ListTile(
+              leading: const Icon(Symbols.edit),
+              title: const Text('Edit'),
+              onTap: () => Navigator.of(context).pop('edit'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    switch (action) {
+      case 'copy-title':
+        await Clipboard.setData(ClipboardData(text: title));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title copied'), duration: Duration(seconds: 1)));
+      case 'copy-desc':
+        await Clipboard.setData(ClipboardData(text: description));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Description copied'), duration: Duration(seconds: 1)));
+      case 'edit':
+        if (!mounted) return;
+        widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tokens = context.m3e;
+    final colors = theme.colorScheme;
+    final title = (entry.catalogMetadata?.xmpTitle ?? '').trim();
+    final description = (_description ?? '').trim();
+    final hasCaption = title.isNotEmpty || description.isNotEmpty;
+
+    return PressableScale(
+      onTap: () => widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription),
+      onLongPress: hasCaption ? () => _showCaptionMenu(context, title, description) : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(tokens.shapeMedium),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Icon(
+                hasCaption ? Symbols.notes : Symbols.add,
+                size: 20,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: hasCaption
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (title.isNotEmpty)
+                          Text(
+                            title,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        if (title.isNotEmpty && description.isNotEmpty) const SizedBox(height: 2),
+                        if (description.isNotEmpty)
+                          Text(
+                            description,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    )
+                  : Text(
+                      'Add a caption...',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

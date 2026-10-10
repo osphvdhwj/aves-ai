@@ -1,0 +1,218 @@
+import 'package:aves/model/entry/entry.dart';
+import 'package:aves/services/ai_service.dart';
+import 'package:aves/services/common/services.dart';
+import 'package:aves/widgets/viewer/info/tag_suggestions.dart';
+import 'package:aves/model/nsfw_tags.dart';
+import 'package:aves/model/filters/covered/tag.dart';
+import 'package:aves/widgets/viewer/info/nsfw_tag_picker.dart';
+import 'package:aves/widgets/viewer/info/auto_tag_page.dart';
+import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:material_ui/material_ui.dart';
+
+/// Row of AI-suggested tags under the Details section.
+///
+/// Populated once the AI companion returns recognised keywords for an
+/// entry. Until then, an empty state is shown that explains why.
+class AiTagsSection extends StatefulWidget {
+  final AvesEntry entry;
+  final EntryInfoActionDelegate actionDelegate;
+
+  const new({super.key, required this.entry, required this.actionDelegate});
+
+  @override
+  State<AiTagsSection> createState() => _AiTagsSectionState();
+}
+
+class _AiTagsSectionState extends State<AiTagsSection> {
+  late Future<List<String>> _loader;
+  final Set<String> _applied = {};
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+    _loader = _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant AiTagsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.entry != widget.entry) {
+      oldWidget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+      widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
+      _applied.clear();
+      _loader = _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
+    super.dispose();
+  }
+
+  void _onMetadataChanged() {
+    if (!mounted) return;
+    // An external edit may have added/removed tags; re-derive suggestions
+    // and drop applied markers so the row reflects current state.
+    setState(() {
+      _applied.clear();
+      _loader = _load();
+    });
+  }
+
+  Future<List<String>> _load() async {
+    // Local heuristic suggestions from the album path. Companion-derived
+    // tags will be merged here once the AI service exposes them. We
+    // preload the bundled vocabulary so suggestions stick to tags the
+    // user already uses.
+    await NsfwTags.load();
+    return TagSuggester.suggestExisting(widget.entry);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+            child: Row(
+              children: [
+                Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
+                const SizedBox(width: 6),
+                Text(
+                  'Suggested tags',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const Spacer(),
+                PressableScale(
+                  onTap: () => showAutoTagPage(
+                    context,
+                    entry: widget.entry,
+                    actionDelegate: widget.actionDelegate,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Symbols.auto_fix_high, size: 16, color: colors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Auto',
+                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                PressableScale(
+                  onTap: () => showNsfwTagPicker(context, entry: widget.entry, actionDelegate: widget.actionDelegate),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Symbols.add, size: 16, color: colors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'NSFW',
+                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          FutureBuilder<List<String>>(
+            future: _loader,
+            builder: (context, snapshot) {
+              final tags = snapshot.data ?? const <String>[];
+              if (tags.isEmpty) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+                  ),
+                  child: Text(
+                    'No album-derived tags to suggest for this entry.',
+                    style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                );
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: tags
+                    .map(
+                      (t) {
+                        final applied = _applied.contains(t.toLowerCase());
+                        return PressableScale(
+                          enabled: !applied && !_busy,
+                          onTap: applied ? null : () => _apply(t),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: applied ? colors.secondaryContainer : colors.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  t,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: applied ? colors.onSecondaryContainer : colors.onSurface,
+                                    fontWeight: applied ? FontWeight.w600 : FontWeight.w500,
+                                  ),
+                                ),
+                                if (applied) ...[
+                                  const SizedBox(width: 6),
+                                  Icon(Symbols.check, size: 14, color: colors.onSecondaryContainer),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                    .toList(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _apply(String tag) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final messenger = ScaffoldMessenger.of(context);
+      await widget.actionDelegate.quickTag(context, widget.entry, TagFilter(tag));
+      if (!mounted) return;
+      setState(() => _applied.add(tag.toLowerCase()));
+      messenger.showSnackBar(
+        SnackBar(content: Text('Added "$tag"'), duration: const Duration(seconds: 1)),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+}

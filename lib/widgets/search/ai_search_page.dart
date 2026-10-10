@@ -11,7 +11,10 @@ import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class AiSearchPage extends StatefulWidget {
   static const routeName = '/ai_search';
@@ -220,7 +223,7 @@ class _InputRow extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Row(
@@ -254,14 +257,14 @@ class _InputRow extends StatelessWidget {
             ),
             const SizedBox(width: 2),
             _RoundActionButton(
-              icon: Icons.add,
+              icon: Symbols.add,
               tooltip: 'Attach',
               onPressed: onPlus,
               colors: colors,
             ),
             const SizedBox(width: 2),
             _RoundActionButton(
-              icon: Icons.send,
+              icon: Symbols.send,
               tooltip: 'Send',
               onPressed: onSubmit,
               colors: colors,

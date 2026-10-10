@@ -11,15 +11,22 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/app_bar/app_bar_title.dart';
 import 'package:aves/widgets/common/app_bar/sliver_app_bar_title.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/popup/menu_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
+import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
+import 'package:aves/widgets/viewer/info/text_select_page.dart';
+import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
+import 'package:aves/widgets/viewer/info/ai_tools_page.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 class InfoAppBar extends StatelessWidget {
@@ -72,6 +79,55 @@ class InfoAppBar extends StatelessWidget {
       actions: useTvLayout
           ? []
           : [
+              if (entry.isImage)
+                FutureBuilder<bool>(
+                  future: aiService.hasCapability('ocr'),
+                  builder: (context, snap) {
+                    final supported = snap.data ?? false;
+                    void onTap() {
+                      if (supported) {
+                        showExtractTextDialog(context, entry);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('OCR needs the AVES+ Tools companion.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                    void onLongPress() {
+                      if (supported) {
+                        showTextSelectPage(context, entry);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Text selection needs the AVES+ Tools companion.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                    return PressableScale(
+                      onLongPress: onLongPress,
+                      child: IconButton(
+                        icon: const Icon(Symbols.text_fields),
+                        onPressed: onTap,
+                        tooltip: 'Extract text (long-press for select mode)',
+                      ),
+                    );
+                  },
+                ),
+              IconButton(
+                icon: const Icon(Symbols.shield_lock),
+                onPressed: () => showSecureShareDialog(context, entry),
+                tooltip: 'Secure share',
+              ),
+              IconButton(
+                icon: const Icon(Symbols.auto_awesome),
+                onPressed: () => showAiToolsPage(context, entry, collection: collection),
+                tooltip: 'AI tools',
+              ),
               IconButton(
                 icon: const Icon(AIcons.search),
                 onPressed: () => _goToSearch(context),

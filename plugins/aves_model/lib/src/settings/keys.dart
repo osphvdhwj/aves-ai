@@ -42,6 +42,7 @@ class SettingKeys {
   static const recentDestinationAlbumsKey = 'recent_destination_albums';
   static const recentTagsKey = 'recent_tags';
   static const aiSearchHistoryKey = 'ai_search_history';
+  static const savedSearchesKey = 'saved_searches';
 
   // debug
   static const debugShowViewerTilesKey = 'debug_show_viewer_tiles';
@@ -148,6 +149,7 @@ class SettingKeys {
   static const infoMapZoomKey = 'info_map_zoom';
   static const coordinateFormatKey = 'coordinates_format';
   static const unitSystemKey = 'unit_system';
+  static const showGooglePhotosBackupKey = 'show_google_photos_backup';
 
   // tag editor
 

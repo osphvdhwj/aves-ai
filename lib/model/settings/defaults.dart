@@ -102,6 +102,7 @@ class SettingsDefaults {
 
   // info
   static const double infoMapZoom = 12.0;
+  static const bool showGooglePhotosBackup = true;
   static const coordinateFormat = CoordinateFormat.dms;
   static const unitSystem = UnitSystem.metric;
 

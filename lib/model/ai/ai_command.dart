@@ -19,6 +19,10 @@ class AiCommands {
     AiCommand('@', 'ocr', 'Search text only'),
     AiCommand('@', 'person', 'Filter by face cluster'),
     AiCommand('@', 'like', 'Similar to current photo'),
+    AiCommand('/', 'clean', 'Find large, old, or junk photos'),
+    AiCommand('/', 'translate', 'Translate text in photos'),
+    AiCommand('/', 'objects', 'Search by object'),
+    AiCommand('/', 'faces', 'Browse face clusters'),
   ];
 
   static List<AiCommand> match(String trigger, String filter) {

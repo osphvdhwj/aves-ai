@@ -1,14 +1,25 @@
 import 'dart:async';
 
+import 'package:aves/model/ai/ai_command.dart';
+import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/ai/chat_message.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 class AiChatPage extends StatefulWidget {
   static const routeName = '/ai_chat';
 
-  const new({super.key});
+  /// When provided, every message carries this entry's media so the
+  /// companion can act on the photo the user was looking at. When
+  /// null (opened from the drawer), chat is text-only.
+  final AvesEntry? entry;
+
+  const new({super.key, this.entry});
 
   @override
   State<AiChatPage> createState() => _AiChatPageState();
@@ -19,8 +30,10 @@ class _AiChatPageState extends State<AiChatPage> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
 
-  static const _presets = ['/find', '/dup', '/blur', '/receipt'];
-  static const _modifiers = ['@deep', '@fast', '@ocr', '@person', '@like'];
+  static List<String> get _presets =>
+      AiCommands.all.where((c) => c.trigger == '/').map((c) => c.token).toList();
+  static List<String> get _modifiers =>
+      AiCommands.all.where((c) => c.trigger == '@').map((c) => c.token).toList();
 
   @override
   void dispose() {
@@ -51,13 +64,25 @@ class _AiChatPageState extends State<AiChatPage> {
     _scrollToBottom();
 
     () async {
-      final reply = await aiService.chat(content);
+      final entry = widget.entry;
+      final reply = await aiService.chat(
+        content,
+        entryIds: entry != null ? [entry.id] : const [],
+        entries: entry != null ? AiService.entriesPayload([entry]) : const [],
+      );
       if (!mounted) return;
       setState(() {
         _messages.removeLast();
+        final body = reply.isModelMissing
+            ? 'The companion is missing a required model. Install it in AVES+ Tools.'
+            : reply.isUnsupported
+                ? 'This companion build does not support that command. Update AVES+ Tools.'
+                : reply.error != null
+                    ? 'Error: ${reply.error}'
+                    : (reply.text.isEmpty ? '(empty reply)' : reply.text);
         _messages.add(ChatMessage(
           role: ChatRole.ai,
-          text: reply.error != null ? 'Error: ${reply.error}' : (reply.text.isEmpty ? '(empty reply)' : reply.text),
+          text: body,
           entryIds: reply.entryIds,
         ));
       });
@@ -76,7 +101,7 @@ class _AiChatPageState extends State<AiChatPage> {
             IconButton(
               tooltip: 'Clear',
               onPressed: () => setState(_messages.clear),
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Symbols.delete),
             ),
         ],
       ),
@@ -129,7 +154,7 @@ class _AiChatPageState extends State<AiChatPage> {
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
         ),
         child: Text(text, style: theme.textTheme.bodyMedium),
       ),

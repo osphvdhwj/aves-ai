@@ -1,8 +1,6 @@
 import 'package:aves/app_mode.dart';
-import 'package:aves/image_providers/app_icon_image_provider.dart';
 import 'package:aves/locale/aves_locale.dart';
 import 'package:aves/locale/calendar/calendar_utils.dart';
-import 'package:aves/model/app_inventory.dart';
 import 'package:aves/model/dynamic_albums.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
@@ -19,25 +17,24 @@ import 'package:aves/model/filters/type.dart';
 import 'package:aves/model/filters/weekday.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
-import 'package:aves/ref/mime_types.dart';
-import 'package:aves/services/common/services.dart';
 import 'package:aves/theme/colors.dart';
-import 'package:aves/theme/format.dart';
-import 'package:aves/utils/file_utils.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/rate_button.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/tag_button.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
-import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
-class BasicSection extends StatefulWidget {
+/// Chips row + rating/tags edit buttons for the info page.
+///
+/// Extracted from the legacy `BasicSection` so the info page can move the
+/// Details rows and this section independently. Preserves the entry
+/// metadata listener and the TV autofocus-on-scroll-end behaviour.
+class ChipsSection extends StatefulWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
   final EntryInfoActionDelegate actionDelegate;
@@ -56,10 +53,10 @@ class BasicSection extends StatefulWidget {
   });
 
   @override
-  State<BasicSection> createState() => _BasicSectionState();
+  State<ChipsSection> createState() => _ChipsSectionState();
 }
 
-class _BasicSectionState extends State<BasicSection> with AutomaticKeepAliveClientMixin {
+class _ChipsSectionState extends State<ChipsSection> with AutomaticKeepAliveClientMixin {
   final FocusNode _chipFocusNode = FocusNode();
 
   CollectionLens? get collection => widget.collection;
@@ -74,7 +71,7 @@ class _BasicSectionState extends State<BasicSection> with AutomaticKeepAliveClie
   }
 
   @override
-  void didUpdateWidget(covariant BasicSection oldWidget) {
+  void didUpdateWidget(covariant ChipsSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     _unregisterWidget(oldWidget);
     _registerWidget(widget);
@@ -87,12 +84,12 @@ class _BasicSectionState extends State<BasicSection> with AutomaticKeepAliveClie
     super.dispose();
   }
 
-  void _registerWidget(BasicSection widget) {
+  void _registerWidget(ChipsSection widget) {
     widget.entry.metadataChangeNotifier.addListener(_onMetadataChanged);
     widget.isScrollingNotifier.addListener(_onScrollingChanged);
   }
 
-  void _unregisterWidget(BasicSection widget) {
+  void _unregisterWidget(ChipsSection widget) {
     widget.entry.metadataChangeNotifier.removeListener(_onMetadataChanged);
     widget.isScrollingNotifier.removeListener(_onScrollingChanged);
   }
@@ -103,7 +100,6 @@ class _BasicSectionState extends State<BasicSection> with AutomaticKeepAliveClie
     return Column(
       crossAxisAlignment: .start,
       children: [
-        _BasicInfo(entry: widget.entry),
         Focus(
           focusNode: _chipFocusNode,
           skipTraversal: true,
@@ -278,136 +274,4 @@ class _BasicSectionState extends State<BasicSection> with AutomaticKeepAliveClie
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class _BasicInfo extends StatefulWidget {
-  final AvesEntry entry;
-
-  const new({
-    required this.entry,
-  });
-
-  @override
-  State<_BasicInfo> createState() => _BasicInfoState();
-}
-
-class _BasicInfoState extends State<_BasicInfo> {
-  Future<String?> _ownerPackageLoader = SynchronousFuture(null);
-  Future<void> _appNameLoader = SynchronousFuture(null);
-
-  AvesEntry get entry => widget.entry;
-
-  static const ownerPackageNamePropKey = 'owner_package_name';
-  static const iconSize = 20.0;
-
-  @override
-  void initState() {
-    super.initState();
-    if (!entry.trashed && entry.isMediaStoreMediaContent) {
-      _ownerPackageLoader = metadataFetchService.hasContentResolverProp(ownerPackageNamePropKey).then((exists) {
-        return exists ? metadataFetchService.getContentResolverProp(entry, ownerPackageNamePropKey) : SynchronousFuture(null);
-      });
-      final isViewerMode = context.read<ValueNotifier<AppMode>>().value == .view;
-      if (isViewerMode && settings.isInstalledAppAccessAllowed) {
-        _appNameLoader = appInventory.initAppNames();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final infoUnknown = l10n.viewerInfoUnknown;
-    final locale = settings.avesLocale;
-    final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
-
-    // TODO TLAD line break on all characters for the following fields when this is fixed: https://github.com/flutter/flutter/issues/61081
-    // inserting ZWSP (\u200B) between characters does help, but it messes with width and height computation (another Flutter issue)
-    final title = entry.bestTitle ?? infoUnknown;
-    final date = entry.bestDate;
-    final dateText = date != null ? formatDateTime(date, locale, use24hour) : infoUnknown;
-    final showResolution = !entry.isSvg && entry.isSized;
-    final sizeText = entry.sizeBytes != null ? formatFileSize(locale, entry.sizeBytes!) : infoUnknown;
-    final path = entry.path;
-
-    return FutureBuilder<String?>(
-      future: _ownerPackageLoader,
-      builder: (context, snapshot) {
-        final ownerPackage = snapshot.data;
-        return FutureBuilder<void>(
-          future: _appNameLoader,
-          builder: (context, snapshot) {
-            return InfoRowGroup(
-              info: {
-                l10n.viewerInfoLabelTitle: title,
-                l10n.viewerInfoLabelDate: dateText,
-                if (entry.isVideo) ..._buildVideoRows(context),
-                if (showResolution) l10n.viewerInfoLabelResolution: context.applyDirectionality(getRasterResolutionText(locale)),
-                l10n.viewerInfoLabelSize: context.applyDirectionality(sizeText),
-                if (!entry.trashed) l10n.viewerInfoLabelUri: entry.uri,
-                l10n.viewerInfoLabelPath: ?path,
-                l10n.viewerInfoLabelOwner: ?ownerPackage,
-              },
-              spanBuilders: {
-                l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Map<String, String> _buildVideoRows(BuildContext context) {
-    return {
-      context.l10n.viewerInfoLabelDuration: entry.durationText,
-    };
-  }
-
-  InfoValueSpanBuilder _ownerHandler(String? ownerPackage) {
-    if (ownerPackage == null) return (context, key, value) => [];
-
-    final appName = appInventory.getCurrentAppName(ownerPackage) ?? ownerPackage;
-    return (context, key, value) => [
-      WidgetSpan(
-        alignment: .middle,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.only(start: 2, end: 4),
-          child: ConstrainedBox(
-            // use constraints instead of sizing `Image`,
-            // so that it can collapse when handling an empty image
-            constraints: const BoxConstraints(
-              maxWidth: iconSize,
-              maxHeight: iconSize,
-            ),
-            child: Image(
-              image: AppIconImage(
-                packageName: ownerPackage,
-                size: iconSize,
-              ),
-            ),
-          ),
-        ),
-      ),
-      TextSpan(
-        text: appName,
-        style: InfoRowGroup.valueStyle,
-      ),
-    ];
-  }
-
-  String getRasterResolutionText(AvesLocale locale) {
-    var s = entry.getResolutionText(locale);
-
-    // guess whether this is a photo, according to file type
-    final isPhoto = [MimeTypes.heic, MimeTypes.heif, MimeTypes.jpeg, MimeTypes.tiff].contains(entry.mimeType) || entry.isRaw;
-    if (isPhoto) {
-      final megaPixels = (entry.width * entry.height / 1000000).round();
-      if (megaPixels > 0) {
-        s += ' • ${locale.numberFormat('0').format(megaPixels)} MP';
-      }
-    }
-
-    return s;
-  }
 }

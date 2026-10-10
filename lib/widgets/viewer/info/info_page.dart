@@ -12,8 +12,10 @@ import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
-import 'package:aves/widgets/viewer/info/basic_section.dart';
+import 'package:aves/widgets/viewer/info/chips_section.dart';
+import 'package:aves/widgets/viewer/info/ai_tags_section.dart';
 import 'package:aves/widgets/viewer/info/color_section.dart';
+import 'package:aves/widgets/viewer/info/details_section.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
@@ -240,14 +242,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
 
   @override
   Widget build(BuildContext context) {
-    final basicSection = BasicSection(
-      entry: entry,
-      collection: collection,
-      actionDelegate: _actionDelegate,
-      isScrollingNotifier: widget.isScrollingNotifier,
-      isEditingMetadataNotifier: _isEditingMetadataNotifier,
-      onFilterSelection: _onFilterSelection,
-    );
+    final detailsSection = DetailsSection(entry: entry);
     final locationAtTop = widget.split && entry.hasGps;
     final locationSection = LocationSection(
       collection: collection,
@@ -255,13 +250,22 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       showTitle: !locationAtTop,
       isScrollingNotifier: widget.isScrollingNotifier,
       onFilterSelection: _onFilterSelection,
+      actionDelegate: _actionDelegate,
     );
-    final basicAndLocationSliver = locationAtTop
+    final chipsSection = ChipsSection(
+      entry: entry,
+      collection: collection,
+      actionDelegate: _actionDelegate,
+      isScrollingNotifier: widget.isScrollingNotifier,
+      isEditingMetadataNotifier: _isEditingMetadataNotifier,
+      onFilterSelection: _onFilterSelection,
+    );
+    final detailsAndLocationSliver = locationAtTop
         ? SliverToBoxAdapter(
             child: Row(
               crossAxisAlignment: .start,
               children: [
-                Expanded(child: basicSection),
+                Expanded(child: detailsSection),
                 const SizedBox(width: 8),
                 Expanded(child: locationSection),
               ],
@@ -270,7 +274,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
         : SliverList(
             delegate: SliverChildListDelegate.fixed(
               [
-                basicSection,
+                detailsSection,
                 locationSection,
               ],
               addAutomaticKeepAlives: true,
@@ -311,7 +315,34 @@ class _InfoPageContentState extends State<_InfoPageContent> {
               return visible
                   ? SliverPadding(
                       padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: basicAndLocationSliver,
+                      sliver: detailsAndLocationSliver,
+                    )
+                  : const SliverToBoxAdapter(child: SizedBox());
+            },
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _isBasicSectionVisibleNotifier,
+            builder: (context, visible, child) {
+              return visible
+                  ? SliverPadding(
+                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
+                      sliver: SliverToBoxAdapter(
+                        child: AiTagsSection(
+                          entry: entry,
+                          actionDelegate: _actionDelegate,
+                        ),
+                      ),
+                    )
+                  : const SliverToBoxAdapter(child: SizedBox());
+            },
+          ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _isBasicSectionVisibleNotifier,
+            builder: (context, visible, child) {
+              return visible
+                  ? SliverPadding(
+                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
+                      sliver: SliverToBoxAdapter(child: chipsSection),
                     )
                   : const SliverToBoxAdapter(child: SizedBox());
             },

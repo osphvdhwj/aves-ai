@@ -4,9 +4,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/info.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
-import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir_tile.dart';
 import 'package:aves/widgets/viewer/info/metadata/tv_page.dart';
@@ -31,6 +29,7 @@ class MetadataSectionSliver extends StatefulWidget {
 
 class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   final ValueNotifier<String?> _expandedDirectoryNotifier = ValueNotifier(null);
+  final ValueNotifier<bool> _isLoadingNotifier = ValueNotifier(false);
 
   AvesEntry get entry => widget.entry;
 
@@ -57,6 +56,7 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   void dispose() {
     _unregisterWidget(widget);
     _expandedDirectoryNotifier.dispose();
+    _isLoadingNotifier.dispose();
     super.dispose();
   }
 
@@ -84,7 +84,30 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
           builder: (context, metadata, child) {
             Widget content;
             if (metadata.isEmpty) {
-              content = const SizedBox();
+              content = ValueListenableBuilder<bool>(
+                valueListenable: _isLoadingNotifier,
+                builder: (context, loading, child) {
+                  if (!loading) return const SizedBox();
+                  final theme = Theme.of(context);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Reading metadata…',
+                          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
             } else {
               final durations = context.watch<DurationsData>();
               content = Column(
@@ -116,10 +139,7 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                           ),
                         ]
                       : [
-                          const SectionRow(
-                            icon: AIcons.info,
-                            padding: EdgeInsets.only(top: 24, bottom: 8),
-                          ),
+                          const SizedBox(height: 16),
                           ...metadata.entries.map(
                             (kv) => MetadataDirTile(
                               entry: entry,
@@ -151,9 +171,14 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   }
 
   Future<void> _getMetadata() async {
-    final titledDirectories = await entry.getMetadataDirectories(context);
-    if (!mounted) return;
-    metadataNotifier.value = Map.fromEntries(titledDirectories);
-    _expandedDirectoryNotifier.value = null;
+    _isLoadingNotifier.value = true;
+    try {
+      final titledDirectories = await entry.getMetadataDirectories(context);
+      if (!mounted) return;
+      metadataNotifier.value = Map.fromEntries(titledDirectories);
+      _expandedDirectoryNotifier.value = null;
+    } finally {
+      if (mounted) _isLoadingNotifier.value = false;
+    }
   }
 }

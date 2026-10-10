@@ -3,6 +3,8 @@ import 'package:aves/theme/icons.dart';
 import 'package:aves/utils/debouncer.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 class QueryBar extends StatefulWidget {
@@ -72,7 +74,7 @@ class _QueryBarState extends State<QueryBar> {
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
                 ),
                 child: TextField(
                   controller: _controller,

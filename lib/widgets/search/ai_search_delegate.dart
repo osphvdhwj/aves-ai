@@ -1,3 +1,4 @@
+import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
@@ -9,7 +10,10 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+
 import 'package:material_ui/material_ui.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 class AiSearchDelegate extends AvesSearchDelegate {
@@ -84,6 +88,30 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
           const SizedBox(height: 24),
 
+          // ── saved ─────────────────────────────────────────
+          if (settings.savedSearches.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _sectionTitle(theme, 'Saved')),
+                TextButton(
+                  onPressed: () {
+                    settings.savedSearches = const [];
+                    final v = query;
+                    query = v.isEmpty ? ' ' : v;
+                    query = v;
+                  },
+                  child: const Text('Clear'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _HistoryChips(
+              queries: settings.savedSearches,
+              onTap: (text) => _onPrompt(context, text),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           // ── history ───────────────────────────────────────
           if (settings.aiSearchHistory.isNotEmpty) ...[
             Row(
@@ -114,7 +142,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           const SizedBox(height: 12),
           _PromptGrid(
             prompts: [
-              ..._dynamic.map((p) => _GridPrompt(p, Icons.auto_awesome)),
+              ..._dynamic.map((p) => _GridPrompt(p, Symbols.auto_awesome)),
               ..._rotating.map((p) => _GridPrompt(p.text, _iconForCategory(p.category))),
             ],
             onTap: (text) => _onPrompt(context, text),
@@ -151,6 +179,22 @@ class AiSearchDelegate extends AvesSearchDelegate {
         if (reply == null) {
           return const Center(child: Text('No reply'));
         }
+        if (reply.isModelMissing) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('The AVES+ Tools companion needs a model it does not have yet.'),
+            ),
+          );
+        }
+        if (reply.isUnsupported) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text('This companion build does not support AI search. Update AVES+ Tools.'),
+            ),
+          );
+        }
         if (reply.error != null) {
           return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('Error: ${reply.error}')));
         }
@@ -162,15 +206,25 @@ class AiSearchDelegate extends AvesSearchDelegate {
         if (entries.isEmpty) {
           return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
         }
-        return _ResultGrid(entries: entries);
+        return Column(
+          children: [
+            _SaveQueryBar(query: currentQuery),
+            Expanded(child: _ResultGrid(entries: entries)),
+          ],
+        );
       },
     );
   }
 
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
-    final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
-    return aiService.chat(q, entryIds: ids);
+    final sample = source.visibleEntries.take(200).toList();
+    final ids = sample.map((e) => e.id).toList();
+    return aiService.chat(
+      q,
+      entryIds: ids,
+      entries: AiService.entriesPayload(sample),
+    );
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
@@ -189,29 +243,35 @@ class AiSearchDelegate extends AvesSearchDelegate {
   static IconData _iconForCategory(String category) {
     switch (category) {
       case 'people':
-        return Icons.people_outline;
+        return Symbols.people;
       case 'places':
-        return Icons.place_outlined;
+        return Symbols.place;
       case 'nature':
-        return Icons.eco_outlined;
+        return Symbols.eco;
       case 'food':
-        return Icons.restaurant_outlined;
+        return Symbols.restaurant;
       case 'animals':
-        return Icons.pets_outlined;
+        return Symbols.pets;
       case 'activity':
-        return Icons.directions_run_outlined;
+        return Symbols.directions_run;
       case 'event':
-        return Icons.celebration_outlined;
+        return Symbols.celebration;
       case 'document':
-        return Icons.description_outlined;
+        return Symbols.description;
       case 'quality':
-        return Icons.high_quality_outlined;
+        return Symbols.high_quality;
       case 'time':
-        return Icons.schedule_outlined;
+        return Symbols.schedule;
       case 'mood':
-        return Icons.emoji_emotions_outlined;
+        return Symbols.emoji_emotions;
+      case 'translate':
+        return Symbols.translate;
+      case 'objects':
+        return Symbols.category;
+      case 'clean':
+        return Symbols.cleaning_services;
       default:
-        return Icons.auto_awesome;
+        return Symbols.auto_awesome;
     }
   }
 }
@@ -282,7 +342,7 @@ class _HeroCard extends StatelessWidget {
                   color: colors.onPrimaryContainer.withValues(alpha: 0.12),
                 ),
                 child: Icon(
-                  Icons.auto_awesome,
+                  Symbols.auto_awesome,
                   color: colors.onPrimaryContainer,
                   size: 32,
                 ),
@@ -390,17 +450,27 @@ class _PromptTile extends StatelessWidget {
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
 
-  static const _actions = <(String, IconData)>[
-    ('/find', Icons.search),
-    ('/dup', Icons.copy_all_outlined),
-    ('/blur', Icons.blur_on_outlined),
-    ('/receipt', Icons.receipt_long_outlined),
-    ('@deep', Icons.psychology_outlined),
-    ('@fast', Icons.bolt_outlined),
-    ('@ocr', Icons.text_fields_outlined),
-    ('@person', Icons.person_outline),
-    ('@like', Icons.favorite_outline),
-  ];
+  /// Derived from [AiCommands.all] so the palette stays in sync with the
+  /// command registry.
+  static List<(String, IconData)> get _actions =>
+      AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
+
+  static IconData _iconForCommand(String token) => switch (token) {
+    '/find' => Symbols.search,
+    '/dup' => Symbols.file_copy,
+    '/blur' => Symbols.blur_on,
+    '/receipt' => Symbols.receipt_long,
+    '/clean' => Symbols.cleaning_services,
+    '/translate' => Symbols.translate,
+    '/objects' => Symbols.category,
+    '/faces' => Symbols.face,
+    '@deep' => Symbols.psychology,
+    '@fast' => Symbols.bolt,
+    '@ocr' => Symbols.text_fields,
+    '@person' => Symbols.person,
+    '@like' => Symbols.favorite,
+    _ => Symbols.auto_awesome,
+  };
 
   const new({required this.onTap});
 
@@ -490,7 +560,7 @@ class _FaceRow extends StatelessWidget {
                       color: colors.surfaceContainerHighest,
                       border: Border.all(color: colors.outlineVariant, width: 1.5),
                     ),
-                    child: Icon(Icons.add, color: colors.onSurfaceVariant, size: 28),
+                    child: Icon(Symbols.add, color: colors.onSurfaceVariant, size: 28),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -515,7 +585,7 @@ class _FaceRow extends StatelessWidget {
                         : null,
                   ),
                   child: Icon(
-                    isFirst ? Icons.person : Icons.person_outline,
+                    isFirst ? Symbols.person : Symbols.person_outline,
                     color: fgPalette[i % fgPalette.length],
                     size: 32,
                   ),
@@ -564,14 +634,14 @@ class _ResultGrid extends StatelessWidget {
           onTap: () => _openViewer(context, entry),
           scale: 0.92,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
             child: Image(
               image: entry.getThumbnail(extent: 256),
               fit: BoxFit.cover,
               errorBuilder: (context, error, stack) => Container(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 alignment: Alignment.center,
-                child: const Icon(Icons.broken_image, size: 24),
+                child: const Icon(Symbols.broken_image, size: 24),
               ),
             ),
           ),
@@ -621,7 +691,7 @@ class _HistoryChips extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.history, size: 16, color: colors.onSurfaceVariant),
+                  Icon(Symbols.history, size: 16, color: colors.onSurfaceVariant),
                   const SizedBox(width: 6),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 200),
@@ -637,6 +707,54 @@ class _HistoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _SaveQueryBar extends StatelessWidget {
+  final String query;
+
+  const _SaveQueryBar({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isSaved = settings.isSavedSearch(query);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              query,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          PressableScale(
+            onTap: () => settings.toggleSavedSearch(query),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                children: [
+                  Icon(
+                    isSaved ? Symbols.bookmark : Symbols.bookmark_add,
+                    size: 18,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    isSaved ? 'Saved' : 'Save',
+                    style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

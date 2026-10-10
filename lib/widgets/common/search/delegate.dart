@@ -5,6 +5,8 @@ import 'package:aves/widgets/common/search/route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:leak_tracker/leak_tracker.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +48,7 @@ abstract class AvesSearchDelegate({
                     icon: AnimatedIcons.menu_arrow,
                     progress: transitionAnimation,
                   )
-                : const Icon(Icons.arrow_back),
+                : const Icon(Symbols.arrow_back),
             onPressed: () => goBack(context),
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           )

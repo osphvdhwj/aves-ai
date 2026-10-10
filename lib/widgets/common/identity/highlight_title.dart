@@ -17,8 +17,6 @@ class HighlightTitle extends StatelessWidget {
     this.showHighlight = true,
   });
 
-  static const disabledColor = Colors.grey;
-
   static List<Shadow> shadows(BuildContext context) => [
     Shadow(
       color: Theme.of(context).isDark ? Colors.black : Colors.white,
