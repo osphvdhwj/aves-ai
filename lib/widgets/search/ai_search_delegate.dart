@@ -1,5 +1,5 @@
-import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/entry/entry.dart';
@@ -10,10 +10,8 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
-import 'package:aves/theme/m3e_tokens.dart';
-
-import 'package:material_ui/material_ui.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class AiSearchDelegate extends AvesSearchDelegate {
@@ -58,9 +56,9 @@ class AiSearchDelegate extends AvesSearchDelegate {
               children: [
                 Text(
                   'Ask AI',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: -0.5,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.25,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -87,30 +85,6 @@ class AiSearchDelegate extends AvesSearchDelegate {
           ),
 
           const SizedBox(height: 24),
-
-          // ── saved ─────────────────────────────────────────
-          if (settings.savedSearches.isNotEmpty) ...[
-            Row(
-              children: [
-                Expanded(child: _sectionTitle(theme, 'Saved')),
-                TextButton(
-                  onPressed: () {
-                    settings.savedSearches = const [];
-                    final v = query;
-                    query = v.isEmpty ? ' ' : v;
-                    query = v;
-                  },
-                  child: const Text('Clear'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            _HistoryChips(
-              queries: settings.savedSearches,
-              onTap: (text) => _onPrompt(context, text),
-            ),
-            const SizedBox(height: 24),
-          ],
 
           // ── history ───────────────────────────────────────
           if (settings.aiSearchHistory.isNotEmpty) ...[
@@ -151,7 +125,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
           const SizedBox(height: 24),
 
           // ── quick actions ─────────────────────────────────
-          _sectionTitle(theme, 'Quick actions'),
+          _sectionTitle(theme, 'Commands & modes'),
           const SizedBox(height: 12),
           _QuickActions(onTap: (text) => _onPrompt(context, text)),
         ],
@@ -173,30 +147,20 @@ class AiSearchDelegate extends AvesSearchDelegate {
       future: _resultFuture,
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
+          return const _LoadingState();
         }
         final reply = snap.data;
         if (reply == null) {
-          return const Center(child: Text('No reply'));
-        }
-        if (reply.isModelMissing) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('The AVES+ Tools companion needs a model it does not have yet.'),
-            ),
-          );
-        }
-        if (reply.isUnsupported) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Text('This companion build does not support AI search. Update AVES+ Tools.'),
-            ),
+          return _ErrorState(
+            message: 'No reply from the assistant.',
+            onRetry: () => _retry(context),
           );
         }
         if (reply.error != null) {
-          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('Error: ${reply.error}')));
+          return _ErrorState(
+            message: reply.error!,
+            onRetry: () => _retry(context),
+          );
         }
         final source = context.read<CollectionSource>();
         final entries = reply.entryIds
@@ -204,11 +168,15 @@ class AiSearchDelegate extends AvesSearchDelegate {
             .whereType<AvesEntry>()
             .toList();
         if (entries.isEmpty) {
-          return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(reply.text.isEmpty ? 'No results' : reply.text)));
+          return _EmptyResults(
+            text: reply.text,
+            onPrompt: (p) => _onPrompt(context, p),
+          );
         }
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _SaveQueryBar(query: currentQuery),
+            _ResultsHeader(count: entries.length),
             Expanded(child: _ResultGrid(entries: entries)),
           ],
         );
@@ -218,13 +186,14 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
-    final sample = source.visibleEntries.take(200).toList();
-    final ids = sample.map((e) => e.id).toList();
-    return aiService.chat(
-      q,
-      entryIds: ids,
-      entries: AiService.entriesPayload(sample),
-    );
+    final ids = source.visibleEntries.take(200).map((e) => e.id).toList();
+    return aiService.chat(q, entryIds: ids);
+  }
+
+  void _retry(BuildContext context) {
+    _lastQuery = null;
+    _resultFuture = null;
+    showResults(context);
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
@@ -263,13 +232,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
       case 'time':
         return Symbols.schedule;
       case 'mood':
-        return Symbols.emoji_emotions;
-      case 'translate':
-        return Symbols.translate;
-      case 'objects':
-        return Symbols.category;
-      case 'clean':
-        return Symbols.cleaning_services;
+        return Symbols.mood;
       default:
         return Symbols.auto_awesome;
     }
@@ -292,59 +255,95 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    final ink = colors.onPrimaryContainer;
+
     return PressableScale(
       onTap: onTap,
-      child: Container(
-        height: 130,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors.primaryContainer,
-              colors.tertiaryContainer,
-            ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(m3e.shapeExtraLarge),
+        child: Container(
+          height: 148,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [colors.primaryContainer, colors.tertiaryContainer],
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
+          child: Stack(
             children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: colors.onPrimaryContainer,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colors.onPrimaryContainer.withValues(alpha: 0.8),
-                          ),
-                    ),
-                  ],
+              Positioned(
+                right: -40,
+                top: -40,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ink.withValues(alpha: 0.06),
+                  ),
                 ),
               ),
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.onPrimaryContainer.withValues(alpha: 0.12),
-                ),
-                child: Icon(
-                  Symbols.auto_awesome,
-                  color: colors.onPrimaryContainer,
-                  size: 32,
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: ink,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.2,
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                subtitle,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: ink.withValues(alpha: 0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: ink.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(m3e.shapeLarge + 4),
+                          ),
+                          child: Icon(Symbols.auto_awesome, color: ink, size: 32),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Text(
+                          'Try it',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: ink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Symbols.arrow_outward, size: 18, color: ink),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -382,9 +381,9 @@ class _PromptGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 2.2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.55,
       ),
       itemCount: prompts.length,
       itemBuilder: (context, i) {
@@ -414,27 +413,49 @@ class _PromptTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final m3e = context.m3e;
+
     return PressableScale(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 6),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
+        padding: const EdgeInsets.all(12),
+        child: Stack(
           children: [
-            Icon(icon, size: 22, color: colors.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  height: 1.15,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(m3e.shapeLarge - 2),
+                  ),
+                  child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
                 ),
+                Text(
+                  text,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    height: 1.15,
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Icon(
+                Symbols.north_east,
+                size: 14,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -450,60 +471,54 @@ class _PromptTile extends StatelessWidget {
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
 
-  /// Derived from [AiCommands.all] so the palette stays in sync with the
-  /// command registry.
-  static List<(String, IconData)> get _actions =>
-      AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
-
-  static IconData _iconForCommand(String token) => switch (token) {
-    '/find' => Symbols.search,
-    '/dup' => Symbols.file_copy,
-    '/blur' => Symbols.blur_on,
-    '/receipt' => Symbols.receipt_long,
-    '/clean' => Symbols.cleaning_services,
-    '/translate' => Symbols.translate,
-    '/objects' => Symbols.category,
-    '/faces' => Symbols.face,
-    '@deep' => Symbols.psychology,
-    '@fast' => Symbols.bolt,
-    '@ocr' => Symbols.text_fields,
-    '@person' => Symbols.person,
-    '@like' => Symbols.favorite,
-    _ => Symbols.auto_awesome,
-  };
+  static const _actions = <(String, IconData)>[
+    ('/find', Symbols.search),
+    ('/dup', Symbols.copy_all),
+    ('/blur', Symbols.blur_on),
+    ('/receipt', Symbols.receipt_long),
+    ('@deep', Symbols.psychology),
+    ('@fast', Symbols.bolt),
+    ('@ocr', Symbols.text_fields),
+    ('@person', Symbols.person),
+    ('@like', Symbols.favorite),
+  ];
 
   const new({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: _actions.map((a) {
-          final (token, icon) = a;
+    final m3e = context.m3e;
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        itemCount: _actions.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final (token, icon) = _actions[i];
+          final isMode = token.startsWith('@');
+          final tint = isMode ? colors.tertiary : colors.primary;
           return PressableScale(
             onTap: () => onTap(token),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.outlineVariant),
+                borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 16, color: colors.primary),
-                  const SizedBox(width: 6),
+                  Icon(icon, size: 18, color: tint),
+                  const SizedBox(width: 8),
                   Text(
                     token,
                     style: TextStyle(
                       fontFamily: 'monospace',
                       fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: colors.onSurface,
                     ),
                   ),
@@ -511,7 +526,7 @@ class _QuickActions extends StatelessWidget {
               ),
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -520,14 +535,43 @@ class _QuickActions extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 // face row
 // ─────────────────────────────────────────────────────────────
-class _FaceRow extends StatelessWidget {
-  static const _circleDim = 72.0;
+class _Person {
+  final String id;
+  final String label;
 
-  const new({super.key});
+  const _Person({required this.id, required this.label});
+
+  /// Fallback set shown until face-cluster data is wired through ai_service.
+  static const stubs = <_Person>[
+    _Person(id: 'me', label: 'Me'),
+    _Person(id: 'p2', label: 'Person 2'),
+    _Person(id: 'p3', label: 'Person 3'),
+    _Person(id: 'p4', label: 'Person 4'),
+    _Person(id: 'p5', label: 'Person 5'),
+    _Person(id: 'p6', label: 'Person 6'),
+    _Person(id: 'p7', label: 'Person 7'),
+    _Person(id: 'p8', label: 'Person 8'),
+  ];
+}
+
+/// Data-driven people rail. Pass [people] once face clusters are available;
+/// otherwise the stub list is rendered. Kept as [_FaceRow] so existing call
+/// sites do not need to change.
+class _FaceRow extends StatelessWidget {
+  final List<_Person>? people;
+  final ValueChanged<_Person>? onPick;
+  final VoidCallback? onSeeAll;
+
+  static const _circleDim = 76.0;
+
+  const new({super.key, this.people, this.onPick, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final list = people ?? _Person.stubs;
+
     final palette = [
       colors.primaryContainer,
       colors.secondaryContainer,
@@ -539,73 +583,157 @@ class _FaceRow extends StatelessWidget {
       colors.onTertiaryContainer,
     ];
 
-    return SizedBox(
-      height: _circleDim + 20,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        itemCount: 9,
-        separatorBuilder: (_, _) => const SizedBox(width: 14),
-        itemBuilder: (context, i) {
-          if (i == 8) {
-            return Column(
-              children: [
-                PressableScale(
-                  onTap: () => _notify(context, 'more'),
-                  child: Container(
-                    width: _circleDim,
-                    height: _circleDim,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colors.surfaceContainerHighest,
-                      border: Border.all(color: colors.outlineVariant, width: 1.5),
-                    ),
-                    child: Icon(Symbols.add, color: colors.onSurfaceVariant, size: 28),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text('More', style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
-              ],
-            );
-          }
-
-          final isFirst = i == 0;
-          return Column(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
             children: [
-              PressableScale(
-                onTap: () => _notify(context, isFirst ? 'me' : 'person ${i + 1}'),
-                child: Container(
-                  width: _circleDim,
-                  height: _circleDim,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: palette[i % palette.length],
-                    border: isFirst
-                        ? Border.all(color: colors.primary, width: 2.5)
-                        : null,
-                  ),
-                  child: Icon(
-                    isFirst ? Symbols.person : Symbols.person_outline,
-                    color: fgPalette[i % fgPalette.length],
-                    size: 32,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
               Text(
-                isFirst ? 'Me' : 'Person ${i + 1}',
-                style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+                'People',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: onSeeAll ?? () => _notify(context, 'see all'),
+                child: const Text('See all'),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        ),
+        SizedBox(
+          height: _circleDim + 30,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: list.length + 1,
+            separatorBuilder: (_, _) => const SizedBox(width: 14),
+            itemBuilder: (context, i) {
+              if (i == list.length) {
+                return _PersonCircle(
+                  label: 'Add',
+                  icon: Symbols.add,
+                  bg: colors.surfaceContainerHighest,
+                  fg: colors.onSurfaceVariant,
+                  borderColor: colors.outlineVariant,
+                  onTap: () => _notify(context, 'add person'),
+                );
+              }
+              final p = list[i];
+              final isFirst = i == 0;
+              return _PersonCircle(
+                label: p.label,
+                icon: Symbols.person,
+                bg: palette[i % palette.length],
+                fg: fgPalette[i % fgPalette.length],
+                borderColor: isFirst ? colors.primary : null,
+                borderWidth: isFirst ? 2.5 : 1.5,
+                onTap: () => (onPick ?? (_) => _notify(context, p.label)).call(p),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   void _notify(BuildContext context, String label) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 1)),
+    );
+  }
+}
+
+class _PersonCircle extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color bg;
+  final Color fg;
+  final Color? borderColor;
+  final double borderWidth;
+  final VoidCallback onTap;
+
+  const new({
+    required this.label,
+    required this.icon,
+    required this.bg,
+    required this.fg,
+    required this.onTap,
+    this.borderColor,
+    this.borderWidth = 1.5,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PressableScale(
+          onTap: onTap,
+          child: Container(
+            width: _FaceRow._circleDim,
+            height: _FaceRow._circleDim,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: bg,
+              border: borderColor == null
+                  ? null
+                  : Border.all(color: borderColor!, width: borderWidth),
+            ),
+            child: Icon(icon, color: fg, size: 32),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// results header
+// ─────────────────────────────────────────────────────────────
+class _ResultsHeader extends StatelessWidget {
+  final int count;
+
+  const new({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
+      child: Row(
+        children: [
+          Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
+          const SizedBox(width: 8),
+          Text(
+            'Results',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(m3e.shapeSmall + 2),
+            ),
+            child: Text(
+              '$count',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -620,28 +748,36 @@ class _ResultGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final m3e = context.m3e;
     return GridView.builder(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
       ),
       itemCount: entries.length,
       itemBuilder: (context, i) {
         final entry = entries[i];
         return PressableScale(
           onTap: () => _openViewer(context, entry),
-          scale: 0.92,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
-            child: Image(
-              image: entry.getThumbnail(extent: 256),
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                alignment: Alignment.center,
-                child: const Icon(Symbols.broken_image, size: 24),
+          scale: 0.94,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.3)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              child: Image(
+                image: entry.getThumbnail(extent: 256),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => Container(
+                  color: colors.surfaceContainerHighest,
+                  alignment: Alignment.center,
+                  child: Icon(Symbols.broken_image, size: 22, color: colors.onSurfaceVariant),
+                ),
               ),
             ),
           ),
@@ -655,6 +791,200 @@ class _ResultGrid extends StatelessWidget {
       MaterialPageRoute(
         settings: const RouteSettings(name: EntryViewerPage.routeName),
         builder: (_) => EntryViewerPage(initialEntry: entry),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// loading / error / empty
+// ─────────────────────────────────────────────────────────────
+class _LoadingState extends StatefulWidget {
+  const new({super.key});
+
+  @override
+  State<_LoadingState> createState() => _LoadingStateState();
+}
+
+class _LoadingStateState extends State<_LoadingState> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final m3e = context.m3e;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
+          child: Row(
+            children: [
+              Icon(Symbols.auto_awesome, size: 16, color: colors.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Searching…',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
+            ),
+            itemCount: 9,
+            itemBuilder: (context, i) => FadeTransition(
+              opacity: Tween<double>(begin: 0.45, end: 0.85).animate(_ctl),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const new({super.key, required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.errorContainer,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(Symbols.error, size: 32, color: colors.onErrorContainer),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Couldn't reach AI",
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            PressableScale(
+              passthrough: true,
+              child: FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Symbols.refresh, size: 18),
+                label: const Text('Retry'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyResults extends StatelessWidget {
+  final String text;
+  final ValueChanged<String> onPrompt;
+
+  static const _fallbacks = <String>[
+    'My best pictures',
+    'Sunsets',
+    'Photos of friends',
+  ];
+
+  const new({super.key, required this.text, required this.onPrompt});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final m3e = context.m3e;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(Symbols.search_off, size: 32, color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No matches',
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              text.isEmpty ? 'Try a different phrasing, or pick a suggestion below.' : text,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: _fallbacks.map((p) {
+                return PressableScale(
+                  onTap: () => onPrompt(p),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
+                    ),
+                    child: Text(
+                      p,
+                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -707,54 +1037,6 @@ class _HistoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _SaveQueryBar extends StatelessWidget {
-  final String query;
-
-  const _SaveQueryBar({required this.query});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isSaved = settings.isSavedSearch(query);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              query,
-              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          PressableScale(
-            onTap: () => settings.toggleSavedSearch(query),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Row(
-                children: [
-                  Icon(
-                    isSaved ? Symbols.bookmark : Symbols.bookmark_add,
-                    size: 18,
-                    color: colors.primary,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    isSaved ? 'Saved' : 'Save',
-                    style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
