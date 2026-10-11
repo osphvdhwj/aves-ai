@@ -319,8 +319,6 @@ class AiHandler(private val context: Context) : MethodChannel.MethodCallHandler 
         const val CAP_GPHOTOS = "gphotos_backup"
         val COMPANION_PACKAGES = listOf(
             "com.avesplus.tools",
-            "io.github.osphvdhwj.aves.ai.debug",
-            "io.github.osphvdhwj.aves.ai",
         )
         const val COMPANION_SERVICE = "io.github.osphvdhwj.aves.ai.AiCompanionService"
         const val BIND_TIMEOUT_MS = 3000L

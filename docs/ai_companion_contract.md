@@ -11,7 +11,7 @@ AI companion. Update whenever either side changes.
 |---|---|---|---|
 | **Aves** | Flutter + Kotlin | `deckers.thibault.aves` | Gallery; consumes AI |
 | **AVESPlusTools** | Kotlin | `com.avesplus.tools` | AI companion; provides capabilities |
-| **aves-ai-core** (legacy) | Kotlin | `io.github.osphvdhwj.aves.ai` | Earlier AIDL companion; kept as fallback, do not extend |
+| ~~aves-ai-core~~ (removed) | — | — | Earlier AIDL companion, superseded and dropped |
 
 ---
 
@@ -27,12 +27,11 @@ Aves never talks to the Tools app directly. Everything goes through
 `deckers.thibault/aves/ai` and Aves' `AiHandler.kt`, which binds to
 the companion over AIDL.
 
-`AiHandler.COMPANION_PACKAGES` is an ordered list; the first installed
-wins:
+`AiHandler.COMPANION_PACKAGES` lists one entry:
 
-1. `com.avesplus.tools`
-2. `io.github.osphvdhwj.aves.ai.debug`
-3. `io.github.osphvdhwj.aves.ai`
+1. `com.avesplus.tools` — the AVESPlusTools companion
+
+Anything else installed is ignored.
 
 The service component is always
 `<package>.io.github.osphvdhwj.aves.ai.AiCompanionService`.
