@@ -7,6 +7,7 @@ import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -33,7 +34,12 @@ class DuplicatesPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Duplicates')),
       body: SafeArea(
         child: groups.isEmpty
-            ? _EmptyState(entryCount: entries.length)
+            ? StatusView(
+                icon: Symbols.content_copy,
+                title: 'No duplicates found',
+                subtitle: 'Scanned ${entries.length} items using size and dimensions. '
+                    'Perceptual duplicate detection lands when the AI companion ships.',
+              )
             : ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                 itemCount: groups.length,
@@ -261,36 +267,6 @@ class _GroupCard extends StatelessWidget {
     if (bytes >= 1 << 20) return '${(bytes / (1 << 20)).toStringAsFixed(1)} MB';
     if (bytes >= 1 << 10) return '${(bytes / (1 << 10)).toStringAsFixed(0)} KB';
     return '$bytes B';
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  final int entryCount;
-
-  const _EmptyState({required this.entryCount});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Symbols.content_copy, size: 64, color: colors.onSurfaceVariant),
-          const SizedBox(height: 20),
-          Text('No duplicates found', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
-          const SizedBox(height: 8),
-          Text(
-            'Scanned $entryCount items using size and dimensions. '
-            'Perceptual duplicate detection lands when the AI companion ships.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-          ),
-        ],
-      ),
-    );
   }
 }
 

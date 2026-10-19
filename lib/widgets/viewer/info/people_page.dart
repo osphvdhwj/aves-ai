@@ -1,5 +1,6 @@
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:aves/widgets/viewer/info/person_detail_page.dart';
 import 'package:material_ui/material_ui.dart';
@@ -26,7 +27,14 @@ class PeoplePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('People')),
       body: SafeArea(
-        child: clusters.isEmpty ? const _EmptyState() : _Grid(clusters: clusters),
+        child: clusters.isEmpty
+            ? const StatusView(
+                icon: Symbols.face_6,
+                title: 'No people yet',
+                subtitle: 'Face clustering runs on-device in the AI companion. Once it ships, '
+                    'people you appear with will be grouped here automatically.',
+              )
+            : _Grid(clusters: clusters),
       ),
     );
   }
@@ -95,37 +103,6 @@ class _Grid extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const new();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Symbols.face_6, size: 64, color: colors.onSurfaceVariant),
-          const SizedBox(height: 20),
-          Text(
-            'No people yet',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Face clustering runs on-device in the AI companion. Once it ships, '
-            'people you appear with will be grouped here automatically.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-          ),
-        ],
-      ),
     );
   }
 }

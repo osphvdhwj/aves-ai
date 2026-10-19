@@ -2,6 +2,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -107,7 +108,10 @@ class _PersonDetailPageState extends State<PersonDetailPage> {
             if (photos.isEmpty)
               const SliverFillRemaining(
                 hasScrollBody: false,
-                child: _Empty(),
+                child: StatusView(
+                  icon: Symbols.person,
+                  title: 'No photos in this cluster yet',
+                ),
               )
             else
               SliverGrid.builder(
@@ -139,30 +143,6 @@ class _PersonDetailPageState extends State<PersonDetailPage> {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Empty extends StatelessWidget {
-  const _Empty();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Symbols.person, size: 56, color: colors.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(
-            'No photos in this cluster yet',
-            style: theme.textTheme.titleMedium?.copyWith(color: colors.onSurface),
-          ),
-        ],
       ),
     );
   }
