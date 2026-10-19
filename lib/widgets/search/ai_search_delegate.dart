@@ -1064,7 +1064,7 @@ class _HistoryChips extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
                 border: Border.all(color: colors.outlineVariant),
               ),
               child: Row(

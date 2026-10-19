@@ -11,6 +11,7 @@ import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:provider/provider.dart';
 
 class DebugSettingsSection extends StatefulWidget {
@@ -238,7 +239,7 @@ class _AiDiagnosticsState extends State<_AiDiagnostics> {
     final colors = theme.colorScheme;
     final containerDecoration = BoxDecoration(
       color: colors.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
     );
 
     return Column(
@@ -351,7 +352,7 @@ class _AiDiagnosticsState extends State<_AiDiagnostics> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
                 ),
                 child: SelectableText(
                   _lastResult.isEmpty ? '(no result yet)' : _lastResult,
