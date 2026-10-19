@@ -2,6 +2,7 @@ import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
@@ -176,27 +177,42 @@ class AiSearchDelegate extends AvesSearchDelegate {
         }
         final reply = snap.data;
         if (reply == null) {
-          return _ErrorState(
-            message: 'No reply from the assistant.',
-            onRetry: () => _retry(context),
+          return StatusView(
+            icon: Symbols.error,
+            isError: true,
+            title: 'No reply from the assistant.',
+            actionLabel: 'Retry',
+            onAction: () => _retry(context),
           );
         }
         if (reply.isModelMissing) {
-          return _ErrorState(
-            message: 'The AVES+ Tools companion needs a model it does not have yet.',
-            onRetry: () => _retry(context),
+          return StatusView(
+            icon: Symbols.model_training,
+            isError: true,
+            title: 'Model missing',
+            subtitle: 'The AVES+ Tools companion needs a model it does not have yet.',
+            actionLabel: 'Retry',
+            onAction: () => _retry(context),
           );
         }
         if (reply.isUnsupported) {
-          return _ErrorState(
-            message: 'This companion build does not support AI search. Update AVES+ Tools.',
-            onRetry: () => _retry(context),
+          return StatusView(
+            icon: Symbols.update,
+            isError: true,
+            title: 'Update required',
+            subtitle: 'This companion build does not support AI search. Update AVES+ Tools.',
+            actionLabel: 'Retry',
+            onAction: () => _retry(context),
           );
         }
         if (reply.error != null) {
-          return _ErrorState(
-            message: reply.error!,
-            onRetry: () => _retry(context),
+          return StatusView(
+            icon: Symbols.error,
+            isError: true,
+            title: 'Search failed',
+            subtitle: reply.error!,
+            actionLabel: 'Retry',
+            onAction: () => _retry(context),
           );
         }
         final source = context.read<CollectionSource>();
@@ -921,58 +937,6 @@ class _LoadingStateState extends State<_LoadingState> with SingleTickerProviderS
   }
 }
 
-class _ErrorState extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const new({super.key, required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: colors.errorContainer,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Icon(Symbols.error, size: 32, color: colors.onErrorContainer),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Couldn't reach AI",
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-            ),
-            const SizedBox(height: 20),
-            PressableScale(
-              passthrough: true,
-              child: FilledButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Symbols.refresh, size: 18),
-                label: const Text('Retry'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _EmptyResults extends StatelessWidget {
   final String text;
@@ -990,55 +954,31 @@ class _EmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final m3e = context.m3e;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Icon(Symbols.search_off, size: 32, color: colors.onSurfaceVariant),
+            StatusView(
+              icon: Symbols.search_off,
+              title: text.isEmpty ? 'No results' : text,
             ),
-            const SizedBox(height: 20),
-            Text(
-              'No matches',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              text.isEmpty ? 'Try a different phrasing, or pick a suggestion below.' : text,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Wrap(
-              alignment: WrapAlignment.center,
               spacing: 8,
               runSpacing: 8,
-              children: _fallbacks.map((p) {
-                return PressableScale(
-                  onTap: () => onPrompt(p),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
-                    ),
-                    child: Text(
-                      p,
-                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                );
-              }).toList(),
+              alignment: WrapAlignment.center,
+              children: _fallbacks
+                  .map((p) => PressableScale(
+                        onTap: () => onPrompt(p),
+                        child: Chip(
+                          label: Text(p),
+                          side: BorderSide(color: colors.outlineVariant),
+                          backgroundColor: colors.surface,
+                        ),
+                      ))
+                  .toList(),
             ),
           ],
         ),
