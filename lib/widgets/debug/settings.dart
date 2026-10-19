@@ -8,6 +8,8 @@ import 'package:aves/widgets/filter_grids/countries_page.dart';
 import 'package:aves/widgets/filter_grids/places_page.dart';
 import 'package:aves/widgets/filter_grids/tags_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
+import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -232,73 +234,131 @@ class _AiDiagnosticsState extends State<_AiDiagnostics> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final containerDecoration = BoxDecoration(
+      color: colors.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(12),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FutureBuilder<AiHealth>(
-          future: _healthFuture,
-          builder: (context, snap) {
-            if (snap.connectionState != ConnectionState.done) {
-              return const Text('querying companion...');
-            }
-            final h = snap.data;
-            if (h == null) return const Text('no result');
-            return InfoRowGroup(
-              info: {
-                'installed': '${h.installed}',
-                'connected': '${h.connected}',
-                'apiVersion': '${h.apiVersion}',
-                'package': h.companionPackage ?? '-',
-                'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
-                if (h.error != null) 'error': h.error!,
-              },
-            );
-          },
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+          decoration: containerDecoration,
+          child: FutureBuilder<AiHealth>(
+            future: _healthFuture,
+            builder: (context, snap) {
+              if (snap.connectionState != ConnectionState.done) {
+                return const Text('querying companion...');
+              }
+              final h = snap.data;
+              if (h == null) return const Text('no result');
+              final healthText = [
+                'installed:    ${h.installed}',
+                'connected:    ${h.connected}',
+                'apiVersion:   ${h.apiVersion}',
+                'package:      ${h.companionPackage ?? '-'}',
+                'capabilities: ${h.capabilities.isEmpty ? '-' : h.capabilities.join(', ')}',
+                if (h.error != null) 'error:        ${h.error}',
+              ].join('\n');
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: InfoRowGroup(
+                        info: {
+                          'installed': '${h.installed}',
+                          'connected': '${h.connected}',
+                          'apiVersion': '${h.apiVersion}',
+                          'package': h.companionPackage ?? '-',
+                          'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
+                          if (h.error != null) 'error': h.error!,
+                        },
+                      )),
+                      IconButton(
+                        tooltip: 'Copy health',
+                        icon: const Icon(Symbols.content_copy, size: 18),
+                        onPressed: () async {
+                          await Clipboard.setData(ClipboardData(text: healthText));
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Health copied'), duration: Duration(seconds: 1)),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        tooltip: 'Recheck',
+                        icon: const Icon(Symbols.refresh, size: 18),
+                        onPressed: _recheck,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Row(
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          decoration: containerDecoration,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ElevatedButton(
-                onPressed: _recheck,
-                child: const Text('Recheck'),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(
+                  'Chat probe (no entry media attached)',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
-              const SizedBox(width: 8),
-              const Text('fires health(forceRefresh: true)'),
-            ],
-          ),
-        ),
-        const Divider(),
-        const Padding(
-          padding: EdgeInsets.only(top: 4, bottom: 4),
-          child: Text('Chat probe (no entry media attached):'),
-        ),
-        TextField(
-          controller: _cmd,
-          decoration: const InputDecoration(
-            hintText: '@ocr, /find dog, ...',
-            border: OutlineInputBorder(),
-            isDense: true,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Row(
-            children: [
-              ElevatedButton(
-                onPressed: _busy ? null : _run,
-                child: Text(_busy ? 'running...' : 'Run'),
+              TextField(
+                controller: _cmd,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                decoration: const InputDecoration(
+                  hintText: '@ocr, /find dog, ...',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
               ),
-              const SizedBox(width: 8),
-              const Text('raw reply printed below'),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _busy ? null : _run,
+                    child: Text(_busy ? 'running...' : 'Run'),
+                  ),
+                  const Spacer(),
+                  if (_lastResult.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: _lastResult));
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Result copied'), duration: Duration(seconds: 1)),
+                        );
+                      },
+                      icon: const Icon(Symbols.content_copy, size: 16),
+                      label: const Text('Copy'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: SelectableText(
+                  _lastResult.isEmpty ? '(no result yet)' : _lastResult,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ),
             ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: SelectableText(
-            _lastResult.isEmpty ? '(no result yet)' : _lastResult,
-            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
           ),
         ),
       ],
