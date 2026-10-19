@@ -8,6 +8,7 @@ import 'package:aves/model/filters/rating.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -31,7 +32,11 @@ class MemoriesPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Memories')),
       body: SafeArea(
         child: memories.isEmpty
-            ? const _Empty()
+            ? const StatusView(
+                icon: Symbols.auto_awesome,
+                title: 'No memories yet',
+                subtitle: 'Memories are generated locally as you add photos — nothing leaves your device.',
+              )
             : ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                 itemCount: memories.length,
@@ -174,33 +179,6 @@ class _MemoryCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Empty extends StatelessWidget {
-  const _Empty();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Symbols.auto_awesome, size: 64, color: colors.onSurfaceVariant),
-          const SizedBox(height: 20),
-          Text('No memories yet', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
-          const SizedBox(height: 8),
-          Text(
-            'Memories are generated locally as you add photos — nothing leaves your device.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-          ),
-        ],
       ),
     );
   }
