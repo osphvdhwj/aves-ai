@@ -15,6 +15,7 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/foundation.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -146,6 +147,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                         },
                         spanBuilders: {
                           l10n.viewerInfoLabelOwner: _ownerHandler(ownerPackage),
+                          if (backup != BackupStatus.unknown) 'Google Photos': _gphotosHandler(backup),
                         },
                       );
                     },
@@ -163,6 +165,20 @@ class _DetailsSectionState extends State<DetailsSection> {
     return {
       context.l10n.viewerInfoLabelDuration: entry.durationText,
     };
+  }
+
+  InfoValueSpanBuilder _gphotosHandler(BackupStatus backup) {
+    final icon = backup == BackupStatus.uploaded ? Symbols.cloud_done : Symbols.cloud_off;
+    return (context, key, value) => [
+      WidgetSpan(
+        alignment: .middle,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 2, end: 4),
+          child: Icon(icon, size: 18),
+        ),
+      ),
+      TextSpan(text: value, style: InfoRowGroup.valueStyle),
+    ];
   }
 
   InfoValueSpanBuilder _ownerHandler(String? ownerPackage) {
