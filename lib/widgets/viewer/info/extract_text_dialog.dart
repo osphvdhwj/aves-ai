@@ -53,6 +53,7 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
     final colors = theme.colorScheme;
 
     return AlertDialog(
+      icon: Icon(Symbols.text_fields, color: colors.primary),
       title: const Text('Extract text'),
       content: SizedBox(
         width: 360,
