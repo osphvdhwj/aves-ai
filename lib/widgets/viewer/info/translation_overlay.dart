@@ -1,6 +1,7 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -96,7 +97,12 @@ class TranslationOverlayDialog extends StatelessWidget {
       ),
       body: SafeArea(
         child: blocks.isEmpty
-            ? _EmptyState(entry: entry)
+            ? const StatusView(
+                icon: Symbols.translate,
+                title: 'In-place translation needs OCR bounding boxes.',
+                subtitle: 'The AI companion currently returns recognised text without positions, '
+                    'so translated text cannot yet be placed over the original layout.',
+              )
             : _Overlay(media: media, blocks: blocks),
       ),
     );
@@ -163,40 +169,6 @@ class _Overlay extends StatelessWidget {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  final AvesEntry entry;
-
-  const new({required this.entry});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Symbols.translate, size: 48, color: colors.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(
-            'In-place translation needs OCR bounding boxes.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'The AI companion currently returns recognised text without positions, '
-            'so translated text cannot yet be placed over the original layout.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-          ),
-        ],
       ),
     );
   }

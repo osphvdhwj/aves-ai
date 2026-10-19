@@ -7,6 +7,7 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -197,21 +198,10 @@ class _AutoTagPageState extends State<AutoTagPage> {
                   }
                   final proposals = (snapshot.data ?? const <TagProposal>[]).where((p) => !_dismissed.contains(p.tag.toLowerCase())).toList();
                   if (proposals.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Symbols.check_circle, size: 56, color: colors.primary),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Nothing to suggest',
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                      ),
+                    return const StatusView(
+                      icon: Symbols.check_circle,
+                      title: 'Nothing to suggest',
+                      subtitle: 'Every tag this entry could carry has already been applied or dismissed.',
                     );
                   }
                   return ListView.builder(
