@@ -595,12 +595,9 @@ class _QuickActions extends StatelessWidget {
           final isMode = token.startsWith('@');
           final tint = isMode ? colors.tertiary : colors.primary;
 
-          final showDivider = !isMode
-              && index > 0
-              && _commandGroup.contains(actions[index - 1].$1)
-              && _commandGroup.contains(token)
-              ? false
-              : (isMode && index > 0 && _commandGroup.contains(actions[index - 1].$1));
+          // Show a divider only at the /→@ boundary.
+          final prev = index > 0 ? actions[index - 1].$1 : '';
+          final showDivider = isMode && _commandGroup.contains(prev);
 
           final chip = PressableScale(
             onTap: () => onTap(token),
