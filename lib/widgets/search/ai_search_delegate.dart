@@ -153,7 +153,10 @@ class AiSearchDelegate extends AvesSearchDelegate {
           // ── quick actions ─────────────────────────────────
           _sectionTitle(theme, 'Commands & modes'),
           const SizedBox(height: 12),
-          _QuickActions(onTap: (text) => _onPrompt(context, text)),
+          _QuickActions(
+            onTap: (text) => _onPrompt(context, text),
+            onInsert: (token) => _insertIntoQuery(token),
+          ),
         ],
       ),
     );
@@ -266,6 +269,15 @@ class AiSearchDelegate extends AvesSearchDelegate {
   void _onPrompt(BuildContext context, String text) {
     query = text;
     showResults(context);
+  }
+
+  void _insertIntoQuery(String token) {
+    final controller = queryTextController;
+    final current = controller.text;
+    final needsSpace = current.isNotEmpty && !current.endsWith(' ');
+    final next = '$current${needsSpace ? ' ' : ''}$token ';
+    query = next;
+    controller.selection = TextSelection.fromPosition(TextPosition(offset: next.length));
   }
 
   static IconData _iconForCategory(String category) {
@@ -535,9 +547,12 @@ class _PromptTile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 class _QuickActions extends StatelessWidget {
   final ValueChanged<String> onTap;
+  final ValueChanged<String> onInsert;
 
   static List<(String, IconData)> get _actions =>
       AiCommands.all.map((c) => (c.token, _iconForCommand(c.token))).toList();
+
+  static const _commandGroup = <String>{'/find', '/dup', '/blur', '/receipt', '/clean', '/translate', '/objects', '/faces'};
 
   static IconData _iconForCommand(String token) => switch (token) {
     '/find' => Symbols.search,
@@ -556,25 +571,40 @@ class _QuickActions extends StatelessWidget {
     _ => Symbols.auto_awesome,
   };
 
-  const new({required this.onTap});
+  const new({required this.onTap, required this.onInsert});
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final m3e = context.m3e;
+    final actions = _actions;
+
     return SizedBox(
       height: 44,
-      child: ListView.separated(
+      child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        itemCount: _actions.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, i) {
-          final (token, icon) = _actions[i];
+        itemCount: actions.length + 1,
+        itemBuilder: (context, index) {
+          if (index == actions.length) {
+            // Trailing spacer
+            return const SizedBox(width: 4);
+          }
+
+          final (token, icon) = actions[index];
           final isMode = token.startsWith('@');
           final tint = isMode ? colors.tertiary : colors.primary;
-          return PressableScale(
+
+          final showDivider = !isMode
+              && index > 0
+              && _commandGroup.contains(actions[index - 1].$1)
+              && _commandGroup.contains(token)
+              ? false
+              : (isMode && index > 0 && _commandGroup.contains(actions[index - 1].$1));
+
+          final chip = PressableScale(
             onTap: () => onTap(token),
+            onLongPress: () => onInsert(token),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
@@ -597,6 +627,31 @@ class _QuickActions extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          );
+
+          if (!showDivider) {
+            return Padding(
+              padding: EdgeInsets.only(right: index == actions.length - 1 ? 0 : 8),
+              child: chip,
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 24,
+                  child: VerticalDivider(
+                    width: 16,
+                    thickness: 1,
+                    color: colors.outlineVariant,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                chip,
+              ],
             ),
           );
         },
