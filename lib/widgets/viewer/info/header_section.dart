@@ -115,14 +115,21 @@ class InfoHeaderSection extends StatelessWidget {
           showPeoplePage(context);
         }
 
+        final dim = colors.onSurfaceVariant.withValues(alpha: .4);
         Widget circle() => Container(
           width: 44,
           height: 44,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: colors.surfaceContainerHighest,
-            border: Border.all(color: colors.outlineVariant, width: 1.5),
+            color: supported ? colors.surfaceContainerHighest : colors.surfaceContainerLowest,
+            border: Border.all(
+              color: supported ? colors.outlineVariant : colors.outlineVariant.withValues(alpha: .4),
+              width: 1.5,
+            ),
           ),
+          child: supported
+              ? null
+              : Icon(Symbols.person_add, color: dim, size: 20),
         );
 
         return Column(
@@ -149,9 +156,10 @@ class InfoHeaderSection extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Add someone',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: dim),
                     ),
                   ),
+                  Icon(Symbols.chevron_right, size: 18, color: dim),
                 ],
               ),
             ),
