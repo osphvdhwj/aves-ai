@@ -7,10 +7,12 @@ import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/model/entry/extensions/multipage.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/favourites.dart';
+import 'package:aves/model/filters/container/dynamic_album.dart';
 import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/filters/covered/tag.dart';
 import 'package:aves/model/filters/date.dart';
 import 'package:aves/model/filters/favourite.dart';
+import 'package:aves/model/filters/filters.dart';
 import 'package:aves/model/filters/mime.dart';
 import 'package:aves/model/filters/rating.dart';
 import 'package:aves/model/filters/type.dart';
@@ -29,11 +31,6 @@ import 'package:collection/collection.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
-/// Chips row + rating/tags edit buttons for the info page.
-///
-/// Extracted from the legacy `BasicSection` so the info page can move the
-/// Details rows and this section independently. Preserves the entry
-/// metadata listener and the TV autofocus-on-scroll-end behaviour.
 class ChipsSection extends StatefulWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
@@ -141,28 +138,68 @@ class _ChipsSectionState extends State<ChipsSection> with AutomaticKeepAliveClie
     return ListenableBuilder(
       listenable: favourites,
       builder: (context, child) {
-        final effectiveFilters = [
+        final effectiveFilters = <CollectionFilter>[
           ...filters,
           if (entry.isFavourite) FavouriteFilter.instance,
         ]..sort();
 
+        final clusters = _clusterFilters(effectiveFilters);
+        final dividerColor = Theme.of(context).colorScheme.outlineVariant.withValues(alpha: .4);
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: AvesFilterChip.outlineWidth / 2) + const EdgeInsets.only(top: 8),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: effectiveFilters
-                .map(
-                  (filter) => AvesFilterChip(
-                    filter: filter,
-                    onTap: widget.onFilterSelection,
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              for (var i = 0; i < clusters.length; i++) ...[
+                if (i > 0) ...[
+                  const SizedBox(height: 12),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: dividerColor,
                   ),
-                )
-                .toList(),
+                  const SizedBox(height: 12),
+                ],
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: clusters[i]
+                      .map(
+                        (filter) => AvesFilterChip(
+                          filter: filter,
+                          onTap: widget.onFilterSelection,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ],
           ),
         );
       },
     );
+  }
+
+  List<List<CollectionFilter>> _clusterFilters(List<CollectionFilter> filters) {
+    final media = <CollectionFilter>[];
+    final when = <CollectionFilter>[];
+    final where = <CollectionFilter>[];
+    final why = <CollectionFilter>[];
+
+    for (final filter in filters) {
+      if (filter is MimeFilter || filter is TypeFilter) {
+        media.add(filter);
+      } else if (filter is DateFilter || filter is WeekDayFilter) {
+        when.add(filter);
+      } else if (filter is StoredAlbumFilter || filter is DynamicAlbumFilter) {
+        where.add(filter);
+      } else {
+        why.add(filter);
+      }
+    }
+
+    return [media, when, where, why].where((cluster) => cluster.isNotEmpty).toList();
   }
 
   Widget _buildEditButtons(BuildContext context) {
@@ -265,8 +302,6 @@ class _ChipsSectionState extends State<ChipsSection> with AutomaticKeepAliveClie
   void _onScrollingChanged() {
     if (!widget.isScrollingNotifier.value) {
       if (settings.useTvLayout) {
-        // using `autofocus` while scrolling seems to fail for widget built offscreen
-        // so we give focus to this page when the screen is no longer scrolling
         _chipFocusNode.children.firstOrNull?.requestFocus();
       }
     }
