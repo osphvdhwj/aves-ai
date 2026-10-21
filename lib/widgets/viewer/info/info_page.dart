@@ -18,6 +18,7 @@ import 'package:aves/widgets/viewer/info/color_section.dart';
 import 'package:aves/widgets/viewer/info/details_section.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
+import 'package:aves/widgets/viewer/info/info_fade_in.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/header_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
@@ -267,20 +268,23 @@ class _InfoPageContentState extends State<_InfoPageContent> {
     );
     final detailsAndLocationSliver = locationAtTop
         ? SliverToBoxAdapter(
-            child: Row(
-              crossAxisAlignment: .start,
-              children: [
-                Expanded(child: detailsSection),
-                const SizedBox(width: 8),
-                Expanded(child: locationSection),
-              ],
+            child: InfoFadeIn(
+              index: 1,
+              child: Row(
+                crossAxisAlignment: .start,
+                children: [
+                  Expanded(child: detailsSection),
+                  const SizedBox(width: 8),
+                  Expanded(child: locationSection),
+                ],
+              ),
             ),
           )
         : SliverList(
             delegate: SliverChildListDelegate.fixed(
               [
-                detailsSection,
-                locationSection,
+                InfoFadeIn(index: 1, child: detailsSection),
+                InfoFadeIn(index: 2, child: locationSection),
               ],
               addAutomaticKeepAlives: true,
             ),
@@ -308,10 +312,13 @@ class _InfoPageContentState extends State<_InfoPageContent> {
             onBackPressed: widget.goToViewer,
           ),
           SliverToBoxAdapter(
-            child: InfoHeaderSection(
-              entry: entry,
-              collection: collection,
-              actionDelegate: _actionDelegate,
+            child: InfoFadeIn(
+              index: 0,
+              child: InfoHeaderSection(
+                entry: entry,
+                collection: collection,
+                actionDelegate: _actionDelegate,
+              ),
             ),
           ),
           ValueListenableBuilder<bool>(
@@ -332,9 +339,12 @@ class _InfoPageContentState extends State<_InfoPageContent> {
                   ? SliverPadding(
                       padding: _horizontalPadding + const EdgeInsets.only(top: 8),
                       sliver: SliverToBoxAdapter(
-                        child: AiTagsSection(
-                          entry: entry,
-                          actionDelegate: _actionDelegate,
+                        child: InfoFadeIn(
+                          index: 3,
+                          child: AiTagsSection(
+                            entry: entry,
+                            actionDelegate: _actionDelegate,
+                          ),
                         ),
                       ),
                     )
@@ -347,7 +357,12 @@ class _InfoPageContentState extends State<_InfoPageContent> {
               return visible
                   ? SliverPadding(
                       padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: SliverToBoxAdapter(child: chipsSection),
+                      sliver: SliverToBoxAdapter(
+                        child: InfoFadeIn(
+                          index: 4,
+                          child: chipsSection,
+                        ),
+                      ),
                     )
                   : const SliverToBoxAdapter(child: SizedBox());
             },
