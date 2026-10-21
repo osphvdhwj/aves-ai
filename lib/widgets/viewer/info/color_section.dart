@@ -5,12 +5,15 @@ import 'dart:typed_data';
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/basic/color_indicator.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:flex_color_picker/flex_color_picker.dart' as flex;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +47,7 @@ class _ColorSectionSliverState extends State<ColorSectionSliver> {
 
           final durations = context.watch<DurationsData>();
           final theme = Theme.of(context);
+          final colors_ = theme.colorScheme;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,42 +57,55 @@ class _ColorSectionSliverState extends State<ColorSectionSliver> {
                   'Color',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
+                    color: colors_.onSurface,
                   ),
                 ),
               ),
-              Wrap(
-                alignment: .center,
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: durations.staggeredAnimation,
-                  delay: durations.staggeredAnimationDelay * timeDilation,
-                  childAnimationBuilder: (child) => SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: child,
-                    ),
-                  ),
-                  children: [
-                        ...colors.map(
-                      (v) => Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Row(
-                          mainAxisSize: .min,
-                          children: [
-                            ColorIndicator(value: v),
-                            const SizedBox(width: 8),
-                            Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: SelectableText(
-                                '#${v.hex}',
-                                style: const TextStyle(fontFamily: 'monospace'),
-                              ),
-                            ),
-                          ],
-                        ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colors_.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+                ),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  children: AnimationConfiguration.toStaggeredList(
+                    duration: durations.staggeredAnimation,
+                    delay: durations.staggeredAnimationDelay * timeDilation,
+                    childAnimationBuilder: (child) => SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: child,
                       ),
                     ),
-                  ],
+                    children: [
+                      ...colors.map(
+                        (v) => PressableScale(
+                          onTap: () async {
+                            await Clipboard.setData(ClipboardData(text: '#${v.hex}'));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ColorIndicator(value: v),
+                                const SizedBox(width: 8),
+                                Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: SelectableText(
+                                    '#${v.hex}',
+                                    style: const TextStyle(fontFamily: 'monospace'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
