@@ -139,7 +139,16 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                           ),
                         ]
                       : [
-                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+                            child: Text(
+                              'Metadata',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
                           ...metadata.entries.map(
                             (kv) => MetadataDirTile(
                               entry: entry,
