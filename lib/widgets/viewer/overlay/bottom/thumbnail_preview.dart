@@ -8,8 +8,7 @@ class ViewerThumbnailPreview extends StatefulWidget {
   final int displayedIndex;
   final double availableWidth;
   /// When set, overrides the default action (dispatch `ShowEntryNotification`)
-  /// on tap. Used by the info page, which does not listen for that notification.
-  /// Also suppresses the auto-navigation on scroll.
+  /// on tap, and suppresses the auto-navigation on scroll.
   final void Function(int index)? onTapOverride;
 
   const new({

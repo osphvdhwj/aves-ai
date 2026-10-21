@@ -8,11 +8,10 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/services/ai_service.dart';
-import 'package:aves/theme/format.dart';
-import 'package:aves/theme/text.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/viewer/info/info_date_header.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
@@ -64,27 +63,7 @@ class InfoHeaderSection extends StatelessWidget {
   }
 
   Widget _buildDateHeader(BuildContext context, ThemeData theme) {
-    final tokens = context.m3e;
-    final date = entry.bestDate;
-    final locale = settings.avesLocale;
-    final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
-    // Google Photos style: "Fri, Jan 10, 2025 · 9:36 AM"
-    final dateText = date != null ? '${locale.MMMEd(date)}, ${locale.y(date)}${AText.separator}${formatTime(date, locale, use24hour)}' : '';
-
-    final baseStyle = theme.textTheme.headlineMedium ?? theme.textTheme.headlineSmall;
-    final baseWeight = baseStyle?.fontWeight ?? FontWeight.w400;
-    final steps = (tokens.emphasizedWeightDelta / 100).round();
-    final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
-    final emphasizedWeight = FontWeight.values[emphasizedIndex];
-
-    return Text(
-      dateText.isEmpty ? 'Undated' : dateText,
-      style: baseStyle?.copyWith(
-        fontWeight: emphasizedWeight,
-        letterSpacing: -0.5,
-        color: theme.colorScheme.onSurface,
-      ),
-    );
+    return InfoDateHeader(entry: entry);
   }
 
   Widget _buildCaption(BuildContext context, ThemeData theme) {

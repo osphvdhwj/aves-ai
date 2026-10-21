@@ -754,8 +754,12 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
             duration: animationDuration,
             curve: Curves.easeOutCubic,
           );
-        } else {
+        } else if (_horizontalPager.hasClients) {
           _horizontalPager.jumpToPage(page);
+        } else {
+          // the image page may not be built while the info page is in full view
+          _currentEntryIndex = page;
+          await _updateEntry();
         }
       }
     }

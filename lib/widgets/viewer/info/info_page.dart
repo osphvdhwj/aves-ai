@@ -87,7 +87,12 @@ class _InfoPageState extends State<InfoPage> {
                       split: MediaQuery.sizeOf(context).width > splitScreenWidthThreshold,
                       goToViewer: _goToViewer,
                       onEntrySelected: (newEntry) {
-                        widget.entryNotifier.value = newEntry;
+                        // go through the viewer's horizontal pager instead of setting `entryNotifier` directly,
+                        // so that the page index, entry controllers (e.g. video) and the notifier stay in sync
+                        final entries = widget.collection?.sortedEntries;
+                        final index = entries?.indexWhere((e) => e.id == newEntry.id) ?? -1;
+                        if (index < 0) return;
+                        ShowEntryNotification(animate: false, index: index).dispatch(context);
                         // jump info scroll back to top so new entry is visible
                         if (_scrollController.hasClients) {
                           _scrollController.jumpTo(0);
