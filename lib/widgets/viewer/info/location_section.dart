@@ -20,6 +20,7 @@ import 'package:aves/widgets/map/map_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves_map/aves_map.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -291,6 +292,27 @@ class _AddressInfoGroupState extends State<_AddressInfoGroup> {
           info: {
             l10n.viewerInfoLabelCoordinates: settings.coordinateFormat.format(context, entry.latLng!),
             if (address.isNotEmpty) l10n.viewerInfoLabelAddress: address,
+          },
+          spanBuilders: {
+            l10n.viewerInfoLabelCoordinates: (context, key, value) => [
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 4),
+                  child: PressableScale(
+                    onTap: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      await Clipboard.setData(ClipboardData(text: value));
+                      messenger.showSnackBar(
+                        const SnackBar(content: Text('Coordinates copied'), duration: Duration(seconds: 1)),
+                      );
+                    },
+                    child: Icon(Symbols.content_copy, size: 16, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+              ),
+              TextSpan(text: value, style: InfoRowGroup.valueStyle),
+            ],
           },
         );
       },

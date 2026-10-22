@@ -91,9 +91,20 @@ class _CleanerPageState extends State<CleanerPage> {
                 ),
                 const SizedBox(height: 16),
                 if (buckets == null)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: CircularProgressIndicator()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32),
+                    child: Column(
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Analyzing ${entries.length} items…',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 else
                   for (final bucket in CleanerBucket.values)

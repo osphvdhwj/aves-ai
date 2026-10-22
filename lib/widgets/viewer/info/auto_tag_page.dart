@@ -194,7 +194,16 @@ class _AutoTagPageState extends State<AutoTagPage> {
                 future: _loader,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Finding tag suggestions…'),
+                        ],
+                      ),
+                    );
                   }
                   final proposals = (snapshot.data ?? const <TagProposal>[]).where((p) => !_dismissed.contains(p.tag.toLowerCase())).toList();
                   if (proposals.isEmpty) {
