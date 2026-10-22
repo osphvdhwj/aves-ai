@@ -440,7 +440,7 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
             height: kMinInteractiveDimension,
             child: Divider(
               thickness: 4,
-              radius: BorderRadius.circular(2),
+              radius: const BorderRadius.all(Radius.circular(2)),
             ),
           ),
         ),
