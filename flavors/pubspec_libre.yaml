@@ -1,6 +1,6 @@
 name: aves
-description: A visual media gallery and metadata explorer app.
-repository: https://github.com/deckerst/aves
+description: Aves + is a privacy-first gallery and metadata explorer, with an on-device AI companion.
+repository: https://github.com/osphvdhwj/aves-ai
 publish_to: none
 
 # version bump checklist:
