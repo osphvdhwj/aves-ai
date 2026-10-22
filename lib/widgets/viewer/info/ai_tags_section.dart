@@ -149,9 +149,22 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                     color: colors.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
                   ),
-                  child: Text(
-                    'No album-derived tags to suggest for this entry.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Icon(Symbols.info, size: 16, color: colors.onSurfaceVariant),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'No tags to suggest from the album name. '
+                          'Use the NSFW button above to add tags manually.',
+                          style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }
