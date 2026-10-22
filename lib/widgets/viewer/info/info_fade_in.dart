@@ -28,7 +28,7 @@ class _InfoFadeInState extends State<InfoFadeIn> {
     // Wait one frame so the spring animates from 0 to 1 on mount.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Future.delayed(Duration(milliseconds: widget.index * 60), () {
+        Future.delayed(Duration(milliseconds: widget.index * 35), () {
           if (mounted) setState(() => _target = 1.0);
         });
       }
@@ -44,7 +44,7 @@ class _InfoFadeInState extends State<InfoFadeIn> {
       value: _target,
       builder: (context, t) {
         final opacity = t.clamp(0.0, 1.0);
-        final offsetY = (1 - t) * 16;
+        final offsetY = (1 - t) * 8;
         return Opacity(
           opacity: opacity,
           child: Transform.translate(

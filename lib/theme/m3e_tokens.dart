@@ -64,8 +64,11 @@ class M3ETokens extends ThemeExtension<M3ETokens> {
     this.durationLong2 = const Duration(milliseconds: 500),
     this.durationLong3 = const Duration(milliseconds: 550),
     this.durationLong4 = const Duration(milliseconds: 600),
-    this.springDamping = 0.85,
-    this.springStiffness = 380.0,
+    // Critically damped, high stiffness: settles in ~250-300ms with
+    // no overshoot. Snappy, not floaty. If a UI element needs a bit
+    // of bounce, it can override locally.
+    this.springDamping = 1.0,
+    this.springStiffness = 900.0,
     this.springMass = 1.0,
     this.emphasizedWeightDelta = 100.0,
     this.emphasizedLetterSpacing = 0.1,

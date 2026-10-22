@@ -3,15 +3,11 @@ import 'dart:async';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/info.dart';
 import 'package:aves/model/settings/settings.dart';
-import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir_tile.dart';
 import 'package:aves/widgets/viewer/info/metadata/tv_page.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 class MetadataSectionSliver extends StatefulWidget {
   final AvesEntry entry;
@@ -109,18 +105,8 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                 },
               );
             } else {
-              final durations = context.watch<DurationsData>();
               content = Column(
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: durations.staggeredAnimation,
-                  delay: durations.staggeredAnimationDelay * timeDilation,
-                  childAnimationBuilder: (child) => SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: child,
-                    ),
-                  ),
-                  children: settings.useTvLayout
+                children: settings.useTvLayout
                       ? [
                           const SizedBox(height: 16),
                           AvesOutlinedButton(
@@ -158,16 +144,10 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                             ),
                           ),
                         ],
-                ),
               );
             }
 
-            return AnimationLimiter(
-              // we update the limiter key after fetching the metadata of a new entry,
-              // in order to restart the staggered animation of the metadata section
-              key: ValueKey(metadata.length),
-              child: content,
-            );
+            return content;
           },
         ),
       ),
