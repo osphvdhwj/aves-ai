@@ -184,22 +184,22 @@ class InfoHeaderSection extends StatelessWidget {
             ),
             child: Row(
               children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(tokens.shapeSmall),
-                child: SizedBox(
-                  width: 56,
-                  height: 56,
-                  child: Image(
-                    image: entry.getThumbnail(extent: 128),
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stack) => Container(
-                      color: colors.surfaceContainerHighest,
-                      alignment: Alignment.center,
-                      child: Icon(Symbols.image, color: colors.onSurfaceVariant, size: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(tokens.shapeSmall),
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: Image(
+                      image: entry.getThumbnail(extent: 128),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stack) => Container(
+                        color: colors.surfaceContainerHighest,
+                        alignment: Alignment.center,
+                        child: Icon(Symbols.image, color: colors.onSurfaceVariant, size: 20),
+                      ),
                     ),
                   ),
                 ),
-              ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -221,6 +221,8 @@ class InfoHeaderSection extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
+                Icon(Symbols.chevron_right, size: 20, color: colors.onSurfaceVariant),
               ],
             ),
           ),
