@@ -17,6 +17,7 @@ import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
+import 'package:aves/widgets/search/ai_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
 import 'package:aves/widgets/viewer/info/text_select_page.dart';
 import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
@@ -130,6 +131,9 @@ class InfoAppBar extends StatelessWidget {
       items.add(_customItem('Extract text', Symbols.text_fields, _AppBarAction.extractText));
       items.add(_customItem('Select text', Symbols.text_select_start, _AppBarAction.selectText));
     }
+    if (entry.isImage) {
+      items.add(_customItem('Find similar', Symbols.image_search, _AppBarAction.findSimilar));
+    }
     items.add(_customItem('Secure share', Symbols.shield_lock, _AppBarAction.secureShare));
     items.add(_customItem('AI tools', Symbols.auto_awesome, _AppBarAction.aiTools));
 
@@ -183,12 +187,28 @@ class InfoAppBar extends StatelessWidget {
           showExtractTextDialog(context, entry);
         case _AppBarAction.selectText:
           showTextSelectPage(context, entry);
+        case _AppBarAction.findSimilar:
+          _openFindSimilar(context);
         case _AppBarAction.secureShare:
           showSecureShareDialog(context, entry);
         case _AppBarAction.aiTools:
           showAiToolsPage(context, entry, collection: collection);
       }
     }
+  }
+
+  void _openFindSimilar(BuildContext context) {
+    Navigator.maybeOf(context)?.push(
+      SearchPageRoute(
+        delegate: AiSearchDelegate(
+          searchFieldLabel: 'Find similar',
+          searchFieldStyle: Themes.searchFieldStyle(context),
+          initialText: '@like',
+          contextEntry: entry,
+        ),
+        background: Theme.of(context).scaffoldBackgroundColor,
+      ),
+    );
   }
 
   void _goToSearch(BuildContext context) {
@@ -211,6 +231,7 @@ class InfoAppBar extends StatelessWidget {
 enum _AppBarAction {
   extractText,
   selectText,
+  findSimilar,
   secureShare,
   aiTools,
 }

@@ -19,6 +19,11 @@ import 'package:provider/provider.dart';
 class AiSearchDelegate extends AvesSearchDelegate {
   final String? initialText;
 
+  /// When set, this entry is prepended to the entries payload of every
+  /// query. Used by `@like` ("find similar") so the companion has a
+  /// reference image even if the entry isn't in the first 200 visible.
+  final AvesEntry? contextEntry;
+
   List<AiPrompt> _rotating = const [];
   List<String> _dynamic = const [];
 
@@ -27,6 +32,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
     required super.searchFieldStyle,
     super.canPop,
     this.initialText,
+    this.contextEntry,
   }) : super(routeName: SearchPage.routeName) {
     query = initialText ?? '';
     _rotating = PromptLibrary.pick(6);
@@ -244,11 +250,18 @@ class AiSearchDelegate extends AvesSearchDelegate {
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
     final sample = source.visibleEntries.take(200).toList();
-    final ids = sample.map((e) => e.id).toList();
+
+    // If a context entry is provided (e.g. @like), prepend it so it's
+    // always in the payload even if it isn't in the visible sample.
+    final entries = <AvesEntry>[
+      if (contextEntry != null) contextEntry!,
+      ...sample.where((e) => e.id != contextEntry?.id),
+    ];
+    final ids = entries.map((e) => e.id).toList();
     return aiService.chat(
       q,
       entryIds: ids,
-      entries: AiService.entriesPayload(sample),
+      entries: AiService.entriesPayload(entries),
     );
   }
 
