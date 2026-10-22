@@ -11,7 +11,6 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/app_bar/app_bar_title.dart';
 import 'package:aves/widgets/common/app_bar/sliver_app_bar_title.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/popup/menu_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
@@ -24,10 +23,8 @@ import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
 import 'package:aves/widgets/viewer/info/ai_tools_page.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 class InfoAppBar extends StatelessWidget {
   final AvesEntry entry;
@@ -79,93 +76,119 @@ class InfoAppBar extends StatelessWidget {
       actions: useTvLayout
           ? []
           : [
-              if (entry.isImage)
-                FutureBuilder<bool>(
-                  future: aiService.hasCapability('ocr'),
+              FontSizeIconTheme(
+                child: IconButton(
+                  icon: const Icon(AIcons.search),
+                  onPressed: () => _goToSearch(context),
+                  tooltip: MaterialLocalizations.of(context).searchFieldLabel,
+                ),
+              ),
+              FontSizeIconTheme(
+                child: FutureBuilder<AiHealth>(
+                  future: aiService.health(),
                   builder: (context, snap) {
-                    final supported = snap.data ?? false;
-                    void onTap() {
-                      if (supported) {
-                        showExtractTextDialog(context, entry);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('OCR needs the AVES+ Tools companion.'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    }
-                    void onLongPress() {
-                      if (supported) {
-                        showTextSelectPage(context, entry);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Text selection needs the AVES+ Tools companion.'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    }
-                    return PressableScale(
-                      onLongPress: onLongPress,
-                      child: IconButton(
-                        icon: const Icon(Symbols.text_fields),
-                        onPressed: onTap,
-                        tooltip: 'Extract text (long-press for select mode)',
+                    final health = snap.data;
+                    final ocrSupported = health?.connected == true && health!.has('ocr');
+                    return PopupMenuButton<Object>(
+                      icon: const Icon(Symbols.more_vert),
+                      tooltip: 'More',
+                      itemBuilder: (context) => _buildMenuItems(
+                        context,
+                        ocrSupported: ocrSupported,
+                        commonActions: commonActions,
+                        formatSpecificActions: formatSpecificActions,
+                        isVisible: isVisible,
                       ),
+                      onSelected: (value) => _onMenuSelected(
+                        context,
+                        value,
+                        animations: animations,
+                      ),
+                      popUpAnimationStyle: animations.popUpAnimationStyle,
                     );
                   },
                 ),
-              IconButton(
-                icon: const Icon(Symbols.shield_lock),
-                onPressed: () => showSecureShareDialog(context, entry),
-                tooltip: 'Secure share',
               ),
-              IconButton(
-                icon: const Icon(Symbols.auto_awesome),
-                onPressed: () => showAiToolsPage(context, entry, collection: collection),
-                tooltip: 'AI tools',
-              ),
-              IconButton(
-                icon: const Icon(AIcons.search),
-                onPressed: () => _goToSearch(context),
-                tooltip: MaterialLocalizations.of(context).searchFieldLabel,
-              ),
-              if (entry.canEdit)
-                PopupMenuButton<EntryAction>(
-                  itemBuilder: (context) => [
-                    ...commonActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))),
-                    if (formatSpecificActions.isNotEmpty) ...[
-                      const PopupMenuDivider(),
-                      ...formatSpecificActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))),
-                    ],
-                    if (isVisible(EntryAction.debug)) ...[
-                      const PopupMenuDivider(),
-                      _toMenuItem(context, EntryAction.debug, enabled: true),
-                    ],
-                  ],
-                  onSelected: (action) async {
-                    // wait for the popup menu to hide before proceeding with the action
-                    await Future.delayed(animations.popUpAnimationDelay * timeDilation);
-                    await actionDelegate.onActionSelected(context, entry, collection, action);
-                  },
-                  popUpAnimationStyle: animations.popUpAnimationStyle,
-                ),
-            ].map((v) => FontSizeIconTheme(child: v)).toList(),
+            ],
       floating: true,
       // as of Flutter v3.44.4, `SliverAppBar` does not automatically pick up `systemOverlayStyle` from `AppBar` theme
       systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
     );
   }
 
-  PopupMenuItem<EntryAction> _toMenuItem(BuildContext context, EntryAction action, {required bool enabled}) {
-    return PopupMenuItem(
+  List<PopupMenuEntry<Object>> _buildMenuItems(
+    BuildContext context, {
+    required bool ocrSupported,
+    required Iterable<EntryAction> commonActions,
+    required Iterable<EntryAction> formatSpecificActions,
+    required bool Function(EntryAction) isVisible,
+  }) {
+    final items = <PopupMenuEntry<Object>>[];
+
+    // Info-page specific actions, now consolidated into the overflow menu.
+    if (entry.isImage && ocrSupported) {
+      items.add(_customItem('Extract text', Symbols.text_fields, _AppBarAction.extractText));
+      items.add(_customItem('Select text', Symbols.text_select_start, _AppBarAction.selectText));
+    }
+    items.add(_customItem('Secure share', Symbols.shield_lock, _AppBarAction.secureShare));
+    items.add(_customItem('AI tools', Symbols.auto_awesome, _AppBarAction.aiTools));
+
+    // Existing per-entry edit actions (only when the entry supports them).
+    if (entry.canEdit && (commonActions.isNotEmpty || formatSpecificActions.isNotEmpty)) {
+      items.add(const PopupMenuDivider());
+      items.addAll(commonActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))));
+      if (formatSpecificActions.isNotEmpty) {
+        items.add(const PopupMenuDivider());
+        items.addAll(formatSpecificActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))));
+      }
+    }
+
+    if (isVisible(EntryAction.debug)) {
+      items.add(const PopupMenuDivider());
+      items.add(_toMenuItem(context, EntryAction.debug, enabled: true));
+    }
+
+    return items;
+  }
+
+  PopupMenuItem<Object> _customItem(String label, IconData icon, _AppBarAction value) {
+    return PopupMenuItem<Object>(
+      value: value,
+      child: MenuRow(text: label, icon: Icon(icon)),
+    );
+  }
+
+  PopupMenuItem<Object> _toMenuItem(BuildContext context, EntryAction action, {required bool enabled}) {
+    return PopupMenuItem<Object>(
       value: action,
       enabled: enabled,
       child: MenuRow(text: action.getText(context), icon: action.getIcon()),
     );
+  }
+
+  Future<void> _onMenuSelected(
+    BuildContext context,
+    Object value, {
+    required AccessibilityAnimations animations,
+  }) async {
+    if (value is EntryAction) {
+      // wait for the popup menu to hide before proceeding with the action
+      await Future.delayed(animations.popUpAnimationDelay * timeDilation);
+      await actionDelegate.onActionSelected(context, entry, collection, value);
+      return;
+    }
+    if (value is _AppBarAction) {
+      switch (value) {
+        case _AppBarAction.extractText:
+          showExtractTextDialog(context, entry);
+        case _AppBarAction.selectText:
+          showTextSelectPage(context, entry);
+        case _AppBarAction.secureShare:
+          showSecureShareDialog(context, entry);
+        case _AppBarAction.aiTools:
+          showAiToolsPage(context, entry, collection: collection);
+      }
+    }
   }
 
   void _goToSearch(BuildContext context) {
@@ -183,4 +206,11 @@ class InfoAppBar extends StatelessWidget {
       ),
     );
   }
+}
+
+enum _AppBarAction {
+  extractText,
+  selectText,
+  secureShare,
+  aiTools,
 }
