@@ -50,6 +50,7 @@ class _AiToolsPageState extends State<AiToolsPage> {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
+                if (!connected) _CompanionBanner(health: health),
                 ..._buildTiles(context, health),
               ],
             );

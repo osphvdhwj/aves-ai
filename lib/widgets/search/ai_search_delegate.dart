@@ -102,9 +102,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
                 TextButton(
                   onPressed: () {
                     settings.savedSearches = const [];
-                    final v = query;
-                    query = v.isEmpty ? ' ' : v;
-                    query = v;
+                    _refresh();
                   },
                   child: const Text('Clear'),
                 ),
@@ -126,10 +124,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
                 TextButton(
                   onPressed: () {
                     settings.aiSearchHistory = const [];
-                    // force rebuild
-                    final v = query;
-                    query = v.isEmpty ? ' ' : v;
-                    query = v;
+                    _refresh();
                   },
                   child: const Text('Clear'),
                 ),
@@ -282,6 +277,14 @@ class AiSearchDelegate extends AvesSearchDelegate {
   void _onPrompt(BuildContext context, String text) {
     query = text;
     showResults(context);
+  }
+
+  /// Force the search page to rebuild without touching the query text.
+  /// Used after clearing saved searches / history.
+  void _refresh() {
+    final current = currentBody;
+    currentBodyNotifier.value = null;
+    currentBodyNotifier.value = current;
   }
 
   void _insertIntoQuery(String token) {
