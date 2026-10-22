@@ -13,6 +13,7 @@ import 'package:aves/widgets/common/expandable_filter_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/dialogs/aves_confirmation_dialog.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -359,7 +360,7 @@ class _TagCount extends StatelessWidget {
             color: DefaultTextStyle.of(context).style.color!,
           ),
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(123)),
+        borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
       ),
       child: Text(
         '$count',

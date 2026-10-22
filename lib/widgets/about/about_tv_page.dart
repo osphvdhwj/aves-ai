@@ -110,9 +110,7 @@ class _ContentState extends State<_Content> {
                     selected: isSelected,
                     contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                     onTap: () => _railIndexNotifier.value = index,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(123)),
-                    ),
+                    shape: const StadiumBorder(),
                   );
                 },
                 itemCount: _Section.values.length,

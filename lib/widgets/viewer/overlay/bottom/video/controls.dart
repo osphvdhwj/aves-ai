@@ -15,7 +15,8 @@ class VideoControlRow extends StatelessWidget {
   final Function(EntryAction value) onActionSelected;
 
   static const double edgeButtonPadding = 3;
-  static const Radius radius = Radius.circular(123);
+  // Pill radius for edge buttons. Large enough to always fully round.
+  static const Radius radius = Radius.circular(999);
 
   const new({
     super.key,

@@ -9,6 +9,7 @@ import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:collection/collection.dart';
 import 'package:community_charts_flutter/community_charts_flutter.dart' as charts;
 import 'package:equatable/equatable.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -142,7 +143,7 @@ class _AvesDonutState extends State<AvesDonut> with AutomaticKeepAliveClientMixi
                       scale: 0.96,
                       child: InkWell(
                       onTap: onTap != null ? () => onTap(d) : null,
-                      borderRadius: const BorderRadius.all(Radius.circular(123)),
+                      borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
                       child: Row(
                         mainAxisSize: .min,
                         children: [

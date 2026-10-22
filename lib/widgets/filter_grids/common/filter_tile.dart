@@ -10,6 +10,7 @@ import 'package:aves/widgets/filter_grids/common/covered_filter_chip.dart';
 import 'package:aves/widgets/filter_grids/common/filter_chip_grid_decorator.dart';
 import 'package:aves/widgets/filter_grids/common/list_details.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 typedef FilterTileTapCallback<T extends CollectionFilter> = void Function(FilterGridItem<T> gridItem, void Function(Route route) navigate);
@@ -158,13 +159,15 @@ class FilterTile<T extends CollectionFilter> extends StatelessWidget {
         );
         if (_onTap != null) {
           // larger than the chip corner radius, so ink effects will be effectively clipped from the leading chip corners
-          const radius = Radius.circular(123);
+          final radius = Radius.circular(context.m3e.shapeExtraLarge * 4);
           child = PressableScale(
             passthrough: true,
             scale: 0.98,
             child: InkWell(
               // as of Flutter v2.8.1, `InkWell` does not use `BorderRadiusGeometry`
-              borderRadius: context.isRtl ? const BorderRadius.only(topRight: radius, bottomRight: radius) : const BorderRadius.only(topLeft: radius, bottomLeft: radius),
+              borderRadius: context.isRtl
+                  ? BorderRadius.only(topRight: radius, bottomRight: radius)
+                  : BorderRadius.only(topLeft: radius, bottomLeft: radius),
               onTap: () => _onTap(filter),
               child: child,
             ),

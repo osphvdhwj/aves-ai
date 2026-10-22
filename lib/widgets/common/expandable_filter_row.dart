@@ -7,6 +7,7 @@ import 'package:aves/theme/styles.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class const TitledExpandableFilterRow({
@@ -38,7 +39,7 @@ class const TitledExpandableFilterRow({
           scale: 0.98,
           child: InkWell(
             onTap: toggle,
-            borderRadius: const BorderRadius.all(Radius.circular(123)),
+            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
