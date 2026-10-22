@@ -1,5 +1,7 @@
 import 'package:aves/model/entry/entry.dart';
-import 'package:intl/intl.dart';
+import 'package:aves/model/settings/settings.dart';
+import 'package:aves/theme/format.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class InfoDateHeader extends StatelessWidget {
@@ -12,9 +14,23 @@ class InfoDateHeader extends StatelessWidget {
     final date = entry.bestDate;
     if (date == null) return const SizedBox();
 
-    final locale = Localizations.localeOf(context).toString();
+    // Use Aves' calendar-aware formatters, not raw intl. The custom
+    // AvesLocale understands Hijri, Persian, and locale-specific
+    // orderings; Localizations.localeOf would fall back to Gregorian.
+    final locale = settings.avesLocale;
+    final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final tokens = context.m3e;
+
+    final datePart = locale.yMMMMd(date);
+    final timePart = formatTime(date, locale, use24hour);
+
+    final baseStyle = theme.textTheme.headlineSmall;
+    final baseWeight = baseStyle?.fontWeight ?? FontWeight.w400;
+    final steps = (tokens.emphasizedWeightDelta / 100).round();
+    final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
+    final emphasizedWeight = FontWeight.values[emphasizedIndex];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -22,12 +38,16 @@ class InfoDateHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            DateFormat.yMMMMd(locale).format(date),
-            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+            datePart,
+            style: baseStyle?.copyWith(
+              fontWeight: emphasizedWeight,
+              letterSpacing: -0.4,
+              color: scheme.onSurface,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
-            '${DateFormat.EEEE(locale).format(date)} · ${DateFormat.jm(locale).format(date)}',
+            timePart,
             style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
