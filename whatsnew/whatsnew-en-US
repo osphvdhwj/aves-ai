@@ -1,5 +1,6 @@
-In v1.15.5:
-- preview videos your way
-- listen to captured audio behind your panoramas
-- find significant dates with the Hijri calendars
-Full changelog available on GitHub
+Aves + v2.0.0 (first release):
+- redesigned info page with a Google Photos-style layout
+- extract text (OCR) and find similar photos via the AVES+ Tools companion
+- cleaner, duplicates, memories, and query composer
+- Material 3 Expressive throughout
+Full changelog on GitHub
