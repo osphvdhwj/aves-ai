@@ -75,6 +75,14 @@ class Themes {
     return ThemeData(
       // M3E TOKENS
       extensions: [M3ETokens.fromColorScheme(colors)],
+      // MOTION — standard M3 Android zoom transition on every route
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       // COLOR
       brightness: colors.brightness,
       canvasColor: _schemeSecondLayer(colors),
