@@ -66,10 +66,9 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
 
   @override
   Widget build(BuildContext context) {
-    // use a `Column` inside a `SliverToBoxAdapter`, instead of a `SliverList`,
-    // so that we can have the metadata-dependent `AnimationLimiter` inside the metadata section
-    // warning: placing the `AnimationLimiter` as a parent to the `ScrollView`
-    // triggers dispose & reinitialization of other sections, including heavy widgets like maps
+    // Use a `Column` inside a `SliverToBoxAdapter` instead of a `SliverList`
+    // so the tiles rebuild cleanly when the entry changes without
+    // triggering dispose/reinit of other sections (e.g. maps).
     return SliverToBoxAdapter(
       child: NotificationListener<ScrollNotification>(
         // cancel notification bubbling so that the info page
