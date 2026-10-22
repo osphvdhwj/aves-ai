@@ -187,11 +187,15 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  t,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: applied ? colors.onSecondaryContainer : colors.onSurface,
-                                    fontWeight: applied ? FontWeight.w600 : FontWeight.w500,
+                                Flexible(
+                                  child: Text(
+                                    t,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: applied ? colors.onSecondaryContainer : colors.onSurface,
+                                      fontWeight: applied ? FontWeight.w600 : FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                                 if (applied) ...[

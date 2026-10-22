@@ -184,7 +184,12 @@ class _CompanionBanner extends StatelessWidget {
             Icon(installed ? Symbols.info : Symbols.download, color: colors.onErrorContainer, size: 18),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(text, style: theme.textTheme.bodySmall?.copyWith(color: colors.onErrorContainer)),
+              child: Text(
+                text,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(color: colors.onErrorContainer),
+              ),
             ),
           ],
         ),

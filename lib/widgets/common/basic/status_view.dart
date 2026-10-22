@@ -41,6 +41,8 @@ class StatusView extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
             ),
             if (subtitle != null) ...[
@@ -48,6 +50,8 @@ class StatusView extends StatelessWidget {
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
               ),
             ],
