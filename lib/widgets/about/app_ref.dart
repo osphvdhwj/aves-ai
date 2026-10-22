@@ -1,6 +1,7 @@
 import 'package:aves/model/device.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_logo.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AppReference extends StatelessWidget {
@@ -38,7 +39,7 @@ class AppReference extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: colors.secondaryContainer,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
               ),
               child: Text(
                 device.packageVersion,

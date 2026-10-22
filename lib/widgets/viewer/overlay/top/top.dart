@@ -14,6 +14,7 @@ import 'package:aves/widgets/viewer/page_entry_builder.dart';
 import 'package:aves/widgets/viewer/view/conductor.dart';
 import 'package:aves/widgets/viewer/view/controller.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -180,7 +181,7 @@ class ZoomLevelIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blurred = settings.enableBlurEffect;
-    final borderRadius = BorderRadius.circular(20);
+    final borderRadius = BorderRadius.circular(context.m3e.shapeExtraLarge - 8);
     final zoomScaleFactor = MediaQuery.devicePixelRatioOf(context) * 100;
 
     return IgnorePointer(
