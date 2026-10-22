@@ -106,9 +106,6 @@ class InfoHeaderSection extends StatelessWidget {
               width: 1.5,
             ),
           ),
-          child: supported
-              ? null
-              : Icon(Symbols.person_add, color: dim, size: 20),
         );
 
         return Column(
