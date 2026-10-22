@@ -1,8 +1,5 @@
-import 'dart:math';
 
 import 'package:aves/model/settings/settings.dart';
-import 'package:aves/theme/durations.dart';
-import 'package:aves/widgets/common/extensions/media_query.dart';
 import 'package:aves/widgets/settings/accessibility/accessibility.dart';
 import 'package:aves/widgets/settings/ai/ai.dart';
 import 'package:aves/widgets/settings/display/display.dart';
@@ -15,10 +12,7 @@ import 'package:aves/widgets/settings/settings_tv_page.dart';
 import 'package:aves/widgets/settings/thumbnails/thumbnails.dart';
 import 'package:aves/widgets/settings/video/video.dart';
 import 'package:aves/widgets/settings/viewer/viewer.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   static const routeName = '/settings';
@@ -65,25 +59,9 @@ class SettingsListView extends StatelessWidget {
           bodyMedium: const TextStyle(fontSize: 12),
         ),
       ),
-      child: Selector<MediaQueryData, double>(
-        selector: (context, mq) => max(mq.effectiveBottomPadding, mq.systemGestureInsets.bottom),
-        builder: (context, mqPaddingBottom, child) {
-          final durations = context.watch<DurationsData>();
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8) + EdgeInsets.only(bottom: mqPaddingBottom),
-            children: AnimationConfiguration.toStaggeredList(
-              duration: durations.staggeredAnimation,
-              delay: durations.staggeredAnimationDelay * timeDilation,
-              childAnimationBuilder: (child) => SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: child,
-                ),
-              ),
-              children: children,
-            ),
-          );
-        },
+      child: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        children: children,
       ),
     );
   }
