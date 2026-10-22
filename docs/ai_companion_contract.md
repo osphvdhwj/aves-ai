@@ -160,6 +160,7 @@ Do not renumber. Aves' Dart side maps 1 and 2 to strings.
 | `@ocr` | OCR on `entries[0]` | `text` = recognised |
 | `@ocr.structured` | OCR with positions | `text` = rows `L,T,W,H<TAB>text` |
 | `@nsfw` | NSFW score for `entries[0]` | `text` = `nsfw:0.87` or `nsfw:0.87:label1,label2` |
+| `@like` | Visual similarity to `entries[0]` | `entryIds` ranked |
 
 ### `@ocr.structured` row format
 
@@ -180,6 +181,25 @@ Either `nsfw:<score>` or `nsfw:<score>:<labels>` with labels comma
 separated. Score in `[0, 1]`. Aves clamps and applies a 0.75
 threshold before suggesting a tag. Empty reply = unknown.
 
+### `@like` context entry
+
+`@like` ("Find similar" in the info app bar) is opened from a specific
+entry. Aves sends that entry as `entries[0]` — prepended to the visible
+sample — regardless of whether it is among the first 200 visible. The
+companion must:
+
+1. Embed `entries[0]` with the same image model it uses for `/find`.
+2. Rank the remaining entries by cosine similarity to that embedding.
+3. Return the top-N ids, excluding `entries[0]` itself.
+
+If CLIP weights are missing, reply `onError(id, 2, "model missing")`
+so Aves shows the "companion needs a model" empty state.
+
+Aves-side entry points for this flow:
+- Menu action: `_openFindSimilar` in `info_app_bar.dart`
+- Delegate: `AiSearchDelegate(contextEntry: entry, initialText: '@like')`
+- Payload: `AiService.entriesPayload` prepends `contextEntry`.
+
 ---
 
 ## File map (Aves side)
@@ -196,6 +216,8 @@ threshold before suggesting a tag. Empty reply = unknown.
 | Auto-tag review page | `lib/widgets/viewer/info/auto_tag_page.dart` |
 | NSFW classifier wrapper | `lib/services/nsfw_service.dart` |
 | AI tools hub | `lib/widgets/viewer/info/ai_tools_page.dart` |
+| Find similar action | `lib/widgets/viewer/info/info_app_bar.dart` (`_openFindSimilar`) |
+| AI search delegate | `lib/widgets/search/ai_search_delegate.dart` |
 | NSFW vocabulary asset | `assets/nsfw_tags.txt` |
 
 ---
