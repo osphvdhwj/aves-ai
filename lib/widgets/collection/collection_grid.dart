@@ -423,12 +423,16 @@ class const _CollectionScaler({
         ),
         child: child,
       ),
-      scaledItemBuilder: (entry, tileSize) => EntryListDetailsTheme(
-        extent: tileSize.height,
-        child: Tile(
-          entry: entry,
-          thumbnailExtent: context.read<TileExtentController>().effectiveExtentMax,
-          tileLayout: tileLayout,
+      scaledItemBuilder: (entry, tileSize) => RepaintBoundary(
+        // Isolates each thumbnail's repaint from the rest of the grid.
+        // Critical for smooth scrolling in large libraries.
+        child: EntryListDetailsTheme(
+          extent: tileSize.height,
+          child: Tile(
+            entry: entry,
+            thumbnailExtent: context.read<TileExtentController>().effectiveExtentMax,
+            tileLayout: tileLayout,
+          ),
         ),
       ),
       mosaicItemBuilder: (index, targetExtent) => DecoratedBox(
