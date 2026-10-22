@@ -140,7 +140,7 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                         ]
                       : [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                             child: Text(
                               'Metadata',
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(

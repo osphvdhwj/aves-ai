@@ -52,7 +52,7 @@ class _ColorSectionSliverState extends State<ColorSectionSliver> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                 child: Text(
                   'Color',
                   style: theme.textTheme.titleSmall?.copyWith(
