@@ -61,6 +61,16 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
       appBar: AppBar(
         title: const Text('Compose query'),
         actions: [
+          if (composed.isNotEmpty)
+            IconButton(
+              icon: const Icon(Symbols.clear_all),
+              tooltip: 'Clear',
+              onPressed: () => setState(() {
+                _mime = null;
+                _ratingMin = null;
+                _type = null;
+              }),
+            ),
           TextButton(
             onPressed: composed.isEmpty
                 ? null
@@ -149,12 +159,21 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
               color: isSelected ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
             ),
-            child: Text(
-              label(item),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isSelected ? Theme.of(context).colorScheme.onSecondaryContainer : Theme.of(context).colorScheme.onSurface,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isSelected) ...[
+                  Icon(Symbols.check, size: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  label(item),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: isSelected ? Theme.of(context).colorScheme.onSecondaryContainer : Theme.of(context).colorScheme.onSurface,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                ),
+              ],
             ),
           ),
         );
