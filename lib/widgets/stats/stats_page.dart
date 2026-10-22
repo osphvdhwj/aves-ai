@@ -33,6 +33,8 @@ import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -312,10 +314,13 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
         // prevent ink response when tapping the header does nothing,
         // because otherwise Play Store reviewers think it is broken navigation
         child: onHeaderPressed != null
-            ? InkWell(
-                onTap: onHeaderPressed,
-                borderRadius: const BorderRadius.all(Radius.circular(123)),
-                child: header,
+            ? PressableScale(
+                passthrough: true,
+                child: InkWell(
+                  onTap: onHeaderPressed,
+                  borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
+                  child: header,
+                ),
               )
             : Focus(child: header),
       );

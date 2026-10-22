@@ -1,5 +1,7 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/styles.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AboutSectionTitle extends StatelessWidget {
@@ -19,15 +21,18 @@ class AboutSectionTitle extends StatelessWidget {
     );
 
     if (settings.useTvLayout) {
-      child = InkWell(
-        borderRadius: const BorderRadius.all(Radius.circular(123)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisSize: .min,
-            children: [
-              child,
-            ],
+      child = PressableScale(
+        passthrough: true,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisSize: .min,
+              children: [
+                child,
+              ],
+            ),
           ),
         ),
       );

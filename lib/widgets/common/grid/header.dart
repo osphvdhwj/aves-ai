@@ -8,6 +8,8 @@ import 'package:aves/widgets/common/basic/gestures/gesture_detector.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/grid/sections/list_layout.dart';
 import 'package:flutter/rendering.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -104,10 +106,13 @@ class SectionHeader<T> extends StatelessWidget {
       // prevent ink response when tapping the header does nothing,
       // because otherwise Play Store reviewers think it is broken navigation
       child = context.select<Selection<T>, bool>((v) => v.isSelecting)
-          ? InkWell(
-              onTap: onTap,
-              borderRadius: const BorderRadius.all(Radius.circular(123)),
-              child: child,
+          ? PressableScale(
+              passthrough: true,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
+                child: child,
+              ),
             )
           : Focus(child: child);
     }
