@@ -34,26 +34,26 @@ class InfoDateHeader extends StatelessWidget {
     final emphasizedIndex = (baseWeight.index + steps).clamp(0, FontWeight.values.length - 1);
     final emphasizedWeight = FontWeight.values[emphasizedIndex];
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            datePart,
-            style: baseStyle?.copyWith(
-              fontWeight: emphasizedWeight,
-              letterSpacing: -0.4,
-              color: scheme.onSurface,
-            ),
+    // No outer Padding: the parent InfoHeaderSection already wraps this
+    // widget in fromLTRB(16, 8, 16, 16). Adding our own would double-up
+    // to 36px horizontal.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          datePart,
+          style: baseStyle?.copyWith(
+            fontWeight: emphasizedWeight,
+            letterSpacing: -0.4,
+            color: scheme.onSurface,
           ),
-          const SizedBox(height: 2),
-          Text(
-            timePart,
-            style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          timePart,
+          style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }
