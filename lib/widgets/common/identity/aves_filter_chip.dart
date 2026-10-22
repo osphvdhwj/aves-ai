@@ -21,6 +21,7 @@ import 'package:aves/widgets/filter_grids/common/action_delegates/chip.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:aves/widgets/common/motion/spring_transition.dart';
 import 'package:provider/provider.dart';
 
 typedef AFilterCallback<T extends CollectionFilter> = void Function(T filter);
@@ -446,10 +447,8 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
       }
     }
     final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    return AnimatedScale(
+    return SpringScale(
       scale: (_pressed && !disableAnimations) ? 0.96 : 1.0,
-      duration: const Duration(milliseconds: 120),
-      curve: Curves.easeOut,
       child: chip,
     );
   }
