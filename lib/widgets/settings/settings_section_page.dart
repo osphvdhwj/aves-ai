@@ -9,6 +9,9 @@ class SettingsSectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return AvesScaffold(
       appBar: AppBar(title: Text(section.title(context))),
       body: SafeArea(
@@ -19,13 +22,35 @@ class SettingsSectionPage extends StatelessWidget {
             if (tiles == null) {
               return const Center(child: CircularProgressIndicator());
             }
+            if (tiles.isEmpty) {
+              return const SizedBox();
+            }
 
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: tiles.length,
-              itemBuilder: (context, index) {
-                return tiles[index].build(context);
-              },
+            return ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < tiles.length; i++) ...[
+                        tiles[i].build(context),
+                        if (i < tiles.length - 1)
+                          Divider(
+                            height: 1,
+                            indent: 16,
+                            endIndent: 16,
+                            color: colors.outlineVariant.withValues(alpha: 0.3),
+                          ),
+                      ]
+                    ],
+                  ),
+                ),
+              ],
             );
           },
         ),
