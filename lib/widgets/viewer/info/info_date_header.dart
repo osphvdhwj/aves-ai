@@ -23,7 +23,9 @@ class InfoDateHeader extends StatelessWidget {
     final scheme = theme.colorScheme;
     final tokens = context.m3e;
 
-    final datePart = locale.yMMMMd(date);
+    // Compose 'Fri, Jan 10, 2025' from MMMEd + y. AvesLocale has no
+    // standalone EEEE getter, and yMMMMd drops the weekday entirely.
+    final datePart = '${locale.MMMEd(date)}, ${locale.y(date)}';
     final timePart = formatTime(date, locale, use24hour);
 
     final baseStyle = theme.textTheme.headlineSmall;
