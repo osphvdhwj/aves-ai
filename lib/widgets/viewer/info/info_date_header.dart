@@ -42,6 +42,8 @@ class InfoDateHeader extends StatelessWidget {
       children: [
         Text(
           datePart,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: baseStyle?.copyWith(
             fontWeight: emphasizedWeight,
             letterSpacing: -0.4,
@@ -51,6 +53,8 @@ class InfoDateHeader extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           timePart,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
         ),
       ],
