@@ -281,7 +281,10 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
         : null;
     Widget header = Text(
       title,
-      style: AStyles.knownTitleText,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
     if (settings.useTvLayout) {
       header = Padding(
