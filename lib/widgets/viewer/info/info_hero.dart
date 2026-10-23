@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/action_controls/togglers/favourite.dart';

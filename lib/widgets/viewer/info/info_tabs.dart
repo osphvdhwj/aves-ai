@@ -2,6 +2,7 @@ import 'package:aves/app_mode.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/themes.dart';
+import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/basic/insets.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';

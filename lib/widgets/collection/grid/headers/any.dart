@@ -17,6 +17,7 @@ class const CollectionSectionHeader({
   required final SectionKey sectionKey,
   required final double height,
   required final bool selectable,
+  final int? count,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
