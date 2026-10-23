@@ -218,11 +218,6 @@ class Dependencies {
       sourceUrl: 'https://github.com/foresightmobile/flutter_markdown_plus',
     ),
     Dependency(
-      name: 'Flutter Staggered Animations (Aves fork)',
-      license: mit,
-      sourceUrl: 'https://github.com/deckerst/flutter_staggered_animations',
-    ),
-    Dependency(
       name: 'Kurd Localization',
       license: isc,
       sourceUrl: 'https://github.com/khalisit/kurd_localization',
