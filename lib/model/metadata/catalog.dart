@@ -72,6 +72,7 @@ class CatalogMetadata {
     String? xmpTitle,
     String? xmpDescription,
     int? rating,
+    bool clearLocation = false,
   }) {
     return CatalogMetadata(
       id: id ?? this.id,
@@ -89,8 +90,8 @@ class CatalogMetadata {
       xmpSubjects: xmpSubjects ?? this.xmpSubjects,
       xmpTitle: xmpTitle ?? this.xmpTitle,
       xmpDescription: xmpDescription ?? this.xmpDescription,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
+      latitude: clearLocation ? null : (latitude ?? this.latitude),
+      longitude: clearLocation ? null : (longitude ?? this.longitude),
       rating: rating ?? this.rating,
     );
   }

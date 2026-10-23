@@ -130,13 +130,31 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       metadata[MetadataType.mp4] = Map<String, String?>.fromEntries(mp4Fields.entries.map((kv) => MapEntry(kv.key.toPlatform!, kv.value)));
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
-      dataTypes.addAll({
-        EntryDataType.catalog,
-        EntryDataType.address,
-      });
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.addAll({
+          EntryDataType.catalog,
+          EntryDataType.address,
+        });
+      }
     }
+
+    if (!success) {
+      if (latLng == null || latLng == removalLocation) {
+        catalogMetadata = catalogMetadata?.copyWith(clearLocation: true);
+      } else {
+        catalogMetadata = catalogMetadata?.copyWith(
+          latitude: latLng.latitude,
+          longitude: latLng.longitude,
+        );
+      }
+      hasLocalMetadataEdit = true;
+      dataTypes.addAll({EntryDataType.catalog, EntryDataType.address});
+    }
+
     return dataTypes;
   }
 

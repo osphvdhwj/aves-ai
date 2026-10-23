@@ -53,6 +53,8 @@ extension ExtraAvesEntryCatalog on AvesEntry {
             xmpTitle: catalogMetadata?.xmpTitle,
             xmpSubjects: catalogMetadata?.xmpSubjects,
             rating: catalogMetadata?.rating,
+            latitude: catalogMetadata?.latitude,
+            longitude: catalogMetadata?.longitude,
           );
         } else {
           catalogMetadata = newMetadata;
