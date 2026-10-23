@@ -63,19 +63,19 @@ jobs:
       - name: Generate app localizations
         run: ./flutterw gen-l10n
 
-      - name: Build APK (arm64-v8a only)
+      - name: Build APK (signed release)
+        if: steps.key_check.outputs.HAS_KEY == 'true'
         env:
           AVES_STORE_FILE: ${{ secrets.AVES_STORE_FILE }}
           AVES_STORE_PASSWORD: ${{ secrets.AVES_STORE_PASSWORD }}
           AVES_KEY_ALIAS: ${{ secrets.AVES_KEY_ALIAS }}
           AVES_KEY_PASSWORD: ${{ secrets.AVES_KEY_PASSWORD }}
           AVES_GOOGLE_API_KEY: ${{ secrets.AVES_GOOGLE_API_KEY }}
-        run: |
-          BUILD_MODE=release
-          if [ "${{ steps.key_check.outputs.HAS_KEY }}" != "true" ]; then
-            BUILD_MODE=debug
-          fi
-          ./flutterw build apk --$BUILD_MODE -t lib/main_play.dart --flavor play --target-platform android-arm64
+        run: ./flutterw build apk --release -t lib/main_play.dart --flavor play --target-platform android-arm64
+
+      - name: Build APK (debug fallback)
+        if: steps.key_check.outputs.HAS_KEY != 'true'
+        run: ./flutterw build apk --debug -t lib/main_play.dart --flavor play --target-platform android-arm64
 
       - name: Locate APK
         run: find build/app/outputs -name '*.apk' -type f

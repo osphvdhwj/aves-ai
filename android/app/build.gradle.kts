@@ -81,7 +81,10 @@ android {
 
     signingConfigs {
         val storeFilePath = keystoreProperties["storeFile"] as String?
-        if (storeFilePath != null) {
+        // Treat empty string the same as null. GitHub Actions passes empty
+        // env vars when secrets are missing, which would otherwise make
+        // `file("")` throw during Gradle config-time.
+        if (!storeFilePath.isNullOrEmpty()) {
             println("Create signing config for release using file=$storeFilePath")
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String
@@ -89,6 +92,8 @@ android {
                 storeFile = file(storeFilePath)
                 storePassword = keystoreProperties["storePassword"] as String
             }
+        } else {
+            println("No signing keystore configured — release builds will use the debug signing config.")
         }
     }
 
