@@ -28,7 +28,10 @@ extension ExtraAvesEntryCatalog on AvesEntry {
         };
         await applyNewFields(fields, persist: persist);
       }
-      catalogMetadata = CatalogMetadata(id: id);
+      // preserve local metadata edits for SVG (no EXIF/XMP in the file format)
+      if (!hasLocalMetadataEdit) {
+        catalogMetadata = CatalogMetadata(id: id);
+      }
     } else {
       // pre-processing
       if (isVideo || mimeType == MimeTypes.avif) {
