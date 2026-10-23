@@ -472,8 +472,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     final selectedItemCount = selection.selectedItemCount;
     final hasSelection = selectedItemCount > 0;
 
-    final browsingQuickActions = settings.collectionBrowsingQuickActions;
-    final selectionQuickActions = isTrash ? _trashSelectionQuickActions : settings.collectionSelectionQuickActions;
+    final browsingQuickActions = settings.collectionBrowsingQuickActions.where((a) => a != EntrySetAction.searchCollection);
+    final selectionQuickActions = (isTrash ? _trashSelectionQuickActions : settings.collectionSelectionQuickActions).where((a) => a != EntrySetAction.searchCollection);
     final quickActions = (isSelecting ? selectionQuickActions : browsingQuickActions).take(max(0, availableCount - 1)).toList();
     final quickActionButtons = quickActions
         .where(isVisible)

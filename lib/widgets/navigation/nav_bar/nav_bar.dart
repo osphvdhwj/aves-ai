@@ -17,6 +17,9 @@ class AppBottomNavBar extends StatefulWidget {
 
   // collection loaded in the `CollectionPage`, if any
   final CollectionLens? currentCollection;
+  
+  // Optional widget (e.g. FAB) to render alongside the nav bar
+  final Widget? trailing;
 
   // M3 NavigationBar default height
   static const double _barHeight = 76.0;
@@ -26,6 +29,7 @@ class AppBottomNavBar extends StatefulWidget {
     super.key,
     required this.events,
     this.currentCollection,
+    this.trailing,
   });
 
   @override
@@ -72,23 +76,37 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
       events: widget.events,
       childHeight: AppBottomNavBar.height + context.select<MediaQueryData, double>((mq) => mq.effectiveBottomPadding),
       child: SafeArea(
-        child: AvesFloatingBar(
-          builder: (context, backgroundColor, child) => NavigationBar(
-            destinations: items.map((item) {
-              final label = item.getText(context);
-              return NavigationDestination(
-                icon: item.getIcon(context),
-                label: label,
-                tooltip: label,
-              );
-            }).toList(),
-            onDestinationSelected: (index) => _goTo(context, items, index),
-            selectedIndex: _getCurrentIndex(context, items),
-            backgroundColor: backgroundColor,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-            height: AppBottomNavBar._barHeight,
-            indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: AvesFloatingBar(
+                builder: (context, backgroundColor, child) => NavigationBar(
+                  destinations: items.map((item) {
+                    final label = item.getText(context);
+                    return NavigationDestination(
+                      icon: item.getIcon(context),
+                      label: label,
+                      tooltip: label,
+                    );
+                  }).toList(),
+                  onDestinationSelected: (index) => _goTo(context, items, index),
+                  selectedIndex: _getCurrentIndex(context, items),
+                  backgroundColor: backgroundColor,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+                  height: AppBottomNavBar._barHeight,
+                  indicatorColor: Theme.of(context).colorScheme.secondaryContainer,
+                ),
+              ),
+            ),
+            if (widget.trailing != null) ...[
+              const SizedBox(width: 12),
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: widget.trailing!,
+              ),
+            ],
+          ],
         ),
       ),
     );
