@@ -7,7 +7,7 @@ class CatalogMetadata {
   final bool isAnimated, isGeotiff, is360, isMultiPage, isMotionPhoto, isHdr, isSlowMotion;
   bool isFlipped;
   int? rotationDegrees;
-  final String? mimeType, xmpSubjects, xmpTitle;
+  final String? mimeType, xmpSubjects, xmpTitle, xmpDescription;
   double? latitude, longitude;
   Address? address;
   int rating;
@@ -39,6 +39,7 @@ class CatalogMetadata {
     this.rotationDegrees,
     this.xmpSubjects,
     this.xmpTitle,
+    this.xmpDescription,
     double? latitude,
     double? longitude,
     this.rating = 0,
@@ -67,6 +68,10 @@ class CatalogMetadata {
     int? rotationDegrees,
     double? latitude,
     double? longitude,
+    String? xmpSubjects,
+    String? xmpTitle,
+    String? xmpDescription,
+    int? rating,
   }) {
     return CatalogMetadata(
       id: id ?? this.id,
@@ -81,11 +86,12 @@ class CatalogMetadata {
       isHdr: isHdr,
       isSlowMotion: isSlowMotion ?? this.isSlowMotion,
       rotationDegrees: rotationDegrees ?? this.rotationDegrees,
-      xmpSubjects: xmpSubjects,
-      xmpTitle: xmpTitle,
+      xmpSubjects: xmpSubjects ?? this.xmpSubjects,
+      xmpTitle: xmpTitle ?? this.xmpTitle,
+      xmpDescription: xmpDescription ?? this.xmpDescription,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
-      rating: rating,
+      rating: rating ?? this.rating,
     );
   }
 
@@ -107,6 +113,7 @@ class CatalogMetadata {
       rotationDegrees: map['rotationDegrees'],
       xmpSubjects: map['xmpSubjects'] ?? '',
       xmpTitle: map['xmpTitle'] ?? '',
+      xmpDescription: map['xmpDescription'] ?? '',
       latitude: map['latitude'],
       longitude: map['longitude'],
       rating: map['rating'] ?? 0,
@@ -129,6 +136,7 @@ class CatalogMetadata {
     'rotationDegrees': rotationDegrees,
     'xmpSubjects': xmpSubjects,
     'xmpTitle': xmpTitle,
+    'xmpDescription': xmpDescription,
     'latitude': latitude,
     'longitude': longitude,
     'rating': rating,
@@ -141,5 +149,5 @@ class CatalogMetadata {
       '$runtimeType#${shortHash(this)}{id=$id, mimeType=$mimeType, dateMillis=$dateMillis'
       ', isAnimated=$isAnimated, isFlipped=$isFlipped, isGeotiff=$isGeotiff, is360=$is360'
       ', isMultiPage=$isMultiPage, isMotionPhoto=$isMotionPhoto, isHdr=$isHdr, isSlowMotion=$isSlowMotion'
-      ', rotationDegrees=$rotationDegrees, xmpSubjects=$xmpSubjects, xmpTitle=$xmpTitle, latitude=$latitude, longitude=$longitude, rating=$rating}';
+      ', rotationDegrees=$rotationDegrees, xmpSubjects=$xmpSubjects, xmpTitle=$xmpTitle, xmpDescription=$xmpDescription, latitude=$latitude, longitude=$longitude, rating=$rating}';
 }

@@ -44,7 +44,20 @@ extension ExtraAvesEntryCatalog on AvesEntry {
       }
 
       // cataloguing on platform
-      catalogMetadata = await metadataFetchService.getCatalogMetadata(this, background: background);
+      final newMetadata = await metadataFetchService.getCatalogMetadata(this, background: background);
+      if (newMetadata != null) {
+        if (hasLocalMetadataEdit) {
+          // if this file had metadata edited locally (e.g. via fallback for unsupported formats),
+          // merge the file's fresh data with our local edits
+          catalogMetadata = newMetadata.copyWith(
+            xmpTitle: catalogMetadata?.xmpTitle,
+            xmpSubjects: catalogMetadata?.xmpSubjects,
+            rating: catalogMetadata?.rating,
+          );
+        } else {
+          catalogMetadata = newMetadata;
+        }
+      }
 
       // post-processing
       if ((isVideo && (catalogMetadata?.dateMillis ?? 0) == 0) || (mimeType == MimeTypes.avif && durationMillis != null)) {

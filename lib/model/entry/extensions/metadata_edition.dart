@@ -82,6 +82,12 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       }
     }
 
+    if (dataTypes.isEmpty && appliedModifier.setDateTime != null) {
+      catalogDateMillis = appliedModifier.setDateTime!.millisecondsSinceEpoch;
+      hasLocalMetadataEdit = true;
+      dataTypes.addAll({EntryDataType.basic, EntryDataType.catalog});
+    }
+
     return dataTypes;
   }
 
@@ -252,12 +258,26 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
-      dataTypes.addAll({
-        EntryDataType.basic,
-        EntryDataType.catalog,
-      });
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.addAll({
+          EntryDataType.basic,
+          EntryDataType.catalog,
+        });
+      }
+    }
+
+    if (!success) {
+      // Fallback to local DB for unsupported formats
+      catalogMetadata = catalogMetadata?.copyWith(
+        xmpTitle: editTitle ? (title ?? '') : catalogMetadata?.xmpTitle,
+        xmpDescription: editDescription ? (description ?? '') : catalogMetadata?.xmpDescription,
+      );
+      hasLocalMetadataEdit = true;
+      dataTypes.add(EntryDataType.catalog);
     }
 
     return dataTypes;
@@ -284,8 +304,18 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.add(EntryDataType.catalog);
+      }
+    }
+
+    if (!success) {
+      catalogMetadata = catalogMetadata?.copyWith(xmpSubjects: tags.join(';'));
+      hasLocalMetadataEdit = true;
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;
@@ -308,8 +338,18 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.add(EntryDataType.catalog);
+      }
+    }
+
+    if (!success) {
+      catalogMetadata = catalogMetadata?.copyWith(rating: rating ?? 0);
+      hasLocalMetadataEdit = true;
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;

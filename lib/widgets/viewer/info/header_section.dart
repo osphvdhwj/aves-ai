@@ -158,6 +158,11 @@ class _CaptionRowState extends State<_CaptionRow> {
   }
 
   Future<void> _load() async {
+    if (entry.hasLocalMetadataEdit) {
+      if (!mounted) return;
+      setState(() => _description = entry.catalogMetadata?.xmpDescription);
+      return;
+    }
     try {
       final fields = await metadataFetchService.getOverlayMetadata(entry, {MetadataSyntheticField.description});
       if (!mounted) return;
