@@ -10,6 +10,8 @@ import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/basic/insets.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
+import 'package:aves/model/entry/extensions/favourites.dart';
+import 'package:aves/widgets/common/action_controls/togglers/favourite.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
@@ -466,15 +468,29 @@ class _InfoTitleRow extends StatelessWidget {
     final title = entry.bestTitle ?? '';
     if (title.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Text(
-        title,
-        style: theme.textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: colors.onSurface,
-        ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+      padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          FavouriteToggler(
+            entries: {entry},
+            onPressed: () => entry.toggleFavourite(),
+          ),
+        ],
       ),
     );
   }
