@@ -336,7 +336,11 @@ class _ExplorerContentLine extends StatelessWidget {
               height: leadingDim,
               child: Icon(AIcons.folder),
             ),
-      title: Text('${Unicode.FSI}${pContext.split(entity.path).last}${Unicode.PDI}'),
+      title: Text(
+        '${Unicode.FSI}${pContext.split(entity.path).last}${Unicode.PDI}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       onTap: () => _GoToPathNotification(entity.path).dispatch(context),
     );
   }

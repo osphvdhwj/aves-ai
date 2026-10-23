@@ -225,7 +225,11 @@ class _EditEntryDateDialogState extends State<EditEntryDateDialog> {
                         _validate();
                         setState(() {});
                       },
-                      title: Text(field.title),
+                      title: Text(
+                        field.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                   .toList(),

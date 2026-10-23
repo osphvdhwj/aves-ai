@@ -254,7 +254,11 @@ class CleanerBucketPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(bucket.title),
+        title: Text(
+          bucket.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         leading: IconButton(
           icon: const Icon(Symbols.close),
           onPressed: () => Navigator.of(context).maybePop(),

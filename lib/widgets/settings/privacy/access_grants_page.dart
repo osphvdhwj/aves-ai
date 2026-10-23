@@ -68,7 +68,11 @@ class _StorageAccessPageState extends State<StorageAccessPage> {
                 const Divider(),
                 ..._lastPaths!.map(
                   (path) => ListTile(
-                    title: Text(path),
+                    title: Text(
+                      path,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     dense: true,
                     trailing: IconButton(
                       icon: const Icon(AIcons.clear),
