@@ -36,7 +36,7 @@ class _DebugGeneralSectionState extends State<DebugGeneralSection> with Automati
       children: [
         const Padding(
           padding: EdgeInsets.all(8),
-          child: Text('Time dilation'),
+          child: const Text('Time dilation'),
         ),
         Slider(
           value: timeDilation,

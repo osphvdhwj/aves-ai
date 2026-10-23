@@ -201,7 +201,7 @@ class _AutoTagPageState extends State<AutoTagPage> {
                         children: [
                           CircularProgressIndicator(),
                           SizedBox(height: 16),
-                          Text('Finding tag suggestions…'),
+                          const Text('Finding tag suggestions…'),
                         ],
                       ),
                     );

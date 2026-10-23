@@ -235,7 +235,7 @@ class _GroupCard extends StatelessWidget {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Auto-resolve needs the AI companion.'),
+                        content: const Text('Auto-resolve needs the AI companion.'),
                         duration: Duration(seconds: 2),
                       ),
                     );
@@ -247,7 +247,7 @@ class _GroupCard extends StatelessWidget {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Select and delete is not yet wired.'),
+                        content: const Text('Select and delete is not yet wired.'),
                         duration: Duration(seconds: 2),
                       ),
                     );

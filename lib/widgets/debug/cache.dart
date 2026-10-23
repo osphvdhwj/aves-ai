@@ -44,7 +44,7 @@ class _DebugCacheSectionState extends State<DebugCacheSection> with AutomaticKee
             children: [
               Row(
                 children: [
-                  const Expanded(child: Text('Image cache')),
+                  const Expanded(child: const Text('Image cache')),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {
@@ -109,7 +109,7 @@ class _DebugCacheSectionState extends State<DebugCacheSection> with AutomaticKee
               Row(
                 children: [
                   const Expanded(
-                    child: Text('Glide disk cache: ?'),
+                    child: const Text('Glide disk cache: ?'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -121,7 +121,7 @@ class _DebugCacheSectionState extends State<DebugCacheSection> with AutomaticKee
               Row(
                 children: [
                   const Expanded(
-                    child: Text('Glide memory cache: ?'),
+                    child: const Text('Glide memory cache: ?'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(

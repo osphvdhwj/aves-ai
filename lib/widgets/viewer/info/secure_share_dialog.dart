@@ -107,7 +107,7 @@ class _SecureShareDialogState extends State<_SecureShareDialog> {
     Navigator.of(context).maybePop();
     messenger.showSnackBar(
       const SnackBar(
-        content: Text('Secure share is not yet available in this build.'),
+        content: const Text('Secure share is not yet available in this build.'),
         duration: Duration(seconds: 2),
       ),
     );

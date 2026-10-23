@@ -116,7 +116,7 @@ class _AiToolsPageState extends State<AiToolsPage> {
             ? () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Open a photo and long-press the text button.'),
+                    content: const Text('Open a photo and long-press the text button.'),
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -143,7 +143,7 @@ class _AiToolsPageState extends State<AiToolsPage> {
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Open a photo and tap the shield action.'),
+              content: const Text('Open a photo and tap the shield action.'),
               duration: Duration(seconds: 2),
             ),
           );

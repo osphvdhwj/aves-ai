@@ -83,7 +83,7 @@ class _SyncSigninDialogState extends State<_SyncSigninDialog> {
                   Navigator.of(context).maybePop();
                   messenger.showSnackBar(
                     const SnackBar(
-                      content: Text('Sign-in is not yet available in this build.'),
+                      content: const Text('Sign-in is not yet available in this build.'),
                       duration: Duration(seconds: 2),
                     ),
                   );
