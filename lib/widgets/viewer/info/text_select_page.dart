@@ -46,6 +46,7 @@ class _TextSelectPageState extends State<TextSelectPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Symbols.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: const Text('Select text'),

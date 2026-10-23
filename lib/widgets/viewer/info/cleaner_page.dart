@@ -73,6 +73,7 @@ class _CleanerPageState extends State<CleanerPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Symbols.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: const Text('Cleaner'),
@@ -261,6 +262,7 @@ class CleanerBucketPage extends StatelessWidget {
         ),
         leading: IconButton(
           icon: const Icon(Symbols.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
       ),

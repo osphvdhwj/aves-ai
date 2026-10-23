@@ -158,6 +158,7 @@ class _AutoTagPageState extends State<AutoTagPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Symbols.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: const Text('Auto-tag'),
