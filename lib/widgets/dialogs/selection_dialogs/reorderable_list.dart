@@ -1,4 +1,5 @@
 import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
@@ -36,7 +37,7 @@ class _AvesReorderableListDialogState<T> extends State<AvesReorderableListDialog
   @override
   Widget build(BuildContext context) {
     final title = widget.title;
-    final verticalPadding = title == null ? AvesDialog.cornerRadius.y / 2 : .0;
+    final verticalPadding = title == null ? context.m3e.shapeExtraLarge / 2 : .0;
     return AvesDialog(
       title: title,
       scrollableContent: [

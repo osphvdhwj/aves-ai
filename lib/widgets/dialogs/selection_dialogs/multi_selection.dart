@@ -1,3 +1,4 @@
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -33,7 +34,7 @@ class _AvesMultiSelectionDialogState<T> extends State<AvesMultiSelectionDialog<T
   Widget build(BuildContext context) {
     final title = widget.title;
     final message = widget.message;
-    final verticalPadding = (title == null && message == null) ? AvesDialog.cornerRadius.y / 2 : .0;
+    final verticalPadding = (title == null && message == null) ? context.m3e.shapeExtraLarge / 2 : .0;
     return AvesDialog(
       title: title,
       scrollableContent: [

@@ -17,7 +17,8 @@ class AvesDialog extends StatefulWidget {
   final Widget? content;
   final List<Widget> actions;
 
-  static const Radius cornerRadius = Radius.circular(28);
+  static Radius cornerRadiusOf(BuildContext context) =>
+      Radius.circular(context.m3e.shapeExtraLarge);
   static const double defaultHorizontalContentPadding = 24;
   static const double controlCaptionPadding = 16;
   static const double borderWidth = 1.0;
@@ -42,8 +43,8 @@ class AvesDialog extends StatefulWidget {
   static Decoration contentDecoration(BuildContext context) => const BoxDecoration();
 
   static ShapeBorder shape(BuildContext context) {
-    return const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(cornerRadius),
+    return RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
     );
   }
 }
@@ -119,7 +120,7 @@ class _AvesDialogState extends State<AvesDialog> {
               radius: Radius.circular(context.m3e.shapeLarge),
               crossAxisMargin: 4,
               // adapt margin when corner is around content itself, not outside for the title
-              mainAxisMargin: 4 + (widget.title != null ? 0 : AvesDialog.cornerRadius.y / 2),
+              mainAxisMargin: 4 + (widget.title != null ? 0 : context.m3e.shapeExtraLarge / 2),
               interactive: true,
             ),
           ),

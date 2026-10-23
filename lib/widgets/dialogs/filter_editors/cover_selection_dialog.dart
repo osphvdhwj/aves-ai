@@ -153,8 +153,8 @@ class _CoverSelectionDialogState extends State<CoverSelectionDialog> {
               mainAxisSize: .min,
               children: [
                 Material(
-                  borderRadius: const BorderRadius.vertical(
-                    top: AvesDialog.cornerRadius,
+                  borderRadius: BorderRadius.vertical(
+                    top: AvesDialog.cornerRadiusOf(context),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: TabBar(
