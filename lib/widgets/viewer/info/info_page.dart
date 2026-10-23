@@ -27,6 +27,7 @@ import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/multipage/conductor.dart';
 import 'package:aves/widgets/viewer/page_entry_builder.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -173,7 +174,8 @@ class _InfoPageContent extends StatefulWidget {
   State<_InfoPageContent> createState() => _InfoPageContentState();
 }
 
-class _InfoPageContentState extends State<_InfoPageContent> {
+class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
   final Set<StreamSubscription> _subscriptions = {};
   late EntryInfoActionDelegate _actionDelegate;
   final ValueNotifier<bool> _isBasicSectionVisibleNotifier = ValueNotifier(false);
@@ -194,6 +196,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
     _registerWidget(widget);
     // necessary when animations are disabled and page is in full view from first frame
     _onPageInViewChanged();
@@ -217,6 +220,7 @@ class _InfoPageContentState extends State<_InfoPageContent> {
 
   @override
   void dispose() {
+    _tabController.dispose();
     _isBasicSectionVisibleNotifier.dispose();
     _isMetadataSectionVisibleNotifier.dispose();
     _isColorSectionVisibleNotifier.dispose();
@@ -298,103 +302,71 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       child: Column(
         children: [
           Expanded(
-            child: CustomScrollView(
+            child: NestedScrollView(
               controller: widget.scrollController,
-              slivers: [
-          const SliverToBoxAdapter(
-            child: TvEdgeFocus(),
-          ),
-          InfoAppBar(
-            entry: entry,
-            collection: collection,
-            actionDelegate: _actionDelegate,
-            metadataNotifier: _metadataNotifier,
-            onBackPressed: widget.goToViewer,
-          ),
-          SliverToBoxAdapter(
-            child: InfoFadeIn(
-              index: 0,
-              child: InfoHeaderSection(
-                entry: entry,
-                collection: collection,
-                actionDelegate: _actionDelegate,
-              ),
-            ),
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isBasicSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: detailsAndLocationSliver,
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isBasicSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: SliverToBoxAdapter(
-                        child: InfoFadeIn(
-                          index: 3,
-                          child: AiTagsSection(
-                            entry: entry,
-                            actionDelegate: _actionDelegate,
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isBasicSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: SliverToBoxAdapter(
-                        child: InfoFadeIn(
-                          index: 4,
-                          child: chipsSection,
-                        ),
-                      ),
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isMetadataSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(bottom: 8),
-                      sliver: MetadataSectionSliver(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  const SliverToBoxAdapter(
+                    child: TvEdgeFocus(),
+                  ),
+                  InfoAppBar(
+                    entry: entry,
+                    collection: collection,
+                    actionDelegate: _actionDelegate,
+                    metadataNotifier: _metadataNotifier,
+                    onBackPressed: widget.goToViewer,
+                  ),
+                  SliverToBoxAdapter(
+                    child: InfoFadeIn(
+                      index: 0,
+                      child: InfoHeaderSection(
                         entry: entry,
-                        metadataNotifier: _metadataNotifier,
+                        collection: collection,
+                        actionDelegate: _actionDelegate,
                       ),
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          if (!settings.useTvLayout)
-            ValueListenableBuilder<bool>(
-              valueListenable: _isColorSectionVisibleNotifier,
-              builder: (context, visible, child) {
-                return visible
-                    ? SliverPadding(
-                        padding: _horizontalPadding + const EdgeInsets.only(bottom: 8),
-                        sliver: ColorSectionSliver(entry: entry),
-                      )
-                    : const SliverToBoxAdapter(child: SizedBox());
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _TabBarDelegate(
+                      TabBar(
+                        controller: _tabController,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        tabs: const [
+                          Tab(text: 'Overview', icon: Icon(Symbols.home)),
+                          Tab(text: 'Metadata', icon: Icon(Symbols.info)),
+                          Tab(text: 'AI Tools', icon: Icon(Symbols.auto_awesome)),
+                          Tab(text: 'Actions', icon: Icon(Symbols.more_horiz)),
+                        ],
+                      ),
+                      Theme.of(context).colorScheme.surface,
+                    ),
+                  ),
+                ];
               },
-            ),
-          const BottomPaddingSliver(),
-        ],
+              body: TabBarView(
+                controller: _tabController,
+                children: [
+                  _OverviewTab(
+                    entry: entry,
+                    collection: collection,
+                    split: widget.split,
+                    actionDelegate: _actionDelegate,
+                    chipsSection: chipsSection,
+                    detailsSection: detailsSection,
+                    locationSection: locationSection,
+                    isBasicSectionVisibleNotifier: _isBasicSectionVisibleNotifier,
+                    isMetadataSectionVisibleNotifier: _isMetadataSectionVisibleNotifier,
+                    isColorSectionVisibleNotifier: _isColorSectionVisibleNotifier,
+                    metadataNotifier: _metadataNotifier,
+                    horizontalPadding: _horizontalPadding,
+                  ),
+                  const Center(child: Text('Metadata Tab (Coming Soon)')),
+                  const Center(child: Text('AI Tools Tab (Coming Soon)')),
+                  const Center(child: Text('Actions Tab (Coming Soon)')),
+                ],
+              ),
             ),
           ),
           if (settings.showOverlayThumbnailPreview && settings.showInfoThumbnail)
@@ -462,6 +434,168 @@ class _InfoBottomThumbnail extends StatelessWidget {
                 },
         ),
       ),
+    );
+  }
+}
+
+
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  _TabBarDelegate(this.tabBar, this.backgroundColor);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_TabBarDelegate oldDelegate) {
+    return tabBar != oldDelegate.tabBar || backgroundColor != oldDelegate.backgroundColor;
+  }
+}
+
+class _OverviewTab extends StatelessWidget {
+  final AvesEntry entry;
+  final CollectionLens? collection;
+  final bool split;
+  final EntryInfoActionDelegate actionDelegate;
+  final Widget chipsSection;
+  final Widget detailsSection;
+  final Widget locationSection;
+  final ValueNotifier<bool> isBasicSectionVisibleNotifier;
+  final ValueNotifier<bool> isMetadataSectionVisibleNotifier;
+  final ValueNotifier<bool> isColorSectionVisibleNotifier;
+  final ValueNotifier<Map<String, MetadataDirectory>> metadataNotifier;
+  final EdgeInsets horizontalPadding;
+
+  const _OverviewTab({
+    required this.entry,
+    required this.collection,
+    required this.split,
+    required this.actionDelegate,
+    required this.chipsSection,
+    required this.detailsSection,
+    required this.locationSection,
+    required this.isBasicSectionVisibleNotifier,
+    required this.isMetadataSectionVisibleNotifier,
+    required this.isColorSectionVisibleNotifier,
+    required this.metadataNotifier,
+    required this.horizontalPadding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final locationAtTop = split && entry.hasGps;
+    final detailsAndLocationSliver = locationAtTop
+        ? SliverToBoxAdapter(
+            child: InfoFadeIn(
+              index: 1,
+              child: Row(
+                crossAxisAlignment: .start,
+                children: [
+                  Expanded(child: detailsSection),
+                  const SizedBox(width: 8),
+                  Expanded(child: locationSection),
+                ],
+              ),
+            ),
+          )
+        : SliverList(
+            delegate: SliverChildListDelegate.fixed(
+              [
+                InfoFadeIn(index: 1, child: detailsSection),
+                InfoFadeIn(index: 2, child: locationSection),
+              ],
+              addAutomaticKeepAlives: true,
+            ),
+          );
+
+    return CustomScrollView(
+      slivers: [
+        ValueListenableBuilder<bool>(
+          valueListenable: isBasicSectionVisibleNotifier,
+          builder: (context, visible, child) {
+            return visible
+                ? SliverPadding(
+                    padding: horizontalPadding + const EdgeInsets.only(top: 8),
+                    sliver: detailsAndLocationSliver,
+                  )
+                : const SliverToBoxAdapter(child: SizedBox());
+          },
+        ),
+        ValueListenableBuilder<bool>(
+          valueListenable: isBasicSectionVisibleNotifier,
+          builder: (context, visible, child) {
+            return visible
+                ? SliverPadding(
+                    padding: horizontalPadding + const EdgeInsets.only(top: 8),
+                    sliver: SliverToBoxAdapter(
+                      child: InfoFadeIn(
+                        index: 3,
+                        child: AiTagsSection(
+                          entry: entry,
+                          actionDelegate: actionDelegate,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SliverToBoxAdapter(child: SizedBox());
+          },
+        ),
+        ValueListenableBuilder<bool>(
+          valueListenable: isBasicSectionVisibleNotifier,
+          builder: (context, visible, child) {
+            return visible
+                ? SliverPadding(
+                    padding: horizontalPadding + const EdgeInsets.only(top: 8),
+                    sliver: SliverToBoxAdapter(
+                      child: InfoFadeIn(
+                        index: 4,
+                        child: chipsSection,
+                      ),
+                    ),
+                  )
+                : const SliverToBoxAdapter(child: SizedBox());
+          },
+        ),
+        ValueListenableBuilder<bool>(
+          valueListenable: isMetadataSectionVisibleNotifier,
+          builder: (context, visible, child) {
+            return visible
+                ? SliverPadding(
+                    padding: horizontalPadding + const EdgeInsets.only(bottom: 8),
+                    sliver: MetadataSectionSliver(
+                      entry: entry,
+                      metadataNotifier: metadataNotifier,
+                    ),
+                  )
+                : const SliverToBoxAdapter(child: SizedBox());
+          },
+        ),
+        if (!settings.useTvLayout)
+          ValueListenableBuilder<bool>(
+            valueListenable: isColorSectionVisibleNotifier,
+            builder: (context, visible, child) {
+              return visible
+                  ? SliverPadding(
+                      padding: horizontalPadding + const EdgeInsets.only(bottom: 8),
+                      sliver: ColorSectionSliver(entry: entry),
+                    )
+                  : const SliverToBoxAdapter(child: SizedBox());
+            },
+          ),
+        const BottomPaddingSliver(),
+      ],
     );
   }
 }
