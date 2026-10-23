@@ -7,7 +7,6 @@ import 'package:aves/widgets/common/action_controls/quick_choosers/common/quick_
 import 'package:aves_ui/aves_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class MenuQuickChooser<T> extends StatefulWidget {
@@ -179,22 +178,9 @@ class _MenuQuickChooserState<T> extends State<MenuQuickChooser<T>> {
                             constraints: BoxConstraints.tightFor(height: itemHeight),
                             child: widget.itemBuilder(context, options[index]),
                           );
-                          if (index < MenuQuickChooser.maxVisibleOptionCount) {
-                            // only animate items visible on first render
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: durations.staggeredAnimation * .5,
-                              delay: durations.staggeredAnimationDelay * .5 * timeDilation,
-                              child: SlideAnimation(
-                                verticalOffset: 50.0 * (widget.chooserPosition == PopupMenuPosition.over ? 1 : -1),
-                                child: FadeInAnimation(
-                                  child: child,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return child;
-                          }
+                          // No per-item entrance animation. The
+                          // Material popup menu already fades in.
+                          return child;
                         },
                         separatorBuilder: (context, index) => const SizedBox(height: _intraPadding),
                         itemCount: options.length,

@@ -53,7 +53,6 @@ import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -350,19 +349,17 @@ class _CollectionSectionedContentState extends State<_CollectionSectionedContent
 
   @override
   Widget build(BuildContext context) {
-    final scrollView = AnimationLimiter(
-      child: _CollectionScrollView(
-        scrollableKey: _scrollableKey,
-        collection: collection,
-        appBar: CollectionAppBar(
-          appBarHeightNotifier: _appBarHeightNotifier,
-          scrollController: scrollController,
-          collection: collection,
-        ),
+    final scrollView = _CollectionScrollView(
+      scrollableKey: _scrollableKey,
+      collection: collection,
+      appBar: CollectionAppBar(
         appBarHeightNotifier: _appBarHeightNotifier,
-        isScrollingNotifier: widget.isScrollingNotifier,
         scrollController: scrollController,
+        collection: collection,
       ),
+      appBarHeightNotifier: _appBarHeightNotifier,
+      isScrollingNotifier: widget.isScrollingNotifier,
+      scrollController: scrollController,
     );
 
     final scaler = _CollectionScaler(

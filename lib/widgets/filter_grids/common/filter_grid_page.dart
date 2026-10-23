@@ -46,7 +46,6 @@ import 'package:aves/widgets/navigation/nav_bar/nav_bar.dart';
 import 'package:aves/widgets/navigation/tv_rail.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -749,7 +748,7 @@ class _FilterScrollView<T extends CollectionFilter> extends StatelessWidget {
                 ),
           slivers: [
             appBar,
-            AnimationLimiter(
+            KeyedSubtree(
               key: ValueKey(context.select<FilterGroupNotifier?, Uri?>((v) => v?.value)),
               child: isEmpty
                   ? SliverFillRemaining(

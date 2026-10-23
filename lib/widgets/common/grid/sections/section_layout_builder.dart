@@ -1,9 +1,7 @@
 import 'package:aves/model/source/section_keys.dart';
-import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/grid/sections/list_layout.dart';
 import 'package:aves/widgets/common/grid/sections/section_layout.dart';
 import 'package:aves_model/aves_model.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -76,18 +74,9 @@ abstract class const SectionLayoutBuilder<T>({
   }
 
   Widget buildAnimation(BuildContext context, int index, Widget child) {
-    final durations = context.watch<DurationsData>();
-    return AnimationConfiguration.staggeredGrid(
-      position: index,
-      columnCount: tileLayout == .mosaic ? 1 : columnCount,
-      duration: durations.staggeredAnimation,
-      delay: tileAnimationDelay,
-      child: SlideAnimation(
-        verticalOffset: 50.0,
-        child: FadeInAnimation(
-          child: child,
-        ),
-      ),
-    );
+    // Items appear immediately. The grid's RepaintBoundary handles
+    // scroll performance; entrance animations on every tile cause
+    // jank in large collections.
+    return child;
   }
 }
