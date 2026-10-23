@@ -18,6 +18,7 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/collection/entry_set_action_delegate.dart';
 import 'package:aves/widgets/collection/filter_bar.dart';
+import 'package:aves/widgets/collection/collection_search_bar.dart';
 import 'package:aves/widgets/collection/layout_bar.dart';
 import 'package:aves/widgets/collection/query_bar.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/move_button.dart';
@@ -223,6 +224,7 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                                   children: _buildActions(context, selection, double.infinity),
                                 ),
                               ),
+                            CollectionSearchBar(onTap: _goToSearch),
                             if (showFilterBar)
                               NotificationListener(
                                 onNotification: (notification) {
