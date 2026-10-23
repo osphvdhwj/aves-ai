@@ -11,6 +11,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
+import 'package:aves/widgets/search/ai_filters_bar.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -230,13 +231,9 @@ class AiSearchDelegate extends AvesSearchDelegate {
             onPrompt: (p) => _onPrompt(context, p),
           );
         }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ResultsHeader(count: entries.length),
-            _SaveQueryBar(query: currentQuery),
-            Expanded(child: _ResultGrid(entries: entries)),
-          ],
+        return _FilteredResultsView(
+          entries: entries,
+          query: currentQuery,
         );
       },
     );
@@ -1147,6 +1144,62 @@ class _SaveQueryBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FilteredResultsView extends StatefulWidget {
+  final List<AvesEntry> entries;
+  final String query;
+
+  const _FilteredResultsView({required this.entries, required this.query});
+
+  @override
+  State<_FilteredResultsView> createState() => _FilteredResultsViewState();
+}
+
+class _FilteredResultsViewState extends State<_FilteredResultsView> {
+  late List<AvesEntry> _filtered;
+
+  @override
+  void initState() {
+    super.initState();
+    _filtered = widget.entries;
+  }
+
+  @override
+  void didUpdateWidget(covariant _FilteredResultsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.entries, widget.entries)) {
+      _filtered = widget.entries;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final empty = _filtered.isEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ResultsHeader(count: _filtered.length),
+        _SaveQueryBar(query: widget.query),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 4),
+          child: AiFiltersBar(
+            entries: widget.entries,
+            onFiltered: (f) => setState(() => _filtered = f),
+          ),
+        ),
+        Expanded(
+          child: empty
+              ? const StatusView(
+                  icon: Symbols.filter_alt_off,
+                  title: 'No results match the filters',
+                  subtitle: 'Clear one of the chips above to see more.',
+                )
+              : _ResultGrid(entries: _filtered),
+        ),
+      ],
     );
   }
 }
