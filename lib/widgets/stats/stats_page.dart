@@ -187,8 +187,7 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
                       if (showRatings) ..._buildFilterSection<int>(context, l10n.searchRatingSectionTitle, _entryCountPerRating, RatingFilter.new, sortByCount: false, maxRowCount: null),
                     ],
                   ),
-                ),
-              );
+                );
           }
         }
 
