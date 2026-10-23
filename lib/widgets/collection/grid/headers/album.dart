@@ -13,12 +13,14 @@ import 'package:material_ui/material_ui.dart';
 class AlbumSectionHeader extends StatelessWidget {
   final String? directory, albumName;
   final bool selectable;
+  final int? count;
 
   const new({
     super.key,
     required this.directory,
     required this.albumName,
     required this.selectable,
+    this.count,
   });
 
   @override
@@ -35,15 +37,28 @@ class AlbumSectionHeader extends StatelessWidget {
     }
     return SectionHeader<AvesEntry>(
       sectionKey: EntryAlbumSectionKey(_directory),
-      leading: albumIcon,
+      leading: albumIcon ?? _buildDot(context),
       title: albumName ?? context.l10n.sectionUnknown,
-      trailing: _directory != null && androidFileUtils.isOnRemovableStorage(_directory)
-          ? Icon(
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count != null)
+            Text(
+              context.l10n.itemCount(count!),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          if (_directory != null && androidFileUtils.isOnRemovableStorage(_directory)) ...[
+            if (count != null) const SizedBox(width: 8),
+            Icon(
               AIcons.storageCard,
               size: 16,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
-            )
-          : null,
+            ),
+          ],
+        ],
+      ),
       selectable: selectable,
     );
   }
@@ -58,4 +73,18 @@ class AlbumSectionHeader extends StatelessWidget {
       hasTrailing: androidFileUtils.isOnRemovableStorage(directory),
     );
   }
+}
+
+
+Widget _buildDot(BuildContext context) {
+  return Center(
+    child: Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        shape: BoxShape.circle,
+      ),
+    ),
+  );
 }
