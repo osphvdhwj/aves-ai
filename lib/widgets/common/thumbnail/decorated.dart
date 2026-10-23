@@ -1,4 +1,5 @@
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
 import 'package:aves/widgets/common/grid/overlay.dart';
 import 'package:aves/widgets/common/grid/sections/mosaic/section_layout_builder.dart';
@@ -22,9 +23,6 @@ class const DecoratedThumbnail({
   static Color borderColor(BuildContext context) => Theme.of(context).dividerColor;
 
   static double borderWidth(BuildContext context) => AvesBorder.straightBorderWidth(context);
-
-  // M3E tile corner radius — bigger than the old square look
-  static const double cornerRadius = 14.0;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +67,7 @@ class const DecoratedThumbnail({
       ],
     );
 
-    final radius = BorderRadius.circular(cornerRadius);
+    final radius = BorderRadius.circular(context.m3e.shapeMedium);
     return Container(
       // `decoration` with sub logical pixel width yields scintillating borders
       // so we use `foregroundDecoration` instead

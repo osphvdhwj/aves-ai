@@ -1,4 +1,5 @@
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/thumbnail/image.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -10,7 +11,6 @@ class CoverCollage extends StatelessWidget {
   final double devicePixelRatio;
 
   static const double _gap = 2.0;
-  static const double _cornerRadius = 16.0;
 
   const new({
     super.key,
@@ -24,7 +24,7 @@ class CoverCollage extends StatelessWidget {
     assert(entries.length >= 4, 'CoverCollage expects at least 4 entries');
     final cell = (extent - _gap) / 2;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(_cornerRadius),
+      borderRadius: BorderRadius.circular(context.m3e.shapeLarge),
       child: SizedBox(
         width: extent,
         height: extent,
