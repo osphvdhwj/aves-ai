@@ -12,20 +12,27 @@ import 'package:aves/widgets/settings/settings_tv_page.dart';
 import 'package:aves/widgets/settings/thumbnails/thumbnails.dart';
 import 'package:aves/widgets/settings/video/video.dart';
 import 'package:aves/widgets/settings/viewer/viewer.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/settings/settings_search_page_route.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsPage extends StatelessWidget {
   static const routeName = '/settings';
 
   static final List<SettingsSection> sections = [
-    NavigationSection(),
+    // Personalization first — what users open Settings for most often.
+    DisplaySection(),
     ThumbnailsSection(),
     ViewerSection(),
     VideoSection(),
-    PrivacySection(),
-    AccessibilitySection(),
+    // AI is a headline feature of Aves +, so it sits high.
     AiSection(),
-    DisplaySection(),
+    // Behaviour and navigation.
+    NavigationSection(),
+    AccessibilitySection(),
+    // Rarely-changed items at the bottom.
+    PrivacySection(),
     LanguageSection(),
   ];
 
@@ -93,6 +100,37 @@ class _SettingsHeader extends StatelessWidget {
             'Customize how Aves + looks and behaves.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Inline search field. Modern 2026 settings pages put search
+          // in the header rather than only in the app bar. Tapping it
+          // opens the full settings search route.
+          PressableScale(
+            onTap: () {
+              Navigator.maybeOf(context)?.push(
+                SettingsSearchPageRoute(context: context),
+              );
+            },
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                children: [
+                  Icon(Symbols.search, color: colors.onSurfaceVariant, size: 20),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Search settings',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
