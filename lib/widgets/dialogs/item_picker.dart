@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/theme/icons.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/extensions/theme.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
@@ -27,43 +28,46 @@ class ItemPicker extends StatelessWidget {
     final actionBoxBorderRadius = BorderRadiusDirectional.only(topStart: Radius.circular(actionBoxDimension * .6));
     return Tooltip(
       message: context.l10n.changeTooltip,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            border: AvesBorder.border(context),
-            borderRadius: imageBorderRadius,
-          ),
-          child: ClipRRect(
-            borderRadius: imageBorderRadius,
-            child: SizedBox(
-              width: extent,
-              height: extent,
-              child: Stack(
-                children: [
-                  ThumbnailImage(
-                    entry: entry,
-                    extent: extent,
-                    devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-                  ),
-                  PositionedDirectional(
-                    end: -1,
-                    bottom: -1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).isDark ? const Color(0xAA000000) : const Color(0xCCFFFFFF),
-                        border: AvesBorder.border(context),
-                        borderRadius: actionBoxBorderRadius,
-                      ),
-                      width: actionBoxDimension,
-                      height: actionBoxDimension,
-                      child: Icon(
-                        AIcons.edit,
-                        size: actionBoxDimension * .6,
+      child: PressableScale(
+        passthrough: true,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              border: AvesBorder.border(context),
+              borderRadius: imageBorderRadius,
+            ),
+            child: ClipRRect(
+              borderRadius: imageBorderRadius,
+              child: SizedBox(
+                width: extent,
+                height: extent,
+                child: Stack(
+                  children: [
+                    ThumbnailImage(
+                      entry: entry,
+                      extent: extent,
+                      devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
+                    ),
+                    PositionedDirectional(
+                      end: -1,
+                      bottom: -1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).isDark ? const Color(0xAA000000) : const Color(0xCCFFFFFF),
+                          border: AvesBorder.border(context),
+                          borderRadius: actionBoxBorderRadius,
+                        ),
+                        width: actionBoxDimension,
+                        height: actionBoxDimension,
+                        child: Icon(
+                          AIcons.edit,
+                          size: actionBoxDimension * .6,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

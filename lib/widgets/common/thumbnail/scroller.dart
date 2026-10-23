@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/behaviour/known_extent_scroll_physics.dart';
 import 'package:aves/widgets/common/grid/theme.dart';
 import 'package:aves/widgets/common/thumbnail/decorated.dart';
@@ -125,66 +126,69 @@ class _ThumbnailScrollerState extends State<ThumbnailScroller> {
         final radius = isCurrent ? 16.0 : 10.0;
         final visibleSize = isCurrent ? thumbnailExtent : _nonSelectedExtent;
 
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            indexNotifier.value = index;
-            widget.onTap?.call(index);
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              AnimatedContainer(
-                duration: ADurations.thumbnailScrollerShadeAnimation,
-                curve: Curves.easeOut,
-                width: visibleSize,
-                height: visibleSize,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  boxShadow: isCurrent
-                      ? [
-                          BoxShadow(
-                            color: primary.withValues(alpha: 0.5),
-                            blurRadius: 12,
-                            spreadRadius: 1,
-                          ),
-                        ]
-                      : null,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      DecoratedThumbnail(
-                        entry: pageEntry,
-                        tileExtent: thumbnailExtent,
-                        // the retrieval task queue can pile up for thumbnails of heavy pages
-                        // (e.g. thumbnails of 15MP HEIF images inside 100MB+ HEIC containers)
-                        // so we cancel these requests when possible
-                        cancellableNotifier: _cancellableNotifier,
-                        selectable: false,
-                        highlightable: widget.highlightable,
-                        heroTagger: () => widget.heroTagger?.call(pageEntry),
-                      ),
-                      if (!isCurrent)
-                        const ColoredBox(color: Colors.black54),
-                    ],
+        return PressableScale(
+          passthrough: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              indexNotifier.value = index;
+              widget.onTap?.call(index);
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: ADurations.thumbnailScrollerShadeAnimation,
+                  curve: Curves.easeOut,
+                  width: visibleSize,
+                  height: visibleSize,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radius),
+                    boxShadow: isCurrent
+                        ? [
+                            BoxShadow(
+                              color: primary.withValues(alpha: 0.5),
+                              blurRadius: 12,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
                   ),
-                ),
-              ),
-              if (isCurrent)
-                IgnorePointer(
-                  child: Container(
-                    width: visibleSize,
-                    height: visibleSize,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius),
-                      border: Border.all(color: primary, width: 3),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        DecoratedThumbnail(
+                          entry: pageEntry,
+                          tileExtent: thumbnailExtent,
+                          // the retrieval task queue can pile up for thumbnails of heavy pages
+                          // (e.g. thumbnails of 15MP HEIF images inside 100MB+ HEIC containers)
+                          // so we cancel these requests when possible
+                          cancellableNotifier: _cancellableNotifier,
+                          selectable: false,
+                          highlightable: widget.highlightable,
+                          heroTagger: () => widget.heroTagger?.call(pageEntry),
+                        ),
+                        if (!isCurrent)
+                          const ColoredBox(color: Colors.black54),
+                      ],
                     ),
                   ),
                 ),
-            ],
+                if (isCurrent)
+                  IgnorePointer(
+                    child: Container(
+                      width: visibleSize,
+                      height: visibleSize,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(radius),
+                        border: Border.all(color: primary, width: 3),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },
