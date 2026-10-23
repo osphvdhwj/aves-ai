@@ -5,10 +5,10 @@ import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/theme/format.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
-import 'package:aves/widgets/viewer/info/info_date_header.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -27,12 +27,14 @@ class InfoHeaderSection extends StatelessWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
   final EntryInfoActionDelegate actionDelegate;
+  final Widget chipsSection;
 
   const new({
     super.key,
     required this.entry,
     this.collection,
     required this.actionDelegate,
+    required this.chipsSection,
   });
 
   @override
@@ -41,11 +43,13 @@ class InfoHeaderSection extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDateHeader(context, theme),
+          _buildDateLocationRow(context),
+          const SizedBox(height: 12),
+          chipsSection,
           const SizedBox(height: 12),
           _buildCaption(context, theme),
         ],
@@ -53,8 +57,43 @@ class InfoHeaderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildDateHeader(BuildContext context, ThemeData theme) {
-    return InfoDateHeader(entry: entry);
+  Widget _buildDateLocationRow(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final date = entry.bestDate;
+    final locale = settings.avesLocale;
+    final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
+    final dateText = date != null
+        ? '${locale.MMMEd(date)}, ${locale.y(date)} \u00b7 ${formatTime(date, locale, use24hour)}'
+        : context.l10n.viewerInfoUnknown;
+
+    return Row(
+      children: [
+        Icon(Symbols.calendar_today, size: 16, color: colors.onSurfaceVariant),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            dateText,
+            style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (entry.hasGps) ...[
+          const SizedBox(width: 12),
+          Icon(Symbols.location_on, size: 16, color: colors.onSurfaceVariant),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              'Location',
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   Widget _buildCaption(BuildContext context, ThemeData theme) {

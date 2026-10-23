@@ -312,6 +312,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                         entry: entry,
                         collection: collection,
                         actionDelegate: _actionDelegate,
+                        chipsSection: chipsSection,
                       ),
                     ),
                   ),
@@ -340,7 +341,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                   OverviewTab(
                     entry: entry,
                     collection: collection,
-                    chipsSection: chipsSection,
                     locationSection: locationSection,
                   ),
                   InfoMetadataTab(

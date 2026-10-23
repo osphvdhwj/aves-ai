@@ -16,7 +16,6 @@ import 'package:material_ui/material_ui.dart';
 
 class OverviewTab extends StatelessWidget {
   final AvesEntry entry;
-  final Widget chipsSection;
   final Widget locationSection;
 
   final CollectionLens? collection;
@@ -25,7 +24,6 @@ class OverviewTab extends StatelessWidget {
     super.key,
     required this.entry,
     this.collection,
-    required this.chipsSection,
     required this.locationSection,
   });
 
@@ -34,10 +32,7 @@ class OverviewTab extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final locale = settings.avesLocale;
-    final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
 
-    final date = entry.bestDate;
-    final dateText = date != null ? formatDateTime(date, locale, use24hour) : context.l10n.viewerInfoUnknown;
     final sizeText = entry.sizeBytes != null ? formatFileSize(locale, entry.sizeBytes!) : context.l10n.viewerInfoUnknown;
     final formatText = entry.mimeType.split('/').last.toUpperCase();
     final resolutionText = '${entry.width} x ${entry.height}';
@@ -50,31 +45,6 @@ class OverviewTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                // Date & Location
-                Row(
-                  children: [
-                    Icon(Symbols.calendar_today, size: 16, color: colors.onSurfaceVariant),
-                    const SizedBox(width: 4),
-                    Text(dateText, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant)),
-                    const SizedBox(width: 16),
-                    Icon(Symbols.location_on, size: 16, color: colors.onSurfaceVariant),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        entry.hasGps ? 'Location available' : 'No location',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Tags
-                chipsSection,
-                const SizedBox(height: 24),
 
                 // Quick Info Grid
                 Text(
