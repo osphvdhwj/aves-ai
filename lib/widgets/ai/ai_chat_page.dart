@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:aves/model/ai/ai_command.dart';
-import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/ai/chat_message.dart';
+import 'package:aves/model/entry/entry.dart';
 import 'package:aves/services/ai_service.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:material_symbols_icons/symbols.dart';
-
-import 'package:aves/theme/m3e_tokens.dart';
-
 import 'package:material_ui/material_ui.dart';
 
 class AiChatPage extends StatefulWidget {
@@ -47,7 +46,7 @@ class _AiChatPageState extends State<AiChatPage> {
       if (!_scroll.hasClients) return;
       unawaited(_scroll.animateTo(
         _scroll.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 220),
         curve: Curves.easeOut,
       ));
     });
@@ -112,7 +111,7 @@ class _AiChatPageState extends State<AiChatPage> {
                 ? _buildEmpty(theme)
                 : ListView.builder(
                     controller: _scroll,
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
                     itemCount: _messages.length,
                     itemBuilder: (context, i) => _buildBubble(theme, _messages[i]),
                   ),
@@ -123,96 +122,251 @@ class _AiChatPageState extends State<AiChatPage> {
     );
   }
 
-  Widget _buildEmpty(ThemeData theme) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Ask AI', style: theme.textTheme.headlineSmall),
-              const SizedBox(height: 8),
-              Text(
-                'Type /find dog or tap a preset below.',
-                style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+  Widget _buildEmpty(ThemeData theme) {
+    final colors = theme.colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
+              child: Icon(Symbols.auto_awesome, size: 32, color: colors.onPrimaryContainer),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Ask AI about your photos',
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try /find dog, /receipt, or @ocr. Tap a preset below to start.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   Widget _buildBubble(ThemeData theme, ChatMessage m) {
     final isUser = m.role == ChatRole.user;
-    final bg = isUser ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest;
+    final colors = theme.colorScheme;
+    final bg = isUser ? colors.primaryContainer : colors.surfaceContainerHigh;
+    final fg = isUser ? colors.onPrimaryContainer : colors.onSurface;
     final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
-    final text = m.pending ? '...' : m.text;
+    final radius = BorderRadius.only(
+      topLeft: Radius.circular(isUser ? context.m3e.shapeLarge : 4),
+      topRight: Radius.circular(isUser ? 4 : context.m3e.shapeLarge),
+      bottomLeft: Radius.circular(context.m3e.shapeLarge),
+      bottomRight: Radius.circular(context.m3e.shapeLarge),
+    );
+
+    final child = m.pending
+        ? const _TypingIndicator()
+        : Text(
+            m.text,
+            style: theme.textTheme.bodyMedium?.copyWith(color: fg),
+          );
+
     return Align(
       alignment: align,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (!isUser) ...[
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Symbols.auto_awesome, size: 16, color: colors.onPrimaryContainer),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.75),
+                decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: radius,
+                ),
+                child: child,
+              ),
+            ),
+          ],
         ),
-        child: Text(text, style: theme.textTheme.bodyMedium),
       ),
     );
   }
 
   Widget _buildInputRow(ThemeData theme) {
+    final colors = theme.colorScheme;
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: theme.dividerColor)),
+          border: Border(top: BorderSide(color: colors.outlineVariant.withValues(alpha: 0.3))),
         ),
         child: Column(
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+            SizedBox(
+              height: 36,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
-                  ..._presets.map((p) => Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: ActionChip(
-                          label: Text(p),
-                          onPressed: () => _send('$p '),
+                  for (final p in _presets)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: PressableScale(
+                        onTap: () => _send('$p '),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainer,
+                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+                          ),
+                          child: Text(
+                            p,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontFamily: 'monospace',
+                              fontWeight: FontWeight.w600,
+                              color: colors.onSurface,
+                            ),
+                          ),
                         ),
-                      )),
-                  ..._modifiers.map((p) => Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: ActionChip(
-                          label: Text(p),
-                          onPressed: () => _send(p),
+                      ),
+                    ),
+                  for (final p in _modifiers)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: PressableScale(
+                        onTap: () => _send(p),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: colors.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+                          ),
+                          child: Text(
+                            p,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontFamily: 'monospace',
+                              fontWeight: FontWeight.w600,
+                              color: colors.onTertiaryContainer,
+                            ),
+                          ),
                         ),
-                      )),
+                      ),
+                    ),
                 ],
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _input,
-                    decoration: const InputDecoration(
-                      hintText: 'Ask or type /find dog...',
-                      border: OutlineInputBorder(),
-                      isDense: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
                     ),
-                    onSubmitted: (_) => _send(),
+                    child: TextField(
+                      controller: _input,
+                      minLines: 1,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: 'Ask or type /find dog...',
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        isDense: true,
+                      ),
+                      onSubmitted: (_) => _send(),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 6),
-                TextButton(onPressed: _send, child: const Text('Send')),
+                const SizedBox(width: 8),
+                PressableScale(
+                  onTap: _send,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Symbols.arrow_upward, color: colors.onPrimary),
+                  ),
+                ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Three pulsing dots shown while the companion is computing a reply.
+class _TypingIndicator extends StatefulWidget {
+  const _TypingIndicator();
+
+  @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return AnimatedBuilder(
+      animation: _ctl,
+      builder: (context, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) {
+            final phase = (_ctl.value + i * 0.33) % 1.0;
+            final opacity = (0.3 + 0.7 * (0.5 + 0.5 * (1 - (2 * phase - 1).abs()))).clamp(0.0, 1.0);
+            return Padding(
+              padding: EdgeInsets.only(right: i < 2 ? 4 : 0),
+              child: Opacity(
+                opacity: opacity,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                ),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 }
