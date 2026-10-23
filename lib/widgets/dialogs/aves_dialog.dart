@@ -16,11 +16,11 @@ class AvesDialog extends StatefulWidget {
   final Widget? content;
   final List<Widget> actions;
 
-  static const Radius cornerRadius = Radius.circular(24);
+  static const Radius cornerRadius = Radius.circular(28);
   static const double defaultHorizontalContentPadding = 24;
   static const double controlCaptionPadding = 16;
   static const double borderWidth = 1.0;
-  static const EdgeInsets actionsPadding = EdgeInsets.symmetric(vertical: 4, horizontal: 16);
+  static const EdgeInsets actionsPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 24);
   static const EdgeInsets buttonPadding = EdgeInsets.symmetric(horizontal: 8);
 
   const new({
@@ -36,16 +36,13 @@ class AvesDialog extends StatefulWidget {
   @override
   State<AvesDialog> createState() => _AvesDialogState();
 
-  static Decoration contentDecoration(BuildContext context) => BoxDecoration(
-    border: Border(
-      bottom: Divider.createBorderSide(context, width: borderWidth),
-    ),
-  );
+  /// Kept as a stable API for cover selection dialog and others, but
+  /// returns a flat decoration — 2026 M3E dialogs don't use borders.
+  static Decoration contentDecoration(BuildContext context) => const BoxDecoration();
 
   static ShapeBorder shape(BuildContext context) {
-    return RoundedRectangleBorder(
-      side: Divider.createBorderSide(context, width: borderWidth),
-      borderRadius: const BorderRadius.all(cornerRadius),
+    return const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(cornerRadius),
     );
   }
 }
@@ -82,8 +79,9 @@ class _AvesDialogState extends State<AvesDialog> {
           ? EdgeInsets.zero
           : EdgeInsets.only(
               left: widget.horizontalContentPadding,
-              top: 20,
+              top: 8,
               right: widget.horizontalContentPadding,
+              bottom: 8,
             ),
       actions: widget.actions.map((a) => PressableScale(
         passthrough: true,
@@ -166,13 +164,17 @@ class DialogTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: .center,
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-      decoration: AvesDialog.contentDecoration(context),
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
       child: Text(
         title,
-        textAlign: .center,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.2,
+          color: theme.colorScheme.onSurface,
+        ),
       ),
     );
   }
