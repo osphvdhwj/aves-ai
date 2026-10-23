@@ -36,6 +36,7 @@ import 'package:aves/widgets/settings/settings_page.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -203,9 +204,9 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
             colorScheme.primaryContainer,
           ],
         ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(context.m3e.shapeExtraLarge),
+          bottomRight: Radius.circular(context.m3e.shapeExtraLarge),
         ),
       ),
       child: SafeArea(

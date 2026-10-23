@@ -107,16 +107,16 @@ class ViewerTopOverlay extends StatelessWidget {
                 onTap: () => expandedNotifier.value = !expandedNotifier.value,
                 child: BlurredRRect(
                   enabled: blurred,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(28),
-                    bottomRight: Radius.circular(28),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(context.m3e.shapeExtraLarge),
+                    bottomRight: Radius.circular(context.m3e.shapeExtraLarge),
                   ),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Themes.overlayBackgroundColor(brightness: Theme.of(context).brightness, blurred: blurred),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(28),
-                        bottomRight: Radius.circular(28),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(context.m3e.shapeExtraLarge),
+                        bottomRight: Radius.circular(context.m3e.shapeExtraLarge),
                       ),
                     ),
                     child: SafeArea(

@@ -6,6 +6,7 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
 import 'package:aves/widgets/viewer/visual/video/subtitle/subtitle.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +37,7 @@ class const SubtitleSample({super.key}) extends StatelessWidget {
               colors: AColors.boraBoraGradient,
             ),
             border: AvesBorder.border(context),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
           ),
           height: 128,
           child: AnimatedAlign(

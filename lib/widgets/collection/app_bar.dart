@@ -43,6 +43,7 @@ import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -440,7 +441,7 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
             height: kMinInteractiveDimension,
             child: Divider(
               thickness: 4,
-              radius: const BorderRadius.all(Radius.circular(2)),
+              radius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraSmall)),
             ),
           ),
         ),
@@ -700,8 +701,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     Widget buildItem(EntrySetAction action) => Expanded(
       child: Material(
         color: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
         ),
         clipBehavior: Clip.antiAlias,
         child: PopupMenuItem(

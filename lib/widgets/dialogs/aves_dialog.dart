@@ -2,6 +2,7 @@ import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -115,7 +116,7 @@ class _AvesDialogState extends State<AvesDialog> {
           data: Theme.of(context).copyWith(
             scrollbarTheme: ScrollbarThemeData(
               thumbVisibility: WidgetStateProperty.all(true),
-              radius: const Radius.circular(16),
+              radius: Radius.circular(context.m3e.shapeLarge),
               crossAxisMargin: 4,
               // adapt margin when corner is around content itself, not outside for the title
               mainAxisMargin: 4 + (widget.title != null ? 0 : AvesDialog.cornerRadius.y / 2),

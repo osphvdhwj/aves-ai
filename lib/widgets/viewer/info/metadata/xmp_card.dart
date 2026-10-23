@@ -7,6 +7,7 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves/widgets/viewer/info/metadata/xmp_namespaces.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 typedef XmpExtractedCard = (Map<String, XmpProp>, List<XmpCardData>?);
@@ -75,7 +76,7 @@ class _XmpCardState extends State<XmpCard> {
         border: Border.all(
           color: Theme.of(context).dividerColor,
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraSmall)),
       ),
       child: ValueListenableBuilder<int>(
         valueListenable: _indexNotifier,

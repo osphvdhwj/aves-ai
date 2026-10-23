@@ -34,6 +34,7 @@ import 'package:aves_video/aves_video.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -413,8 +414,8 @@ class _ViewerButtonRowContentState extends State<ViewerButtonRowContent> {
     Widget buildItem(EntryAction action) => Expanded(
       child: Material(
         color: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
         ),
         clipBehavior: Clip.antiAlias,
         child: PopupMenuItem(
