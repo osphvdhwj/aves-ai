@@ -1,3 +1,4 @@
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ScrollLabel extends StatelessWidget {
@@ -21,7 +22,7 @@ class ScrollLabel extends StatelessWidget {
         child: Material(
           elevation: 4.0,
           color: backgroundColor,
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeLarge)),
           child: child,
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ class AvesExpansionTile extends StatelessWidget {
       duration: animationDuration,
       shadowColor: Colors.transparent,
       elevation: 0,
-      borderRadius: const BorderRadius.all(Radius.circular(24)),
+      borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
       child: Column(
         crossAxisAlignment: .start,
         children: [

@@ -1,3 +1,4 @@
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -62,7 +63,7 @@ class _OverlayRowExpanderState extends State<OverlayRowExpander> {
               child: Scrollbar(
                 controller: _scrollController,
                 thumbVisibility: true,
-                radius: const Radius.circular(16),
+                radius: Radius.circular(context.m3e.shapeLarge),
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   child: child,

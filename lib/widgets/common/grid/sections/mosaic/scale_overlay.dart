@@ -3,6 +3,7 @@ import 'package:aves/widgets/common/extensions/theme.dart';
 import 'package:aves/widgets/common/grid/sections/mosaic/scale_grid.dart';
 import 'package:aves/widgets/common/providers/media_query_data_provider.dart';
 import 'package:aves_utils/aves_utils.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 typedef MosaicItemBuilder = Widget Function(int index, double targetExtent);
@@ -26,7 +27,7 @@ class const MosaicScaleOverlay({
               final theme = Theme.of(context);
               final colorScheme = theme.colorScheme;
               Widget _buildBar(double width, Color color) => ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraSmall)),
                 child: Container(
                   color: color,
                   width: width,
