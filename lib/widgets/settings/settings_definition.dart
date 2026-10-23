@@ -17,7 +17,7 @@ abstract class SettingsSection {
 
   /// Builds the row that appears on the main Settings page.
   /// This is now a navigation tile, not an expansion tile.
-  Widget build(BuildContext sectionContext, ValueNotifier<String?> expandedNotifier) {
+  Widget build(BuildContext sectionContext) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: PressableScale(

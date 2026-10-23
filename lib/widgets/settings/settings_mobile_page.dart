@@ -12,8 +12,6 @@ import 'package:aves/widgets/settings/settings_action_delegate.dart';
 import 'package:aves/widgets/settings/settings_page.dart';
 import 'package:aves/widgets/settings/settings_search_page_route.dart';
 import 'package:aves_model/aves_model.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -25,14 +23,6 @@ class SettingsMobilePage extends StatefulWidget {
 }
 
 class _SettingsMobilePageState extends State<SettingsMobilePage> with FeedbackMixin {
-  final ValueNotifier<String?> _expandedNotifier = ValueNotifier(null);
-
-  @override
-  void dispose() {
-    _expandedNotifier.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final animations = context.select<Settings, AccessibilityAnimations>((v) => v.accessibilityAnimations);
@@ -73,10 +63,8 @@ class _SettingsMobilePageState extends State<SettingsMobilePage> with FeedbackMi
       body: GestureAreaProtectorStack(
         child: SafeArea(
           bottom: false,
-          child: AnimationLimiter(
-            child: SettingsListView(
-              children: SettingsPage.sections.map((v) => v.build(context, _expandedNotifier)).toList(),
-            ),
+          child: SettingsListView(
+            children: SettingsPage.sections.map((v) => v.build(context)).toList(),
           ),
         ),
       ),
