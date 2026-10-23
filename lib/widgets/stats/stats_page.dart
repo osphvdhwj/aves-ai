@@ -32,7 +32,6 @@ import 'package:aves/widgets/stats/top_page.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
@@ -163,18 +162,8 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
                 _onFilterSelection(context, notification.filter);
                 return true;
               },
-              child: AnimationLimiter(
-                child: ListView(
-                  children: AnimationConfiguration.toStaggeredList(
-                    duration: durations.staggeredAnimation,
-                    delay: durations.staggeredAnimationDelay * timeDilation,
-                    childAnimationBuilder: (child) => SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: child,
-                      ),
-                    ),
-                    children: [
+              child: ListView(
+                  children: [
                       const TvEdgeFocus(),
                       mimeDonuts,
                       Histogram(
@@ -199,8 +188,7 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
                     ],
                   ),
                 ),
-              ),
-            );
+              );
           }
         }
 

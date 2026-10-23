@@ -1,8 +1,5 @@
-import 'package:aves/theme/durations.dart';
 import 'package:aves/widgets/common/extensions/media_query.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class EmptyContent extends StatelessWidget {
@@ -37,16 +34,7 @@ class EmptyContent extends StatelessWidget {
         alignment: alignment,
         child: Column(
           mainAxisSize: .min,
-          children: AnimationConfiguration.toStaggeredList(
-            duration: durations.staggeredAnimation,
-            delay: durations.staggeredAnimationDelay * timeDilation,
-            childAnimationBuilder: (child) => SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(
-                child: child,
-              ),
-            ),
-            children: [
+          children: [
               if (icon != null) ...[
                 Icon(
                   icon,
@@ -66,7 +54,6 @@ class EmptyContent extends StatelessWidget {
                 ),
               ?bottom,
             ],
-          ),
         ),
       ),
     );

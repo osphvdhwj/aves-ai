@@ -29,7 +29,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class ExplorerPage extends StatefulWidget {
@@ -245,23 +244,11 @@ class _ExplorerPageContent extends StatelessWidget {
                           hasScrollBody: false,
                           child: _buildEmptyContent(context),
                         )
-                      : AnimationLimiter(
-                          // animation limiter should not be above the app bar
-                          // so that the crumb line can automatically scroll
+                      : KeyedSubtree(
                           key: ValueKey(contents),
                           child: SliverList.builder(
                             itemBuilder: (context, index) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: durations.staggeredAnimation,
-                                delay: durations.staggeredAnimationDelay * timeDilation,
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  child: FadeInAnimation(
-                                    child: _ExplorerContentLine(entity: contents[index]),
-                                  ),
-                                ),
-                              );
+                              return _ExplorerContentLine(entity: contents[index]);
                             },
                             itemCount: contents.length,
                           ),
