@@ -17,6 +17,7 @@ import 'package:aves/widgets/viewer/info/overview_tab.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/info_fade_in.dart';
+import 'package:aves/widgets/viewer/info/info_hero.dart';
 import 'package:aves/widgets/viewer/info/info_tabs.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/header_section.dart';
@@ -293,6 +294,18 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                   SliverToBoxAdapter(
                     child: InfoFadeIn(
                       index: 0,
+                      child: InfoHeroImage(entry: entry),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: InfoFadeIn(
+                      index: 0,
+                      child: _InfoTitleRow(entry: entry),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: InfoFadeIn(
+                      index: 0,
                       child: InfoHeaderSection(
                         entry: entry,
                         collection: collection,
@@ -439,3 +452,30 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
+
+
+class _InfoTitleRow extends StatelessWidget {
+  final AvesEntry entry;
+
+  const _InfoTitleRow({required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final title = entry.bestTitle ?? '';
+    if (title.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Text(
+        title,
+        style: theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: colors.onSurface,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}

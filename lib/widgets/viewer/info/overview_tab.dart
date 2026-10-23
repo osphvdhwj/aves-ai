@@ -26,7 +26,6 @@ class OverviewTab extends StatelessWidget {
     final locale = settings.avesLocale;
     final use24hour = MediaQuery.alwaysUse24HourFormatOf(context);
 
-    final title = entry.bestTitle ?? context.l10n.viewerInfoUnknown;
     final date = entry.bestDate;
     final dateText = date != null ? formatDateTime(date, locale, use24hour) : context.l10n.viewerInfoUnknown;
     final sizeText = entry.sizeBytes != null ? formatFileSize(locale, entry.sizeBytes!) : context.l10n.viewerInfoUnknown;
@@ -41,47 +40,6 @@ class OverviewTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title & Favorite
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: colors.onSurface,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Mockup shows a Favorite pill/chip. We use a subtle container here.
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Symbols.star, size: 16, color: colors.onPrimaryContainer),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Favorite',
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.onPrimaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
 
                 // Date & Location
                 Row(
