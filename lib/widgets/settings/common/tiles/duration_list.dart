@@ -28,18 +28,17 @@ class const SettingsDurationListTile({
         ].join(' ');
 
         return ListTile(
-            title: Text(title(context) ?? '?'),
-            subtitle: AvesListSubtitle(subtitle),
-            onTap: () async {
-              final seconds = await showAvesDialog<int>(
-                context: context,
-                builder: (context) => DurationDialog(initialSeconds: current),
-              );
-              if (seconds != null) {
-                onChanged(seconds);
-              }
-            },
-          ),
+          title: Text(title(context) ?? '?'),
+          subtitle: AvesListSubtitle(subtitle),
+          onTap: () async {
+            final seconds = await showAvesDialog<int>(
+              context: context,
+              builder: (context) => DurationDialog(initialSeconds: current),
+            );
+            if (seconds != null) {
+              onChanged(seconds);
+            }
+          },
         );
       },
     );
