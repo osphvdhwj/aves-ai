@@ -13,6 +13,7 @@ import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/widgets/common/action_controls/togglers/favourite.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves/widgets/viewer/action/entry_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
 import 'package:aves/widgets/viewer/info/overview_tab.dart';
@@ -179,6 +180,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
   late final TabController _tabController;
   final Set<StreamSubscription> _subscriptions = {};
   late EntryInfoActionDelegate _actionDelegate;
+  late EntryActionDelegate _viewerActionDelegate;
   final ValueNotifier<bool> _isBasicSectionVisibleNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isMetadataSectionVisibleNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isColorSectionVisibleNotifier = ValueNotifier(false);
@@ -210,6 +212,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
     if (oldWidget.entry != widget.entry) {
       _unregisterWidget(oldWidget);
       _registerWidget(widget);
+      _viewerActionDelegate = EntryActionDelegate(widget.entry, widget.entry, widget.collection);
       _isBasicSectionVisibleNotifier.value = false;
       _isMetadataSectionVisibleNotifier.value = false;
       _isColorSectionVisibleNotifier.value = false;
@@ -233,6 +236,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
 
   void _registerWidget(_InfoPageContent widget) {
     _actionDelegate = EntryInfoActionDelegate();
+    _viewerActionDelegate = EntryActionDelegate(widget.entry, widget.entry, widget.collection);
     _subscriptions.add(_actionDelegate.eventStream.listen(_onActionDelegateEvent));
     widget.pageInViewNotifier.addListener(_onPageInViewChanged);
   }
@@ -296,7 +300,13 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                   SliverToBoxAdapter(
                     child: InfoFadeIn(
                       index: 0,
-                      child: InfoHeroImage(entry: entry),
+                      child: InfoHeroImage(
+                        entry: entry,
+                        onShare: () => _viewerActionDelegate.onActionSelected(
+                          context,
+                          EntryAction.share,
+                        ),
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(
