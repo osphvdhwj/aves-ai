@@ -1,6 +1,5 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/widgets/common/basic/list_tiles/common.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/aves_list_subtitle.dart';
 import 'package:aves/widgets/dialogs/selection_dialogs/common.dart';
 import 'package:aves/widgets/dialogs/selection_dialogs/single_selection.dart';
@@ -23,10 +22,7 @@ class const SettingsSelectionListTile<T>({
     return Selector<Settings, T>(
       selector: selector,
       builder: (context, current, child) {
-        return PressableScale(
-          passthrough: true,
-          scale: 0.98,
-          child: ListTile(
+        return ListTile(
             title: Text(tileTitle(context) ?? '?'),
             subtitle: AvesListSubtitle(getName(context, current)),
             trailing: trailingBuilder?.call(context),
@@ -40,8 +36,7 @@ class const SettingsSelectionListTile<T>({
               ),
               onSelection: onSelection,
             ),
-          ),
-        );
+          );
       },
     );
   }
