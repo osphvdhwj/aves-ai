@@ -333,6 +333,13 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                         controller: _tabController,
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
+                        indicator: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
+                        ),
+                        indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                        labelColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                        unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
                         tabs: const [
                           Tab(text: 'Overview', icon: Icon(Symbols.home)),
                           Tab(text: 'Metadata', icon: Icon(Symbols.info)),
