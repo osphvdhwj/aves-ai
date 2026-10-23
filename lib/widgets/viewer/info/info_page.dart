@@ -13,16 +13,14 @@ import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
-import 'package:aves/widgets/viewer/info/ai_tags_section.dart';
-import 'package:aves/widgets/viewer/info/color_section.dart';
 import 'package:aves/widgets/viewer/info/overview_tab.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/info_fade_in.dart';
+import 'package:aves/widgets/viewer/info/info_tabs.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/header_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
-import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
 import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/multipage/conductor.dart';
 import 'package:aves/widgets/viewer/page_entry_builder.dart';
@@ -329,9 +327,19 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                     chipsSection: chipsSection,
                     locationSection: locationSection,
                   ),
-                  const Center(child: Text('Metadata Tab (Coming Soon)')),
-                  const Center(child: Text('AI Tools Tab (Coming Soon)')),
-                  const Center(child: Text('Actions Tab (Coming Soon)')),
+                  InfoMetadataTab(
+                    entry: entry,
+                    metadataNotifier: _metadataNotifier,
+                  ),
+                  InfoAiToolsTab(
+                    entry: entry,
+                    collection: collection,
+                  ),
+                  InfoActionsTab(
+                    entry: entry,
+                    collection: collection,
+                    actionDelegate: _actionDelegate,
+                  ),
                 ],
               ),
             ),
