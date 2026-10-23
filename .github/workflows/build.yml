@@ -57,6 +57,13 @@ jobs:
       - name: Flutter version
         run: ./flutterw --version
 
+      - name: List preinstalled NDKs (diagnostic)
+        run: |
+          echo "Preinstalled NDK versions:"
+          ls /usr/local/lib/android/sdk/ndk/ 2>/dev/null || echo "(none)"
+          echo "Pinned in build.gradle.kts:"
+          grep ndkVersion android/app/build.gradle.kts
+
       - name: Prepare play flavor
         run: scripts/gen_flavor_play.sh
 

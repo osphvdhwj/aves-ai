@@ -42,7 +42,12 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "deckers.thibault.aves"
     compileSdk = 37
-    ndkVersion = flutter.ndkVersion
+    // Pin to a specific NDK that ubuntu-latest runners have preinstalled.
+    // Flutter 3.47.6 defaults to NDK 28.2, which the runner has to
+    // download (~1 GB) and which was consistently getting corrupted.
+    // NDK 27.0.12077973 has been preinstalled on ubuntu-latest since
+    // 2024 and none of Aves + plugins require NDK 28 features.
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         // enable support for the new language APIs on older devices
