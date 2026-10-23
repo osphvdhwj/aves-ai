@@ -46,9 +46,12 @@ class InfoHeroImage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _GlassPill(
-                      child: FavouriteToggler(
-                        entries: {entry},
-                        onPressed: () => entry.toggleFavourite(),
+                      child: IconTheme.merge(
+                        data: const IconThemeData(color: Colors.white),
+                        child: FavouriteToggler(
+                          entries: {entry},
+                          onPressed: () => entry.toggleFavourite(),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
