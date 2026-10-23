@@ -1,19 +1,14 @@
 import 'dart:async';
 
 import 'package:aves/model/entry/entry.dart';
-import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
-import 'package:aves/model/filters/covered/stored_album.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/services/common/services.dart';
-import 'package:aves/services/ai_service.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/viewer/info/info_date_header.dart';
-import 'package:aves/widgets/viewer/controls/notifications.dart';
-import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -53,10 +48,6 @@ class InfoHeaderSection extends StatelessWidget {
           _buildDateHeader(context, theme),
           const SizedBox(height: 12),
           _buildCaption(context, theme),
-          const SizedBox(height: 20),
-          _buildPeopleRow(context, theme, colors),
-          const SizedBox(height: 20),
-          _buildAlbumRow(context, theme, colors),
         ],
       ),
     );
@@ -74,159 +65,6 @@ class InfoHeaderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPeopleRow(BuildContext context, ThemeData theme, ColorScheme colors) {
-    // Face clustering lives in the AVES+ Tools companion. Until it
-    // advertises `person`, the row is display-only.
-    return FutureBuilder<AiHealth>(
-      future: aiService.health(),
-      builder: (context, snap) {
-        final supported = snap.data?.connected == true && snap.data!.has('person');
-        void onTap() {
-          if (!supported) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: const Text('Face recognition needs the AVES+ Tools companion.'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-            return;
-          }
-          showPeoplePage(context);
-        }
-
-        final dim = colors.onSurfaceVariant.withValues(alpha: .4);
-        Widget circle() => Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: supported ? colors.surfaceContainerHighest : colors.surfaceContainerLowest,
-            border: Border.all(
-              color: supported ? colors.outlineVariant : colors.outlineVariant.withValues(alpha: .4),
-              width: 1.5,
-            ),
-          ),
-        );
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'People',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface,
-              ),
-            ),
-            const SizedBox(height: 10),
-            PressableScale(
-              onTap: onTap,
-              child: Row(
-                children: [
-                  circle(),
-                  const SizedBox(width: 8),
-                  circle(),
-                  const SizedBox(width: 8),
-                  circle(),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      'Add someone',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: dim),
-                    ),
-                  ),
-                  Icon(Symbols.chevron_right, size: 18, color: dim),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAlbumRow(BuildContext context, ThemeData theme, ColorScheme colors) {
-    final album = entry.directory;
-    if (album == null) return const SizedBox.shrink();
-
-    final tokens = context.m3e;
-    final source = collection?.source;
-    final albumName = source?.getStoredAlbumDisplayName(context, album) ?? album.split('/').last;
-    final itemCount = source?.albumEntryCount(StoredAlbumFilter(album, null));
-    final subtitle = itemCount != null
-        ? (itemCount == 1 ? '1 item' : '$itemCount items')
-        : album;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Albums',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 10),
-        PressableScale(
-          onTap: () {
-            final displayName = source?.getStoredAlbumDisplayName(context, album) ?? album;
-            SelectFilterNotification(StoredAlbumFilter(album, displayName)).dispatch(context);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(tokens.shapeMedium),
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(tokens.shapeSmall),
-                  child: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: Image(
-                      image: entry.getThumbnail(extent: 128),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stack) => Container(
-                        color: colors.surfaceContainerHighest,
-                        alignment: Alignment.center,
-                        child: Icon(Symbols.image, color: colors.onSurfaceVariant, size: 20),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        albumName,
-                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(Symbols.chevron_right, size: 20, color: colors.onSurfaceVariant),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 /// Caption surface: reads the XMP title from catalog metadata (sync) and the

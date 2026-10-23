@@ -339,6 +339,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
                 children: [
                   OverviewTab(
                     entry: entry,
+                    collection: collection,
                     chipsSection: chipsSection,
                     locationSection: locationSection,
                   ),
