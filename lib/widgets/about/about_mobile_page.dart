@@ -6,6 +6,7 @@ import 'package:aves/widgets/about/credits.dart';
 import 'package:aves/widgets/about/data_usage.dart';
 import 'package:aves/widgets/about/licenses.dart';
 import 'package:aves/widgets/about/translators.dart';
+import 'package:aves/widgets/common/basic/insets.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/theme/colors.dart';

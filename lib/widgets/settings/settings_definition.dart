@@ -33,7 +33,7 @@ abstract class SettingsSection {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(sectionContext).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
+            borderRadius: BorderRadius.circular(sectionContext.m3e.shapeExtraLarge - 4),
           ),
           child: ListTile(
             leading: icon(sectionContext),
@@ -47,7 +47,7 @@ abstract class SettingsSection {
               Symbols.chevron_right,
               color: Theme.of(sectionContext).colorScheme.onSurfaceVariant,
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(sectionContext.m3e.shapeExtraLarge - 4)),
           ),
         ),
       ),
