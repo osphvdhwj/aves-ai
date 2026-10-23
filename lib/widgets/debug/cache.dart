@@ -44,7 +44,7 @@ class _DebugCacheSectionState extends State<DebugCacheSection> with AutomaticKee
             children: [
               Row(
                 children: [
-                  const Expanded(child: const Text('Image cache')),
+                  const Expanded(child: Text('Image cache')),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {

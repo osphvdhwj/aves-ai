@@ -324,11 +324,11 @@ class _CaptionRowState extends State<_CaptionRow> {
       case 'copy-title':
         await Clipboard.setData(ClipboardData(text: title));
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('Title copied'), duration: Duration(seconds: 1)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Title copied'), duration: Duration(seconds: 1)));
       case 'copy-desc':
         await Clipboard.setData(ClipboardData(text: description));
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: const Text('Description copied'), duration: Duration(seconds: 1)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Description copied'), duration: Duration(seconds: 1)));
       case 'edit':
         if (!mounted) return;
         widget.actionDelegate.onActionSelected(context, entry, widget.collection, EntryAction.editTitleDescription);

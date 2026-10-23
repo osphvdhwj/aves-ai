@@ -304,7 +304,7 @@ class _AddressInfoGroupState extends State<_AddressInfoGroup> {
                       final messenger = ScaffoldMessenger.of(context);
                       await Clipboard.setData(ClipboardData(text: value));
                       messenger.showSnackBar(
-                        const SnackBar(content: const Text('Coordinates copied'), duration: Duration(seconds: 1)),
+                        const SnackBar(content: Text('Coordinates copied'), duration: Duration(seconds: 1)),
                       );
                     },
                     child: Icon(Symbols.content_copy, size: 16, color: Theme.of(context).colorScheme.primary),

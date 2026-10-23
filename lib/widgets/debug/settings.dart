@@ -286,7 +286,7 @@ class _AiDiagnosticsState extends State<_AiDiagnostics> {
                           await Clipboard.setData(ClipboardData(text: healthText));
                           if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: const Text('Health copied'), duration: Duration(seconds: 1)),
+                            const SnackBar(content: Text('Health copied'), duration: Duration(seconds: 1)),
                           );
                         },
                       ),
@@ -339,7 +339,7 @@ class _AiDiagnosticsState extends State<_AiDiagnostics> {
                         await Clipboard.setData(ClipboardData(text: _lastResult));
                         if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: const Text('Result copied'), duration: Duration(seconds: 1)),
+                          const SnackBar(content: Text('Result copied'), duration: Duration(seconds: 1)),
                         );
                       },
                       icon: const Icon(Symbols.content_copy, size: 16),
