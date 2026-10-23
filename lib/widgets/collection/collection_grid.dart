@@ -538,6 +538,7 @@ class _CollectionScrollViewState extends State<_CollectionScrollView> with Widge
                       backgroundColor: Colors.white,
                       scrollThumbSize: AvesScrollThumb.thumbSize,
                       scrollThumbBuilder: AvesScrollThumb.builder(
+                        context: context,
                         height: AvesScrollThumb.thumbHeight,
                         backgroundColor: Colors.white,
                       ),

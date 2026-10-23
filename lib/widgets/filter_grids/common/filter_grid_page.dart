@@ -707,6 +707,7 @@ class _FilterScrollView<T extends CollectionFilter> extends StatelessWidget {
                   backgroundColor: Colors.white,
                   scrollThumbSize: AvesScrollThumb.thumbSize,
                   scrollThumbBuilder: AvesScrollThumb.builder(
+                    context: context,
                     height: AvesScrollThumb.thumbHeight,
                     backgroundColor: Colors.white,
                   ),

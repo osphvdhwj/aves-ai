@@ -2,6 +2,7 @@ import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class LinkChip extends StatelessWidget {
@@ -11,8 +12,6 @@ class LinkChip extends StatelessWidget {
   final Color? color;
   final TextStyle? textStyle;
   final VoidCallback? onTap;
-
-  static const borderRadius = BorderRadius.all(Radius.circular(8));
 
   const new({
     super.key,
@@ -26,6 +25,7 @@ class LinkChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.all(Radius.circular(context.m3e.shapeSmall));
     return DefaultTextStyle.merge(
       style: (textStyle ?? const TextStyle()).copyWith(color: color),
       child: PressableScale(

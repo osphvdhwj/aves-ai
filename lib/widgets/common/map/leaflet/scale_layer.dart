@@ -4,6 +4,7 @@ import 'package:aves/widgets/common/basic/text/outlined.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ScaleLayerOptions {
@@ -148,7 +149,7 @@ class ScaleBar extends StatelessWidget {
           Container(
             height: barThickness + outlineWidth * 2,
             width: width,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: fillColor,
               border: Border.fromBorderSide(
                 BorderSide(
@@ -156,7 +157,7 @@ class ScaleBar extends StatelessWidget {
                   width: outlineWidth,
                 ),
               ),
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
             ),
           ),
         ],
