@@ -4,6 +4,7 @@ import 'package:aves/widgets/common/basic/list_tiles/common.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/settings/settings_section_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 abstract class SettingsSection {
@@ -32,7 +33,7 @@ abstract class SettingsSection {
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(sectionContext).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
           ),
           child: ListTile(
             leading: icon(sectionContext),
@@ -46,7 +47,7 @@ abstract class SettingsSection {
               Symbols.chevron_right,
               color: Theme.of(sectionContext).colorScheme.onSurfaceVariant,
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4)),
           ),
         ),
       ),

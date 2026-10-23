@@ -1,5 +1,6 @@
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/settings/settings_definition.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsSectionPage extends StatelessWidget {
@@ -32,7 +33,7 @@ class SettingsSectionPage extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: colors.surfaceContainer,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(

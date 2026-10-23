@@ -15,6 +15,7 @@ import 'package:aves/widgets/settings/viewer/viewer.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/settings/settings_search_page_route.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -117,7 +118,7 @@ class _SettingsHeader extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
               ),
               child: Row(
                 children: [

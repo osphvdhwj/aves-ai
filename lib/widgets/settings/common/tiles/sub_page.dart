@@ -1,5 +1,6 @@
 import 'package:aves/widgets/common/basic/list_tiles/common.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class const SettingsSubPageTile({
@@ -17,6 +18,10 @@ class const SettingsSubPageTile({
       child: ListTile(
         title: Text(title(context) ?? '?'),
         subtitle: subtitle?.call(context),
+        trailing: Icon(
+          Symbols.chevron_right,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         onTap: () {
           Navigator.maybeOf(context)?.push(
             MaterialPageRoute(
