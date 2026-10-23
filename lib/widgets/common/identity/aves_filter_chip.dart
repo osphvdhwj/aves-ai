@@ -268,6 +268,7 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
               ),
               child: IconButton(
                 icon: Icon(AIcons.clear, size: iconSize),
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
                 padding: EdgeInsets.zero,
                 splashRadius: IconTheme.of(context).size,
                 constraints: const BoxConstraints(),
