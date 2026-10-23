@@ -9,6 +9,7 @@ import 'package:aves/model/settings/enums/accessibility_animations.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/colors.dart';
 import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/collection/filter_bar.dart';
@@ -58,7 +59,6 @@ class AvesFilterChip extends StatefulWidget {
   final OffsetFilterCallback? onLongPress;
 
   static const double defaultPadding = 8.0;
-  static const double defaultRadius = 32;
   static const double outlineWidth = 2;
   // M3E: roomier chip, slightly taller than kMinInteractiveDimension
   static const double minChipHeight = 52;
@@ -336,7 +336,7 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
       }
     }
 
-    final borderRadius = decoration?.chipBorderRadius ?? const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius));
+    final borderRadius = decoration?.chipBorderRadius ?? BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge));
     final banner = widget.banner;
     Widget chip = Container(
       constraints: BoxConstraints(

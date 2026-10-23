@@ -20,6 +20,7 @@ import 'package:aves/model/filters/weekday.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/colors.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/rate_button.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/tag_button.dart';
@@ -276,7 +277,7 @@ class _ChipsSectionState extends State<ChipsSection> with AutomaticKeepAliveClie
                     width: AvesFilterChip.outlineWidth,
                   ),
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius)),
+                borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
               ),
               child: button,
             ),

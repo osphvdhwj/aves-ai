@@ -1,6 +1,7 @@
 import 'package:aves/model/filters/coordinate.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/utils/debouncer.dart';
 import 'package:aves/widgets/common/fx/blurred.dart';
@@ -87,7 +88,7 @@ class _OverlayCoordinateFilterChipState extends State<OverlayCoordinateFilterChi
               padding: EdgeInsets.all(widget.padding),
               child: BlurredRRect.all(
                 enabled: blurred,
-                borderRadius: AvesFilterChip.defaultRadius,
+                borderRadius: context.m3e.shapeExtraLarge,
                 child: AvesFilterChip(
                   filter: filter,
                   useFilterColor: false,

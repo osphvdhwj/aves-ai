@@ -19,6 +19,7 @@ import 'package:aves/model/source/tag.dart';
 import 'package:aves/model/vaults/vaults.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/text.dart';
 import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
@@ -62,7 +63,8 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
     return textScaler.scale(AvesFilterChip.fontSize + detailFontSize(extent) + 4) + AvesFilterChip.decoratedContentVerticalPadding * 2;
   }
 
-  static Radius radius(double extent) => Radius.circular(min<double>(AvesFilterChip.defaultRadius, extent / 4));
+  static Radius radius(BuildContext context, double extent) =>
+      Radius.circular(min<double>(context.m3e.shapeExtraLarge, extent / 4));
 
   static double detailIconSize(double extent) => min<double>(AvesFilterChip.fontSize, extent / 7);
 
