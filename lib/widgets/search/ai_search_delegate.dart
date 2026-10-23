@@ -1159,37 +1159,67 @@ class _FilteredResultsView extends StatefulWidget {
 }
 
 class _FilteredResultsViewState extends State<_FilteredResultsView> {
+  Set<AiFilterKind> _selected = {};
   late List<AvesEntry> _filtered;
+
+  // Matches media-kind words in the query. Deliberately conservative;
+  // the local filter is a hint, not a hard rule, so it only preselects
+  // a chip when the query says "image(s)" / "photo(s)" / "pic(s)",
+  // "video(s)" / "movie(s)" / "clip(s)", or "animated" / "gif(s)".
+  static final _imageRe = RegExp(r'\b(?:images?|photos?|pictures?|pics?)\b', caseSensitive: false);
+  static final _videoRe = RegExp(r'\b(?:videos?|movies?|clips?)\b', caseSensitive: false);
+  static final _animatedRe = RegExp(r'\b(?:animated|gifs?)\b', caseSensitive: false);
+
+  static Set<AiFilterKind> _parseKinds(String query) {
+    final out = <AiFilterKind>{};
+    if (_imageRe.hasMatch(query)) out.add(AiFilterKind.images);
+    if (_videoRe.hasMatch(query)) out.add(AiFilterKind.videos);
+    if (_animatedRe.hasMatch(query)) out.add(AiFilterKind.animated);
+    return out;
+  }
 
   @override
   void initState() {
     super.initState();
-    _filtered = widget.entries;
+    _selected = _parseKinds(widget.query);
+    _filtered = _applyFilter(widget.entries, _selected);
   }
 
   @override
   void didUpdateWidget(covariant _FilteredResultsView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.entries, widget.entries)) {
-      _filtered = widget.entries;
+    if (!identical(oldWidget.entries, widget.entries) || oldWidget.query != widget.query) {
+      _selected = _parseKinds(widget.query);
+      _filtered = _applyFilter(widget.entries, _selected);
     }
+  }
+
+  static List<AvesEntry> _applyFilter(List<AvesEntry> source, Set<AiFilterKind> sel) {
+    if (sel.isEmpty) return source;
+    return source.where((e) => sel.any((k) => k.test(e))).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final empty = _filtered.isEmpty;
+    final allEmpty = widget.entries.isEmpty;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ResultsHeader(count: _filtered.length),
         _SaveQueryBar(query: widget.query),
-        Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 4),
-          child: AiFiltersBar(
-            entries: widget.entries,
-            onFiltered: (f) => setState(() => _filtered = f),
+        if (!allEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, bottom: 4),
+            child: AiFiltersBar(
+              entries: widget.entries,
+              selected: _selected,
+              onSelectionChanged: (s) => setState(() {
+                _selected = s;
+                _filtered = _applyFilter(widget.entries, _selected);
+              }),
+            ),
           ),
-        ),
         Expanded(
           child: empty
               ? const StatusView(

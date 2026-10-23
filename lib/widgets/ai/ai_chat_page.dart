@@ -291,7 +291,7 @@ class _AiChatPageState extends State<AiChatPage> {
                       minLines: 1,
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: 'Ask or type /find dog...',
+                        hintText: 'Ask or type /find dog, videos, gifs...',
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         isDense: true,
