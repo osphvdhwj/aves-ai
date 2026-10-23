@@ -433,6 +433,8 @@ class const _LocationIndicator({required final Set<AvesEntry> entries}) extends 
           Text(
             context.l10n.statsWithGps(withGpsCount),
             textAlign: .center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

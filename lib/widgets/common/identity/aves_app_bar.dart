@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
@@ -211,7 +212,6 @@ class AvesFloatingBar extends StatefulWidget {
 
   // M3E floating surface — bigger radius, slightly larger inset
   static const margin = EdgeInsets.symmetric(horizontal: 10, vertical: 8);
-  static const borderRadius = BorderRadius.all(Radius.circular(28));
 
   const new({
     super.key,
@@ -277,7 +277,7 @@ class _AvesFloatingBarState extends State<AvesFloatingBar> with RouteAware {
         return Container(
           margin: AvesFloatingBar.margin,
           decoration: BoxDecoration(
-            borderRadius: AvesFloatingBar.borderRadius,
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.18),
@@ -289,7 +289,7 @@ class _AvesFloatingBarState extends State<AvesFloatingBar> with RouteAware {
           ),
           child: BlurredRRect(
             enabled: blurred,
-            borderRadius: AvesFloatingBar.borderRadius,
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
             child: widget.builder(
               context,
               blurred ? backgroundColor.withValues(alpha: .85) : backgroundColor,

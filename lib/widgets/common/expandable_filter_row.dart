@@ -3,7 +3,6 @@ import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/icons.dart';
-import 'package:aves/theme/styles.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
@@ -28,7 +27,12 @@ class const TitledExpandableFilterRow({
 
     Widget header = Text(
       title,
-      style: AStyles.knownTitleText,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
     void toggle() => expandedNotifier.value = isExpanded ? null : title;
     if (settings.useTvLayout) {
