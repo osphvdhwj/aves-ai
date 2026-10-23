@@ -11,6 +11,7 @@ import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/action_mixins/vault_aware.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/navigation/drawer/tile.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -38,8 +39,14 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
       child: PressableScale(
         passthrough: true,
         scale: 0.97,
-        child: ListTile(
-        leading: leading,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: ListTile(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeLarge)),
+            tileColor: context.currentRouteName == CollectionPage.routeName && isSelected()
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Colors.transparent,
+            leading: leading,
         title: title,
         trailing: trailing != null
             ? Builder(
@@ -56,7 +63,8 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
               )
             : null,
           onTap: () => _goToCollection(context),
-          selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+            selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+          ),
         ),
       ),
     );

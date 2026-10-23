@@ -2,6 +2,7 @@ import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/navigation/drawer/tile.dart';
 import 'package:aves/widgets/navigation/nav_item.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 typedef TileRouteBuilder = Route Function(BuildContext context, String routeName, bool topLevel);
@@ -31,10 +32,16 @@ class PageNavTile extends StatelessWidget {
       child: PressableScale(
         passthrough: true,
         scale: 0.97,
-        child: ListTile(
-        // key is expected by test driver
-        key: Key('$routeName-tile'),
-        leading: leading ?? DrawerPageIcon(route: routeName),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: ListTile(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeLarge)),
+            tileColor: context.currentRouteName == routeName && (isSelected?.call() ?? true)
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Colors.transparent,
+            // key is expected by test driver
+            key: Key('$routeName-tile'),
+            leading: leading ?? DrawerPageIcon(route: routeName),
         title: title ?? DrawerPageTitle(route: routeName),
         trailing: trailing != null
             ? Builder(
@@ -50,7 +57,8 @@ class PageNavTile extends StatelessWidget {
           Navigator.maybeOf(context)?.pop();
           navItem.goTo(context);
         },
-          selected: context.currentRouteName == routeName && (isSelected?.call() ?? true),
+            selected: context.currentRouteName == routeName && (isSelected?.call() ?? true),
+          ),
         ),
       ),
     );
