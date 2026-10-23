@@ -50,8 +50,10 @@ extension ExtraAvesEntryCatalog on AvesEntry {
           // if this file had metadata edited locally (e.g. via fallback for unsupported formats),
           // merge the file's fresh data with our local edits
           catalogMetadata = newMetadata.copyWith(
+            hasLocalMetadataEdit: true,
             xmpTitle: catalogMetadata?.xmpTitle,
             xmpSubjects: catalogMetadata?.xmpSubjects,
+            xmpDescription: catalogMetadata?.xmpDescription,
             rating: catalogMetadata?.rating,
             latitude: catalogMetadata?.latitude,
             longitude: catalogMetadata?.longitude,

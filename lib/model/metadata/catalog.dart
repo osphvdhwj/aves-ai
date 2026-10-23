@@ -8,6 +8,7 @@ class CatalogMetadata {
   bool isFlipped;
   int? rotationDegrees;
   final String? mimeType, xmpSubjects, xmpTitle, xmpDescription;
+  final bool hasLocalMetadataEdit;
   double? latitude, longitude;
   Address? address;
   int rating;
@@ -23,6 +24,7 @@ class CatalogMetadata {
   static const _isMotionPhotoMask = 1 << 5;
   static const _isHdr = 1 << 6; // for images: embedded HDR gainmap, for videos: HDR color transfer
   static const _isSlowMotion = 1 << 7;
+  static const _hasLocalMetadataEditMask = 1 << 8;
 
   new({
     required this.id,
@@ -40,6 +42,7 @@ class CatalogMetadata {
     this.xmpSubjects,
     this.xmpTitle,
     this.xmpDescription,
+    this.hasLocalMetadataEdit = false,
     double? latitude,
     double? longitude,
     this.rating = 0,
@@ -72,6 +75,7 @@ class CatalogMetadata {
     String? xmpTitle,
     String? xmpDescription,
     int? rating,
+    bool? hasLocalMetadataEdit,
     bool clearLocation = false,
   }) {
     return CatalogMetadata(
@@ -90,6 +94,7 @@ class CatalogMetadata {
       xmpSubjects: xmpSubjects ?? this.xmpSubjects,
       xmpTitle: xmpTitle ?? this.xmpTitle,
       xmpDescription: xmpDescription ?? this.xmpDescription,
+      hasLocalMetadataEdit: hasLocalMetadataEdit ?? this.hasLocalMetadataEdit,
       latitude: clearLocation ? null : (latitude ?? this.latitude),
       longitude: clearLocation ? null : (longitude ?? this.longitude),
       rating: rating ?? this.rating,
@@ -115,6 +120,7 @@ class CatalogMetadata {
       xmpSubjects: map['xmpSubjects'] ?? '',
       xmpTitle: map['xmpTitle'] ?? '',
       xmpDescription: map['xmpDescription'] ?? '',
+      hasLocalMetadataEdit: flags & _hasLocalMetadataEditMask != 0,
       latitude: map['latitude'],
       longitude: map['longitude'],
       rating: map['rating'] ?? 0,
@@ -133,7 +139,8 @@ class CatalogMetadata {
         (isMultiPage ? _isMultiPageMask : 0) |
         (isMotionPhoto ? _isMotionPhotoMask : 0) |
         (isHdr ? _isHdr : 0) |
-        (isSlowMotion ? _isSlowMotion : 0),
+        (isSlowMotion ? _isSlowMotion : 0) |
+        (hasLocalMetadataEdit ? _hasLocalMetadataEditMask : 0),
     'rotationDegrees': rotationDegrees,
     'xmpSubjects': xmpSubjects,
     'xmpTitle': xmpTitle,
@@ -150,5 +157,5 @@ class CatalogMetadata {
       '$runtimeType#${shortHash(this)}{id=$id, mimeType=$mimeType, dateMillis=$dateMillis'
       ', isAnimated=$isAnimated, isFlipped=$isFlipped, isGeotiff=$isGeotiff, is360=$is360'
       ', isMultiPage=$isMultiPage, isMotionPhoto=$isMotionPhoto, isHdr=$isHdr, isSlowMotion=$isSlowMotion'
-      ', rotationDegrees=$rotationDegrees, xmpSubjects=$xmpSubjects, xmpTitle=$xmpTitle, xmpDescription=$xmpDescription, latitude=$latitude, longitude=$longitude, rating=$rating}';
+      ', rotationDegrees=$rotationDegrees, xmpSubjects=$xmpSubjects, xmpTitle=$xmpTitle, xmpDescription=$xmpDescription, hasLocalMetadataEdit=$hasLocalMetadataEdit, latitude=$latitude, longitude=$longitude, rating=$rating}';
 }

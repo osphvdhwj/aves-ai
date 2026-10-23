@@ -83,8 +83,10 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
     }
 
     if (dataTypes.isEmpty && appliedModifier.setDateTime != null) {
-      catalogDateMillis = appliedModifier.setDateTime!.millisecondsSinceEpoch;
-      hasLocalMetadataEdit = true;
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        dateMillis: appliedModifier.setDateTime!.millisecondsSinceEpoch,
+      );
       dataTypes.addAll({EntryDataType.basic, EntryDataType.catalog});
     }
 
@@ -143,15 +145,12 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
     }
 
     if (!success) {
-      if (latLng == null || latLng == removalLocation) {
-        catalogMetadata = catalogMetadata?.copyWith(clearLocation: true);
-      } else {
-        catalogMetadata = catalogMetadata?.copyWith(
-          latitude: latLng.latitude,
-          longitude: latLng.longitude,
-        );
-      }
-      hasLocalMetadataEdit = true;
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        clearLocation: latLng == null || latLng == removalLocation,
+        latitude: latLng?.latitude,
+        longitude: latLng?.longitude,
+      );
       dataTypes.addAll({EntryDataType.catalog, EntryDataType.address});
     }
 
@@ -290,11 +289,11 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
 
     if (!success) {
       // Fallback to local DB for unsupported formats
-      catalogMetadata = catalogMetadata?.copyWith(
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
         xmpTitle: editTitle ? (title ?? '') : catalogMetadata?.xmpTitle,
         xmpDescription: editDescription ? (description ?? '') : catalogMetadata?.xmpDescription,
       );
-      hasLocalMetadataEdit = true;
       dataTypes.add(EntryDataType.catalog);
     }
 
@@ -332,8 +331,10 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
     }
 
     if (!success) {
-      catalogMetadata = catalogMetadata?.copyWith(xmpSubjects: tags.join(';'));
-      hasLocalMetadataEdit = true;
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        xmpSubjects: tags.join(';'),
+      );
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;
@@ -366,8 +367,10 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
     }
 
     if (!success) {
-      catalogMetadata = catalogMetadata?.copyWith(rating: rating ?? 0);
-      hasLocalMetadataEdit = true;
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        rating: rating ?? 0,
+      );
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;
