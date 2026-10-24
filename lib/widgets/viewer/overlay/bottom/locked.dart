@@ -50,7 +50,7 @@ class _ViewerLockedOverlayState extends State<ViewerLockedOverlay> {
     _buttonScale = CurvedAnimation(
       parent: widget.animationController,
       // a little bounce at the top
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
   }
 

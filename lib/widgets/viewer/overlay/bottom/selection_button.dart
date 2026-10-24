@@ -55,8 +55,8 @@ class const SelectionButton({
                         builder: (context, isSelected, child) {
                           return AnimatedSwitcher(
                             duration: duration,
-                            switchInCurve: Curves.easeOutBack,
-                            switchOutCurve: Curves.easeOutBack,
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeOutCubic,
                             transitionBuilder: (child, animation) => ScaleTransition(
                               scale: animation,
                               child: child,

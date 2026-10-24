@@ -259,8 +259,8 @@ class _SectionSelectingLeading<T> extends StatelessWidget {
     final isSelected = selection.isSelected(sectionEntries);
     return AnimatedSwitcher(
       duration: duration,
-      switchInCurve: Curves.easeOutBack,
-      switchOutCurve: Curves.easeOutBack,
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeOutCubic,
       transitionBuilder: (child, animation) => ScaleTransition(
         scale: animation,
         child: child,

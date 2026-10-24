@@ -150,7 +150,7 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     );
     _overlayScale = CurvedAnimation(
       parent: _overlayAnimationController,
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
     _scrollerSize = CurvedAnimation(
       parent: _overlayAnimationController,

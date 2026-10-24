@@ -145,7 +145,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
     _overlayButtonScale = CurvedAnimation(
       parent: _overlayAnimationController,
       // a little bounce at the top
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
     _overlayVideoControlScale = CurvedAnimation(
       parent: _overlayAnimationController,

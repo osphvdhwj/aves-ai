@@ -22,7 +22,6 @@ import 'package:aves/widgets/filter_grids/common/action_delegates/chip.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:aves/widgets/common/motion/spring_transition.dart';
 import 'package:provider/provider.dart';
 
 typedef AFilterCallback<T extends CollectionFilter> = void Function(T filter);

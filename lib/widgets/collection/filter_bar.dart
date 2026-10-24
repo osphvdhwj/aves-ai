@@ -53,7 +53,7 @@ class _FilterBarState extends State<FilterBar> {
         index,
         animate
             ? (context, animation) {
-                animation = animation.drive(CurveTween(curve: Curves.easeInOutBack));
+                animation = animation.drive(CurveTween(curve: Curves.easeInOutCubic));
                 return FadeTransition(
                   opacity: animation,
                   child: SizeTransition(

@@ -103,7 +103,7 @@ class _SlideshowButtonsState extends State<SlideshowButtons> {
     _buttonScale = CurvedAnimation(
       parent: widget.animationController,
       // a little bounce at the top
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
   }
 

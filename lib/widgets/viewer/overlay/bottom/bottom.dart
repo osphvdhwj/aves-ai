@@ -130,7 +130,7 @@ class _BottomOverlayContentState extends State<_BottomOverlayContent> {
     _buttonScale = CurvedAnimation(
       parent: animationController,
       // a little bounce at the top
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
     _thumbnailOpacity = CurvedAnimation(
       parent: animationController,

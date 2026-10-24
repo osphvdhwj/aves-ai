@@ -1,4 +1,3 @@
-import 'package:aves/widgets/common/motion/spring_transition.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Material 3 Expressive press feedback.
@@ -67,8 +66,10 @@ class _PressableScaleState extends State<PressableScale> {
             }
           : null,
       onTapCancel: _interactive ? () => _setPressed(false) : null,
-      child: SpringScale(
+      child: AnimatedScale(
         scale: (disableAnimations || !_pressed) ? 1.0 : widget.scale,
+        duration: widget.duration ?? const Duration(milliseconds: 100),
+        curve: Curves.easeOutCubic,
         child: widget.child,
       ),
     );

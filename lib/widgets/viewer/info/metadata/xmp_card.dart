@@ -122,7 +122,7 @@ class _XmpCardState extends State<XmpCard> {
               ),
               MultiCrossFader(
                 duration: ADurations.xmpStructArrayCardTransition,
-                sizeCurve: Curves.easeOutBack,
+                sizeCurve: Curves.easeOutCubic,
                 alignment: .topStart,
                 child: Padding(
                   // add padding at this level (instead of the column level)
