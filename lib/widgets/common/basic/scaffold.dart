@@ -85,7 +85,7 @@ class _AnimatedScaffoldState extends State<_AnimatedScaffold> {
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       extendBody: widget.extendBody,
       drawerEnableOpenDragGesture: widget.drawerEnableOpenDragGesture,
-      drawerScrimColor: Colors.black.withValues(alpha: 0.6),
+      drawerScrimColor: Colors.black.withValues(alpha: 0.2),
       onDrawerChanged: (isOpened) => setState(() => _isDrawerOpen = isOpened),
       body: AnimatedScale(
         scale: _isDrawerOpen ? 0.92 : 1.0,

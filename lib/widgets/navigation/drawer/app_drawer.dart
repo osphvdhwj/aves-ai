@@ -20,6 +20,7 @@ import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/basic/text/outlined.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/extensions/media_query.dart';
+import 'package:aves/widgets/common/fx/blurred.dart';
 import 'package:aves/widgets/common/identity/aves_logo.dart';
 import 'package:aves/widgets/debug/app_debug_page.dart';
 import 'package:aves/widgets/explorer/explorer_page.dart';
@@ -153,36 +154,40 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
       child: SafeArea(
         right: false,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Material(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          padding: const EdgeInsets.all(16.0),
+          child: BlurredRRect(
+            enabled: settings.enableBlurEffect,
             borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
-            clipBehavior: Clip.antiAlias,
-            child: ListTileTheme.merge(
-              selectedColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              textColor: Theme.of(context).colorScheme.onSurface,
-              iconColor: Theme.of(context).colorScheme.onSurfaceVariant,
-              horizontalTitleGap: 16,
-              visualDensity: VisualDensity.comfortable,
-              child: Selector<MediaQueryData, double>(
-                selector: (context, mq) => mq.effectiveBottomPadding,
-                builder: (context, mqPaddingBottom, child) {
-                  final textScaler = MediaQuery.textScalerOf(context);
-                  final iconTheme = IconTheme.of(context);
-                  return SingleChildScrollView(
-                    controller: _scrollController,
-                    key: const Key('drawer-scrollview'),
-                    padding: EdgeInsets.only(top: 16, bottom: 16 + mqPaddingBottom),
-                    child: IconTheme(
-                      data: iconTheme.copyWith(
-                        size: textScaler.scale(iconTheme.size!),
+            child: Material(
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
+              clipBehavior: Clip.antiAlias,
+              child: ListTileTheme.merge(
+                selectedColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                textColor: Theme.of(context).colorScheme.onSurface,
+                iconColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                horizontalTitleGap: 16,
+                visualDensity: VisualDensity.comfortable,
+                child: Selector<MediaQueryData, double>(
+                  selector: (context, mq) => mq.effectiveBottomPadding,
+                  builder: (context, mqPaddingBottom, child) {
+                    final textScaler = MediaQuery.textScalerOf(context);
+                    final iconTheme = IconTheme.of(context);
+                    return SingleChildScrollView(
+                      controller: _scrollController,
+                      key: const Key('drawer-scrollview'),
+                      padding: EdgeInsets.only(top: 16, bottom: 16 + mqPaddingBottom),
+                      child: IconTheme(
+                        data: iconTheme.copyWith(
+                          size: textScaler.scale(iconTheme.size!),
+                        ),
+                        child: Column(
+                          children: drawerItems,
+                        ),
                       ),
-                      child: Column(
-                        children: drawerItems,
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
