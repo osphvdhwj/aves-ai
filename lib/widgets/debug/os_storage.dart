@@ -8,7 +8,7 @@ import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugOSStorageSection extends StatefulWidget {
-  const new({super.key});
+  const DebugOSStorageSection({super.key});
 
   @override
   State<DebugOSStorageSection> createState() => _DebugOSStorageSectionState();

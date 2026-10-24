@@ -43,7 +43,7 @@ class Diff {
   /// Constructor.  Initializes the diff with the provided values.
   /// [operation] is one of Operation.insert, Operation.delete or Operation.equal.
   /// [text] is the text being applied.
-  new(this.operation, this.text);
+  Diff(this.operation, this.text);
 
   /// Display a human-readable version of this Diff.
   /// Returns a text version.

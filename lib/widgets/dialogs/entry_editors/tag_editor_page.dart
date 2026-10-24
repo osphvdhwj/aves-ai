@@ -22,7 +22,7 @@ class TagEditorPage extends StatefulWidget {
 
   final Map<AvesEntry, Set<TagFilter>> tagsByEntry;
 
-  const new({
+  const TagEditorPage({
     super.key,
     required this.tagsByEntry,
   });
@@ -321,7 +321,7 @@ class _FilterRow extends StatelessWidget {
   final ValueNotifier<String?> expandedNotifier;
   final void Function(CollectionFilter filter) onTap;
 
-  const new({
+  const _FilterRow({
     required this.title,
     required this.filters,
     required this.expandedNotifier,
@@ -346,7 +346,7 @@ class _FilterRow extends StatelessWidget {
 class _TagCount extends StatelessWidget {
   final int count;
 
-  const new({
+  const _TagCount({
     required this.count,
   });
 

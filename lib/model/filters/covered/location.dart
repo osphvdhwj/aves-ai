@@ -24,7 +24,7 @@ class LocationFilter extends CollectionFilter with CoveredFilter {
   @override
   List<Object?> get props => [level, _location, _code, reversed];
 
-  new(this.level, String location, {super.reversed = false}) {
+  LocationFilter(this.level, String location, {super.reversed = false}) {
     final split = location.split(locationSeparator);
     _location = split.isNotEmpty ? split[0] : location;
     _code = split.length > 1 ? split[1] : null;

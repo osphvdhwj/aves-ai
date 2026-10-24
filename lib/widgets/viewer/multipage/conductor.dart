@@ -11,7 +11,7 @@ class MultiPageConductor {
 
   static const maxControllerCount = 3;
 
-  new() {
+  MultiPageConductor() {
     if (kFlutterMemoryAllocationsEnabled) {
       LeakTracking.dispatchObjectCreated(
         library: 'aves',

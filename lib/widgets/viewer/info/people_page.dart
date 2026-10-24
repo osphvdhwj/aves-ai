@@ -17,7 +17,7 @@ class PeoplePage extends StatelessWidget {
   /// Face clusters from the companion. Empty until the ML pipeline ships.
   final List<FaceCluster> clusters;
 
-  const new({
+  const PeoplePage({
     super.key,
     this.clusters = const [],
   });
@@ -46,7 +46,7 @@ class FaceCluster {
   final int count;
   final ImageProvider? cover;
 
-  const new({
+  const FaceCluster({
     required this.id,
     required this.count,
     this.name,
@@ -57,7 +57,7 @@ class FaceCluster {
 class _Grid extends StatelessWidget {
   final List<FaceCluster> clusters;
 
-  const new({required this.clusters});
+  const _Grid({required this.clusters});
 
   @override
   Widget build(BuildContext context) {

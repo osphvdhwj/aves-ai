@@ -48,7 +48,7 @@ class EditEntryLocationDialog extends StatefulWidget {
   final Set<AvesEntry> entries;
   final CollectionLens? collection;
 
-  const new({
+  const EditEntryLocationDialog({
     super.key,
     required this.entries,
     this.collection,

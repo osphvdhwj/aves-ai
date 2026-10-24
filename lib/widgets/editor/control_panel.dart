@@ -18,7 +18,7 @@ class EditorControlPanel extends StatelessWidget {
 
   static const padding = ViewerButtonRowContent.padding;
 
-  const new({
+  const EditorControlPanel({
     super.key,
     required this.entry,
     required this.actionNotifier,
@@ -109,7 +109,7 @@ class _TopLevelPanel extends StatelessWidget {
     EditorAction.transform,
   ];
 
-  const new({
+  const _TopLevelPanel({
     required this.actionNotifier,
   });
 

@@ -15,7 +15,7 @@ class QueryBar extends StatefulWidget {
   final String? hintText;
   final bool editable;
 
-  const new({
+  const QueryBar({
     super.key,
     required this.queryNotifier,
     this.focusNode,

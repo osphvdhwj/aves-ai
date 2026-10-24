@@ -418,7 +418,7 @@ class Dependency {
   final String license;
   final String sourceUrl;
 
-  const new({
+  const Dependency({
     required this.name,
     required this.license,
     required this.sourceUrl,

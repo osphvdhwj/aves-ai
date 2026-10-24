@@ -37,7 +37,7 @@ class InfoAppBar extends StatelessWidget {
   final ValueNotifier<Map<String, MetadataDirectory>> metadataNotifier;
   final VoidCallback onBackPressed;
 
-  const new({
+  const InfoAppBar({
     super.key,
     required this.entry,
     required this.collection,

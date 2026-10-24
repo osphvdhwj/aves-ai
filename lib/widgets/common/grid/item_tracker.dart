@@ -16,7 +16,7 @@ class GridItemTracker<T> extends StatefulWidget {
   final ScrollController scrollController;
   final Widget child;
 
-  const new({
+  const GridItemTracker({
     super.key,
     required this.scrollableKey,
     required this.appBarHeightNotifier,

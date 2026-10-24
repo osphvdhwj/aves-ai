@@ -21,7 +21,7 @@ class AiSearchPage extends StatefulWidget {
   final AiSearchDelegate delegate;
   final Animation<double> animation;
 
-  const new({
+  const AiSearchPage({
     super.key,
     required this.delegate,
     required this.animation,
@@ -159,7 +159,7 @@ class _Palette extends StatelessWidget {
   final List<AiCommand> commands;
   final ValueChanged<AiCommand> onTap;
 
-  const new({
+  const _Palette({
     required this.commands,
     required this.onTap,
   });
@@ -276,7 +276,7 @@ class _InputRow extends StatelessWidget {
   final VoidCallback onSubmit;
   final ThemeData theme;
 
-  const new({
+  const _InputRow({
     required this.controller,
     required this.focusNode,
     required this.onAt,
@@ -345,7 +345,7 @@ class _TokenChip extends StatelessWidget {
   final VoidCallback onTap;
   final ColorScheme colors;
 
-  const new({
+  const _TokenChip({
     required this.label,
     required this.onTap,
     required this.colors,
@@ -388,7 +388,7 @@ class _RoundActionButton extends StatelessWidget {
   final bool accent;
   final bool subtle;
 
-  const new({
+  const _RoundActionButton({
     super.key,
     this.label,
     this.icon,

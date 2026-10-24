@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class FilterGroupProvider extends ListenableProvider<FilterGroupNotifier> {
-  new({
+  FilterGroupProvider({
     super.key,
     Uri? initialValue,
     super.child,

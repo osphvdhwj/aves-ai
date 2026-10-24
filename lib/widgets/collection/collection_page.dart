@@ -39,7 +39,7 @@ class CollectionPage extends StatefulWidget {
   final Set<CollectionFilter?>? filters;
   final bool Function(AvesEntry element)? highlightTest;
 
-  const new({
+  const CollectionPage({
     super.key,
     required this.source,
     required this.filters,

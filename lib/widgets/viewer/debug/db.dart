@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 class DbTab extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const DbTab({
     super.key,
     required this.entry,
   });

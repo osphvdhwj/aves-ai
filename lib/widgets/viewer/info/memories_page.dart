@@ -21,7 +21,7 @@ class MemoriesPage extends StatelessWidget {
   final CollectionLens? collection;
   final AvesEntry entry;
 
-  const new({super.key, this.collection, required this.entry});
+  const MemoriesPage({super.key, this.collection, required this.entry});
 
   @override
   Widget build(BuildContext context) {

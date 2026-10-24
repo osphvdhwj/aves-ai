@@ -13,7 +13,7 @@ class HomeError extends StatefulWidget {
   final Object error;
   final StackTrace stack;
 
-  const new({
+  const HomeError({
     super.key,
     required this.error,
     required this.stack,

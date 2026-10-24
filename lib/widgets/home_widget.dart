@@ -21,7 +21,7 @@ class HomeWidgetPainter {
     colors: AColors.boraBoraGradient,
   );
 
-  new({
+  HomeWidgetPainter({
     required this.entry,
     required this.devicePixelRatio,
   });

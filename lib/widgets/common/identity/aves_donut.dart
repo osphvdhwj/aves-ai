@@ -27,7 +27,7 @@ class AvesDonut extends StatefulWidget {
   final DatumColorizer colorize;
   final DatumCallback? onTap;
 
-  const new({
+  const AvesDonut({
     super.key,
     required this.title,
     required this.byTypes,
@@ -198,7 +198,7 @@ class AvesDonutDatum extends Equatable {
   @override
   List<Object?> get props => [key, value];
 
-  const new({
+  const AvesDonutDatum({
     required this.key,
     required this.value,
   });

@@ -55,7 +55,7 @@ class HomePage extends StatefulWidget {
 
   final Map<String, Object?>? intentData;
 
-  const new({
+  const HomePage({
     super.key,
     this.intentData,
   });

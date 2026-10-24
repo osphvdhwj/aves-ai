@@ -17,7 +17,7 @@ class AlbumQuickChooser extends StatelessWidget with FilterQuickChooserMixin<Str
   final PopupMenuPosition chooserPosition;
   final Stream<Offset> pointerGlobalPosition;
 
-  const new({
+  const AlbumQuickChooser({
     super.key,
     required this.valueNotifier,
     required this.options,

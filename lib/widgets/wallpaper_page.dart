@@ -30,7 +30,7 @@ class WallpaperPage extends StatelessWidget {
 
   final AvesEntry? entry;
 
-  const new({
+  const WallpaperPage({
     super.key,
     required this.entry,
   });
@@ -59,7 +59,7 @@ class WallpaperPage extends StatelessWidget {
 class EntryEditor extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const EntryEditor({
     super.key,
     required this.entry,
   });

@@ -12,7 +12,7 @@ class SelectStorageDialog extends StatefulWidget {
 
   final StorageVolume? initialVolume;
 
-  const new({super.key, this.initialVolume});
+  const SelectStorageDialog({super.key, this.initialVolume});
 
   @override
   State<SelectStorageDialog> createState() => _SelectStorageDialogState();

@@ -6,7 +6,7 @@ import 'package:aves/widgets/settings/common/tiles/switch_list.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ManageMediaTile extends StatefulWidget {
-  const new({super.key});
+  const ManageMediaTile({super.key});
 
   @override
   State<ManageMediaTile> createState() => _ManageMediaTileState();

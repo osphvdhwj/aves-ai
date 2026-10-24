@@ -29,7 +29,7 @@ class InfoHeaderSection extends StatelessWidget {
   final EntryInfoActionDelegate actionDelegate;
   final Widget chipsSection;
 
-  const new({
+  const InfoHeaderSection({
     super.key,
     required this.entry,
     this.collection,
@@ -114,7 +114,7 @@ class _CaptionRow extends StatefulWidget {
   final CollectionLens? collection;
   final EntryInfoActionDelegate actionDelegate;
 
-  const new({
+  const _CaptionRow({
     required this.entry,
     this.collection,
     required this.actionDelegate,

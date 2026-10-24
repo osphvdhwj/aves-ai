@@ -36,7 +36,7 @@ class ExplorerPage extends StatefulWidget {
 
   final String? path;
 
-  const new({super.key, this.path});
+  const ExplorerPage({super.key, this.path});
 
   @override
   State<ExplorerPage> createState() => _ExplorerPageState();
@@ -213,7 +213,7 @@ class _ExplorerPageContent extends StatelessWidget {
   final ValueNotifier<VolumeRelativeDirectory?> contentsDirectoryNotifier;
   final ValueNotifier<List<Directory>> contentsNotifier;
 
-  const new({
+  const _ExplorerPageContent({
     required this.directoryNotifier,
     required this.contentsDirectoryNotifier,
     required this.contentsNotifier,
@@ -305,7 +305,7 @@ class _ExplorerPageContent extends StatelessWidget {
 class _ExplorerContentLine extends StatelessWidget {
   final FileSystemEntity entity;
 
-  const new({
+  const _ExplorerContentLine({
     required this.entity,
   });
 
@@ -347,26 +347,26 @@ class _ExplorerContentLine extends StatelessWidget {
 }
 
 abstract class _ExplorerNotification extends Notification {
-  const new();
+  const _ExplorerNotification();
 }
 
 @immutable
 class _GoToDirectoryNotification extends _ExplorerNotification {
   final VolumeRelativeDirectory? dir;
 
-  const new(this.dir);
+  const _GoToDirectoryNotification(this.dir);
 }
 
 @immutable
 class _GoToPathNotification extends _ExplorerNotification {
   final String path;
 
-  const new(this.path);
+  const _GoToPathNotification(this.path);
 }
 
 @immutable
 class _GoToCollectionPageNotification extends _ExplorerNotification {
   final CollectionFilter filter;
 
-  const new(this.filter);
+  const _GoToCollectionPageNotification(this.filter);
 }

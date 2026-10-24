@@ -12,7 +12,7 @@ class CoverCollage extends StatelessWidget {
 
   static const double _gap = 2.0;
 
-  const new({
+  const CoverCollage({
     super.key,
     required this.entries,
     required this.extent,

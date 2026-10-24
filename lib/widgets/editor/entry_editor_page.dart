@@ -19,7 +19,7 @@ class ImageEditorPage extends StatefulWidget {
 
   final AvesEntry entry;
 
-  const new({
+  const ImageEditorPage({
     super.key,
     required this.entry,
   });

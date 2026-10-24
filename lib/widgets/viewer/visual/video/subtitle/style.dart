@@ -33,7 +33,7 @@ class SubtitleStyle extends Equatable with Diagnosticable {
     drawingPaths?.length,
   ];
 
-  const new({
+  const SubtitleStyle({
     this.hAlign,
     this.vAlign,
     this.borderColor,

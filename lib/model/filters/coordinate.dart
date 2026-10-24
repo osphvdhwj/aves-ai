@@ -21,7 +21,7 @@ class CoordinateFilter extends CollectionFilter {
   @override
   List<Object?> get props => [sw, ne, reversed];
 
-  new(this.sw, this.ne, {this.minuteSecondPadding = false, super.reversed = false}) {
+  CoordinateFilter(this.sw, this.ne, {this.minuteSecondPadding = false, super.reversed = false}) {
     _test = (entry) => GeoUtils.contains(sw, ne, entry.latLng);
   }
 

@@ -113,7 +113,7 @@ class _Task<T> {
   final VoidCallback callback;
   final Completer<T> completer;
 
-  const new(this.callback, this.completer);
+  const _Task(this.callback, this.completer);
 }
 
 class CancelledException;
@@ -131,5 +131,5 @@ class QueueState {
   final Map<int, int> queueByPriority;
   final int runningCount, pausedCount;
 
-  const new(this.queueByPriority, this.runningCount, this.pausedCount);
+  const QueueState(this.queueByPriority, this.runningCount, this.pausedCount);
 }

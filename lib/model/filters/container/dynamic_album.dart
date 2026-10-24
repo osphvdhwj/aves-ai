@@ -17,7 +17,7 @@ class DynamicAlbumFilter extends CollectionFilter with ContainerFilter, CoveredF
   @override
   List<Object?> get props => [name, filter, reversed];
 
-  new(this.name, this.filter, {super.reversed = false});
+  DynamicAlbumFilter(this.name, this.filter, {super.reversed = false});
 
   static DynamicAlbumFilter? fromMap(Map<String, Object?> json) {
     final filter = CollectionFilter.fromJson(json['filter']);

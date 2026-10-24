@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 class ColorSectionSliver extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({super.key, required this.entry});
+  const ColorSectionSliver({super.key, required this.entry});
 
   @override
   State<ColorSectionSliver> createState() => _ColorSectionSliverState();

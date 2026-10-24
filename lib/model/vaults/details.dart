@@ -13,7 +13,7 @@ class VaultDetails extends Equatable {
   @override
   List<Object?> get props => [name, autoLockScreenOff, useBin, lockType];
 
-  const new({
+  const VaultDetails({
     required this.name,
     required this.autoLockScreenOff,
     required this.useBin,

@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 class AvesScrollThumb {
   static const EdgeInsetsGeometry _margin = EdgeInsetsDirectional.only(end: 1);
-  static const EdgeInsets _padding = .all(2);
+  static const EdgeInsets _padding = EdgeInsets.all(2);
   static const double _width = 20;
   static final double _thumbWidth = _width + _padding.horizontal + _margin.horizontal;
 

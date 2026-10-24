@@ -35,7 +35,7 @@ class ExplorerAppBar extends StatefulWidget {
   final ValueNotifier<VolumeRelativeDirectory?> directoryNotifier;
   final void Function(VolumeRelativeDirectory? dir) goToDir;
 
-  const new({
+  const ExplorerAppBar({
     super.key,
     required this.directoryNotifier,
     required this.goToDir,

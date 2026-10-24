@@ -16,7 +16,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class AboutMobilePage extends StatelessWidget {
-  const new({super.key});
+  const AboutMobilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +121,7 @@ class _AboutCard extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const new({
+  const _AboutCard({
     required this.title,
     required this.children,
   });

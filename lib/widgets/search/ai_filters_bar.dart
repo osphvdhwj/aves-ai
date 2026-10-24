@@ -19,7 +19,7 @@ class AiFiltersBar extends StatelessWidget {
   final Set<AiFilterKind> selected;
   final ValueChanged<Set<AiFilterKind>> onSelectionChanged;
 
-  const new({
+  const AiFiltersBar({
     super.key,
     required this.entries,
     required this.selected,

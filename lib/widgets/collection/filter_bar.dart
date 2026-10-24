@@ -17,7 +17,7 @@ class FilterBar extends StatefulWidget {
   final bool interactive;
   final AFilterCallback? onTap, onRemove;
 
-  new({
+  FilterBar({
     super.key,
     required Set<CollectionFilter> filters,
     required this.interactive,
@@ -129,7 +129,7 @@ class _Chip extends StatelessWidget {
   final bool single, interactive;
   final AFilterCallback? onTap, onRemove;
 
-  const new({
+  const _Chip({
     required this.filter,
     required this.single,
     required this.interactive,

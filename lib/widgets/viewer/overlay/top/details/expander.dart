@@ -6,7 +6,7 @@ class OverlayRowExpander extends StatefulWidget {
   final ValueNotifier<bool> expandedNotifier;
   final Widget child;
 
-  const new({
+  const OverlayRowExpander({
     super.key,
     required this.expandedNotifier,
     required this.child,

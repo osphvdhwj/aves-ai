@@ -6,7 +6,7 @@ class AvesOutlinedButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
-  const new({
+  const AvesOutlinedButton({
     super.key,
     this.icon,
     required this.label,

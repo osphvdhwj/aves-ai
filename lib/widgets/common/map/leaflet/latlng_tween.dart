@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart';
 
 class LatLngTween extends Tween<LatLng?> {
-  new({
+  LatLngTween({
     required super.begin,
     required super.end,
   });

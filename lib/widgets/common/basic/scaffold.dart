@@ -10,7 +10,7 @@ class AvesScaffold extends StatelessWidget {
   final bool? resizeToAvoidBottomInset;
   final bool extendBody;
 
-  const new({
+  const AvesScaffold({
     super.key,
     this.appBar,
     this.body,

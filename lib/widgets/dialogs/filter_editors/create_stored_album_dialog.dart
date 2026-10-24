@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 class CreateStoredAlbumDialog extends StatefulWidget {
   static const routeName = '/dialog/create_stored_album';
 
-  const new({super.key});
+  const CreateStoredAlbumDialog({super.key});
 
   @override
   State<CreateStoredAlbumDialog> createState() => _CreateStoredAlbumDialogState();

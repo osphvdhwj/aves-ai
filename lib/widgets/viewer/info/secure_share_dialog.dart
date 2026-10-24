@@ -25,7 +25,7 @@ Future<void> showSecureShareDialog(BuildContext context, AvesEntry entry) {
 class _SecureShareDialog extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({super.key, required this.entry});
+  const _SecureShareDialog({super.key, required this.entry});
 
   @override
   State<_SecureShareDialog> createState() => _SecureShareDialogState();

@@ -10,7 +10,7 @@ class TrashDetails extends Equatable {
   @override
   List<Object?> get props => [id, path, dateMillis];
 
-  const new({
+  const TrashDetails({
     required this.id,
     required this.path,
     required this.dateMillis,

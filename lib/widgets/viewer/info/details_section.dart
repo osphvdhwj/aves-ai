@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 class DetailsSection extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const DetailsSection({
     super.key,
     required this.entry,
   });

@@ -15,7 +15,7 @@ class LocaleTile extends StatelessWidget {
 
   static const List<String> settingKeys = [SettingKeys.localeKey];
 
-  const new({super.key});
+  const LocaleTile({super.key});
 
   @override
   Widget build(BuildContext context) {

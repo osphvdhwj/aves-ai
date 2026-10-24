@@ -34,7 +34,7 @@ class TvRail extends StatefulWidget {
 
   static const double minExtendedWidth = 256;
 
-  const new({
+  const TvRail({
     super.key,
     required this.controller,
     this.currentCollection,
@@ -292,7 +292,7 @@ class _NavEntry {
   final bool isHome, isSelected;
   final VoidCallback onSelection;
 
-  const new({
+  const _NavEntry({
     required this.icon,
     required this.label,
     required this.isHome,

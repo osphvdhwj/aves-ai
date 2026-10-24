@@ -40,7 +40,7 @@ class const FixedExtentGridRow({
 class _GridRowParentData extends ContainerBoxParentData<RenderBox>;
 
 class RenderFixedExtentGridRow extends RenderBox with ContainerRenderObjectMixin<RenderBox, _GridRowParentData>, RenderBoxContainerDefaultsMixin<RenderBox, _GridRowParentData> {
-  new({
+  RenderFixedExtentGridRow({
     List<RenderBox>? children,
     required this._width,
     required this._height,

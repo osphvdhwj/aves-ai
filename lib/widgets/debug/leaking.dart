@@ -13,7 +13,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugLeakingSection extends StatefulWidget {
-  const new({super.key});
+  const DebugLeakingSection({super.key});
 
   @override
   State<DebugLeakingSection> createState() => _DebugLeakingSectionState();
@@ -122,7 +122,7 @@ class _DebugLeakingSectionState extends State<DebugLeakingSection> with Automati
 }
 
 class _CollectorOverlay extends StatefulWidget {
-  const new();
+  const _CollectorOverlay();
 
   @override
   State<_CollectorOverlay> createState() => _CollectorOverlayState();

@@ -414,5 +414,5 @@ class GroupUriChangedEvent {
   final Uri oldGroupUri;
   final Uri newGroupUri;
 
-  const new(this.oldGroupUri, this.newGroupUri);
+  const GroupUriChangedEvent(this.oldGroupUri, this.newGroupUri);
 }

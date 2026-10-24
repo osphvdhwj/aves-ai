@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 class Minimap extends StatelessWidget {
   final ValueNotifier<ViewState> viewStateNotifier;
 
-  const new({
+  const Minimap({
     super.key,
     required this.viewStateNotifier,
   });
@@ -61,7 +61,7 @@ class _MinimapPainter extends CustomPainter {
 
   late final Paint fill, minimapStroke, viewportStroke;
 
-  new({
+  _MinimapPainter({
     required this.viewportSize,
     required this.contentSize,
     required this.viewCenterOffset,

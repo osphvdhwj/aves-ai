@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class Attribution extends StatelessWidget {
   final EntryMapStyle? style;
 
-  const new({
+  const Attribution({
     super.key,
     required this.style,
   });

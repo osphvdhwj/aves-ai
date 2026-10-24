@@ -100,7 +100,7 @@ class Analyzer with WidgetsBindingObserver {
 
   static const notificationUpdateInterval = Duration(seconds: 1);
 
-  new() {
+  Analyzer() {
     debugPrint('$runtimeType create');
     if (kFlutterMemoryAllocationsEnabled) {
       LeakTracking.dispatchObjectCreated(

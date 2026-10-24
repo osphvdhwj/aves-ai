@@ -260,7 +260,7 @@ class ExtraBottomOverlay extends StatelessWidget {
   final EdgeInsets? viewInsets, viewPadding;
   final Widget child;
 
-  const new({
+  const ExtraBottomOverlay({
     super.key,
     this.viewInsets,
     this.viewPadding,

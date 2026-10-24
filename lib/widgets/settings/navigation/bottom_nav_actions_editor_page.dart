@@ -25,7 +25,7 @@ class BottomNavigationActionEditorPage extends StatefulWidget {
 
   static const List<String> settingKeys = [SettingKeys.bottomNavigationActionsKey];
 
-  const new({super.key});
+  const BottomNavigationActionEditorPage({super.key});
 
   @override
   State<BottomNavigationActionEditorPage> createState() => _BottomNavigationActionEditorPageState();

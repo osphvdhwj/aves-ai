@@ -15,7 +15,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class AboutTvPage extends StatelessWidget {
-  const new({super.key});
+  const AboutTvPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class AboutTvPage extends StatelessWidget {
 }
 
 class _Content extends StatefulWidget {
-  const new();
+  const _Content();
 
   @override
   State<_Content> createState() => _ContentState();

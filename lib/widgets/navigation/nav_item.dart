@@ -31,7 +31,7 @@ class AvesNavItem extends Equatable {
   @override
   List<Object?> get props => [route, filters, path];
 
-  const new({
+  const AvesNavItem({
     required this.route,
     this.filters,
     this.path,

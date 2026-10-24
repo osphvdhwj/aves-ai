@@ -67,7 +67,7 @@ class DraggableScrollbar extends StatefulWidget {
   /// The view that will be scrolled with the scroll thumb
   final Widget child;
 
-  const new({
+  const DraggableScrollbar({
     super.key,
     required this.backgroundColor,
     required this.scrollThumbSize,

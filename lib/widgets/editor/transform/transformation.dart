@@ -22,7 +22,7 @@ class Transformation extends Equatable {
     region: CropRegion.zero,
   );
 
-  const new({
+  const Transformation({
     required this.orientation,
     required this.straightenDegrees,
     required this.region,

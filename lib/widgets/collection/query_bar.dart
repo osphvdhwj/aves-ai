@@ -10,7 +10,7 @@ class EntryQueryBar extends StatefulWidget {
   final ValueNotifier<String> queryNotifier;
   final FocusNode focusNode;
 
-  const new({
+  const EntryQueryBar({
     super.key,
     required this.queryNotifier,
     required this.focusNode,

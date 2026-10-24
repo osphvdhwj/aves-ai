@@ -25,7 +25,7 @@ class ConvertEntryDialog extends StatefulWidget {
 
   final Set<AvesEntry> entries;
 
-  const new({
+  const ConvertEntryDialog({
     super.key,
     required this.entries,
   });

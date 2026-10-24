@@ -15,7 +15,7 @@ class SettingsSearchDelegate extends AvesSearchDelegate {
 
   static const pageRouteName = '/settings/search';
 
-  new({
+  SettingsSearchDelegate({
     required super.searchFieldLabel,
     required super.searchFieldStyle,
     required this.sections,

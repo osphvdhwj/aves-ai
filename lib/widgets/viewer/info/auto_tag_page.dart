@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aves/model/auto_tagger.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/covered/tag.dart';
@@ -25,7 +27,7 @@ class AutoTagPage extends StatefulWidget {
   final AvesEntry entry;
   final EntryInfoActionDelegate actionDelegate;
 
-  const new({
+  const AutoTagPage({
     super.key,
     this.collection,
     required this.entry,
@@ -95,8 +97,30 @@ class _AutoTagPageState extends State<AutoTagPage> {
       messenger.showSnackBar(
         SnackBar(content: Text('Added "${p.tag}"'), duration: const Duration(seconds: 1)),
       );
+      // Personalization signal: the user confirms the companion's NSFW
+      // scoring, so the learned threshold may move below this score.
+      if (p.source == 'nsfw-classifier') {
+        unawaited(aiService.feedback(
+          type: 'nsfw_explicit',
+          entryId: widget.entry.id,
+          score: p.confidence,
+        ));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _dismiss(TagProposal p) {
+    setState(() => _dismissed.add(p.tag.toLowerCase()));
+    // Personalization signal: the user rejects the companion's NSFW
+    // suggestion, so the learned threshold may move above this score.
+    if (p.source == 'nsfw-classifier') {
+      unawaited(aiService.feedback(
+        type: 'nsfw_safe',
+        entryId: widget.entry.id,
+        score: p.confidence,
+      ));
     }
   }
 
@@ -224,7 +248,7 @@ class _AutoTagPageState extends State<AutoTagPage> {
                         proposal: p,
                         applied: applied,
                         onApply: () => _apply(p),
-                        onDismiss: () => setState(() => _dismissed.add(p.tag.toLowerCase())),
+                        onDismiss: () => _dismiss(p),
                       );
                     },
                   );

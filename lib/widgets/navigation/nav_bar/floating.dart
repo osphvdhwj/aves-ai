@@ -10,7 +10,7 @@ class FloatingNavBar extends StatefulWidget {
   final double childHeight;
   final Widget child;
 
-  const new({
+  const FloatingNavBar({
     super.key,
     required this.scrollController,
     required this.events,

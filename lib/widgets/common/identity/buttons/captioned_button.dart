@@ -14,7 +14,7 @@ class CaptionedButton extends StatefulWidget {
   static const EdgeInsets padding = EdgeInsets.symmetric(horizontal: 8);
   static const double iconTextPadding = 8;
 
-  new({
+  CaptionedButton({
     super.key,
     this.scale = kAlwaysCompleteAnimation,
     Widget? icon,
@@ -154,7 +154,7 @@ class CaptionedButtonText extends StatelessWidget {
 
   static const int maxLines = 2;
 
-  const new({
+  const CaptionedButtonText({
     super.key,
     required this.text,
     required this.enabled,

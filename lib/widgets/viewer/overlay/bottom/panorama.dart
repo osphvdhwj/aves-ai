@@ -13,7 +13,7 @@ class PanoramaOverlay extends StatelessWidget with FeedbackMixin {
   final AvesEntry entry;
   final Animation<double> scale;
 
-  const new({
+  const PanoramaOverlay({
     super.key,
     required this.entry,
     required this.scale,

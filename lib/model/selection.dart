@@ -15,7 +15,7 @@ class Selection<T> extends ChangeNotifier {
 
   Set<T> get selectedItems => Set.unmodifiable(_selectedItems);
 
-  new({required ToSelectableItems<T>? toSelectableItems}) {
+  Selection({required ToSelectableItems<T>? toSelectableItems}) {
     if (kFlutterMemoryAllocationsEnabled) ChangeNotifier.maybeDispatchObjectCreation(this);
 
     if (toSelectableItems != null) {

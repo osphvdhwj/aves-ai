@@ -38,7 +38,7 @@ class const VariableExtentGridRow({
 class _GridRowParentData extends ContainerBoxParentData<RenderBox>;
 
 class RenderVariableExtentGridRow extends RenderBox with ContainerRenderObjectMixin<RenderBox, _GridRowParentData>, RenderBoxContainerDefaultsMixin<RenderBox, _GridRowParentData> {
-  new({
+  RenderVariableExtentGridRow({
     List<RenderBox>? children,
     required this._rowLayout,
     required this._spacing,

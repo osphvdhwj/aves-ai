@@ -24,7 +24,7 @@ class MapButtonPanel extends StatefulWidget {
   final ValueNotifier<ZoomedBounds> boundsNotifier;
   final void Function(BuildContext context)? openMapPage;
 
-  const new({
+  const MapButtonPanel({
     super.key,
     required this.controller,
     required this.boundsNotifier,

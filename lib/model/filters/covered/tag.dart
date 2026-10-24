@@ -14,7 +14,7 @@ class TagFilter extends CollectionFilter with CoveredFilter, TagBaseFilter {
   @override
   List<Object?> get props => [tag, reversed];
 
-  new(this.tag, {super.reversed = false}) {
+  TagFilter(this.tag, {super.reversed = false}) {
     if (tag.isEmpty) {
       _test = (entry) => entry.tags.isEmpty;
     } else {

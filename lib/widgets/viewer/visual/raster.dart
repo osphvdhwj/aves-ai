@@ -20,7 +20,7 @@ class RasterImageView extends StatefulWidget {
   final ValueNotifier<ViewState> viewStateNotifier;
   final ImageErrorWidgetBuilder errorBuilder;
 
-  const new({
+  const RasterImageView({
     super.key,
     required this.entry,
     required this.viewStateNotifier,
@@ -390,7 +390,7 @@ class _RegionTile extends StatefulWidget {
   final int sampleSize;
   final FilterQuality quality;
 
-  const new({
+  const _RegionTile({
     required this.entry,
     required this.tileRect,
     required this.regionRect,

@@ -27,7 +27,7 @@ class AvesAppBar extends StatelessWidget {
   static const titleHeroTag = 'appbar-title';
   static const double _titleMinWidth = 96;
 
-  const new({
+  const AvesAppBar({
     super.key,
     required this.contentHeight,
     required this.pinned,
@@ -188,7 +188,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final double height;
   final Widget child;
 
-  const new({
+  const _SliverAppBarDelegate({
     required this.height,
     required this.child,
   });
@@ -213,7 +213,7 @@ class AvesFloatingBar extends StatefulWidget {
   // M3E floating surface — bigger radius, slightly larger inset
   static const margin = EdgeInsets.symmetric(horizontal: 10, vertical: 8);
 
-  const new({
+  const AvesFloatingBar({
     super.key,
     required this.builder,
     this.child,

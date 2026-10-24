@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class ShareButton extends ChooserQuickButton<ShareAction> {
   final Set<AvesEntry> entries;
 
-  const new({
+  const ShareButton({
     super.key,
     required super.blurred,
     required this.entries,

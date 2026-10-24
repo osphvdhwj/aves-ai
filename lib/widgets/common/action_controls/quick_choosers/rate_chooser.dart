@@ -11,7 +11,7 @@ class RateQuickChooser extends StatefulWidget {
   final ValueNotifier<int?> valueNotifier;
   final Stream<Offset> pointerGlobalPosition;
 
-  const new({
+  const RateQuickChooser({
     super.key,
     required this.blurred,
     required this.valueNotifier,

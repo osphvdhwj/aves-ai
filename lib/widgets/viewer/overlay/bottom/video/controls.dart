@@ -18,7 +18,7 @@ class VideoControlRow extends StatelessWidget {
   // Pill radius for edge buttons. Large enough to always fully round.
   static const Radius radius = Radius.circular(999);
 
-  const new({
+  const VideoControlRow({
     super.key,
     this.controller,
     this.scale = kAlwaysCompleteAnimation,
@@ -69,7 +69,7 @@ class _VideoOverlayButton extends StatelessWidget {
   final EntryAction action;
   final BorderRadius? borderRadius;
 
-  const new({
+  const _VideoOverlayButton({
     required this.controller,
     required this.scale,
     required this.canOpenVideoPlayer,

@@ -18,7 +18,7 @@ class ViewerDebugPage extends StatelessWidget {
 
   final AvesEntry entry;
 
-  const new({
+  const ViewerDebugPage({
     super.key,
     required this.entry,
   });

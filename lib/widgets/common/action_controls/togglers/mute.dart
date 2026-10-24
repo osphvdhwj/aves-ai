@@ -14,7 +14,7 @@ class MuteToggler extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
-  const new({
+  const MuteToggler({
     super.key,
     required this.controller,
     this.isMenuItem = false,
@@ -58,7 +58,7 @@ class MuteTogglerCaption extends StatelessWidget {
   final AvesVideoController? controller;
   final bool enabled;
 
-  const new({
+  const MuteTogglerCaption({
     super.key,
     required this.controller,
     required this.enabled,

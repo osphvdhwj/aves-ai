@@ -7,7 +7,7 @@ class MultiCrossFader extends StatefulWidget {
   final AnimatedCrossFadeBuilder layoutBuilder;
   final Widget child;
 
-  const new({
+  const MultiCrossFader({
     super.key,
     required this.duration,
     this.fadeCurve = Curves.linear,

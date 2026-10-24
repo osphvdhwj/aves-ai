@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class EntryListDetails extends StatelessWidget {
   final AvesEntry entry;
 
-  const new({
+  const EntryListDetails({
     super.key,
     required this.entry,
   });

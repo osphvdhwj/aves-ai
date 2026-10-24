@@ -24,7 +24,7 @@ class VideoSubtitles extends StatelessWidget {
 
   static const baseShadowOffset = Offset(1, 1);
 
-  const new({
+  const VideoSubtitles({
     super.key,
     required this.entry,
     required this.controller,
@@ -291,7 +291,7 @@ class SubtitlePathPainter extends CustomPainter {
   final double scale;
   final Paint? fillPaint, strokePaint;
 
-  new({
+  SubtitlePathPainter({
     required this.paths,
     required this.scale,
     required Color? fillColor,
@@ -328,7 +328,7 @@ class SubtitlePathClipper extends CustomClipper<Path> {
   final List<Path> paths;
   final double scale;
 
-  const new({
+  const SubtitlePathClipper({
     required this.paths,
     required this.scale,
   });

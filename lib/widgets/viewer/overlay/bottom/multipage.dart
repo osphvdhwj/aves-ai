@@ -10,7 +10,7 @@ class MultiPageOverlay extends StatefulWidget {
   final double availableWidth;
   final bool scrollable;
 
-  const new({
+  const MultiPageOverlay({
     super.key,
     required this.controller,
     required this.availableWidth,

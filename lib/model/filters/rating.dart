@@ -18,7 +18,7 @@ class RatingFilter extends CollectionFilter {
   @override
   List<Object?> get props => [rating, op, reversed];
 
-  new(this.rating, {this.op = opEqual, super.reversed = false}) {
+  RatingFilter(this.rating, {this.op = opEqual, super.reversed = false}) {
     _test = switch (op) {
       opOrLower => (entry) => entry.rating <= rating && entry.rating > 0,
       opOrGreater => (entry) => entry.rating >= rating,

@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class LoadingEmptyContent extends StatelessWidget {
   final CollectionSource source;
 
-  const new({
+  const LoadingEmptyContent({
     super.key,
     required this.source,
   });

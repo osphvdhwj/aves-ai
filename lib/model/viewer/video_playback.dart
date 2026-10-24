@@ -8,7 +8,7 @@ class VideoPlaybackRow extends Equatable {
   @override
   List<Object?> get props => [entryId, resumeTimeMillis];
 
-  const new({
+  const VideoPlaybackRow({
     required this.entryId,
     required this.resumeTimeMillis,
   });

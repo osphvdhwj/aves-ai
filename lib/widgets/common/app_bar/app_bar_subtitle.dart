@@ -11,7 +11,7 @@ class SourceStateAwareAppBarTitle extends StatelessWidget {
   final Widget title;
   final CollectionSource source;
 
-  const new({
+  const SourceStateAwareAppBarTitle({
     super.key,
     required this.title,
     required this.source,
@@ -52,7 +52,7 @@ class SourceStateAwareAppBarTitle extends StatelessWidget {
 class SourceStateSubtitle extends StatelessWidget {
   final CollectionSource source;
 
-  const new({
+  const SourceStateSubtitle({
     super.key,
     required this.source,
   });

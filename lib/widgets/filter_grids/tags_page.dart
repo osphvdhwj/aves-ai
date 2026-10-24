@@ -23,7 +23,7 @@ class TagListPage extends StatelessWidget {
 
   final Uri? initialGroup;
 
-  const new({
+  const TagListPage({
     super.key,
     required this.initialGroup,
   });

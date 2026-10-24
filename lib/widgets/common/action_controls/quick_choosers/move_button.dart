@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 class MoveButton extends ChooserQuickButton<String> {
   final bool copy;
 
-  const new({
+  const MoveButton({
     super.key,
     required this.copy,
     required super.blurred,

@@ -6,7 +6,7 @@ class AvesFab extends StatelessWidget {
   final Widget icon;
   final VoidCallback? onPressed;
 
-  const new({
+  const AvesFab({
     super.key,
     required this.tooltip,
     required this.icon,

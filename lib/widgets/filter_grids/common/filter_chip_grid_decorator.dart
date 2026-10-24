@@ -10,7 +10,7 @@ class FilterChipGridDecorator<T extends CollectionFilter, U extends FilterGridIt
   final bool selectable, highlightable;
   final Widget child;
 
-  const new({
+  const FilterChipGridDecorator({
     super.key,
     required this.gridItem,
     required this.extent,

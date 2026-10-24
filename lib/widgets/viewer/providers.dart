@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ViewStateConductorProvider extends ProxyProvider<MediaQueryData, ViewStateConductor> {
-  new({
+  ViewStateConductorProvider({
     super.key,
     super.child,
   }) : super(
@@ -20,7 +20,7 @@ class ViewStateConductorProvider extends ProxyProvider<MediaQueryData, ViewState
 }
 
 class VideoConductorProvider extends Provider<VideoConductor> {
-  new({
+  VideoConductorProvider({
     super.key,
     CollectionLens? collection,
     super.child,
@@ -31,7 +31,7 @@ class VideoConductorProvider extends Provider<VideoConductor> {
 }
 
 class MultiPageConductorProvider extends Provider<MultiPageConductor> {
-  new({
+  MultiPageConductorProvider({
     super.key,
     super.child,
   }) : super(

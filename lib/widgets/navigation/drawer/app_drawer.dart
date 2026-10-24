@@ -49,7 +49,7 @@ class AppDrawer extends StatefulWidget {
   // current path loaded in the `ExplorerPage`, if any
   final String? currentExplorerPath;
 
-  const new({
+  const AppDrawer({
     super.key,
     this.currentCollection,
     this.currentExplorerPath,

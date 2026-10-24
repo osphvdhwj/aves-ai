@@ -19,7 +19,7 @@ class PermissionsPage extends StatelessWidget {
     SettingKeys.isErrorReportingAllowedKey,
   ];
 
-  const new({super.key});
+  const PermissionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ class AboutSectionPage extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const new({
+  const AboutSectionPage({
     super.key,
     required this.title,
     required this.child,

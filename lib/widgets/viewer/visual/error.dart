@@ -13,7 +13,7 @@ class ErrorView extends StatefulWidget {
   final AvesEntry entry;
   final VoidCallback onTap;
 
-  const new({
+  const ErrorView({
     super.key,
     required this.entry,
     required this.onTap,

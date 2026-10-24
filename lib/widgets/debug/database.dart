@@ -16,7 +16,7 @@ import 'package:collection/collection.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugAppDatabaseSection extends StatefulWidget {
-  const new({super.key});
+  const DebugAppDatabaseSection({super.key});
 
   @override
   State<DebugAppDatabaseSection> createState() => _DebugAppDatabaseSectionState();

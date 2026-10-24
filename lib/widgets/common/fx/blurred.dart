@@ -11,7 +11,7 @@ class BlurredRect extends StatelessWidget {
   final bool enabled;
   final Widget child;
 
-  const new({
+  const BlurredRect({
     super.key,
     this.enabled = true,
     required this.child,
@@ -35,7 +35,7 @@ class BlurredRRect extends StatelessWidget {
   final BorderRadius? borderRadius;
   final Widget child;
 
-  const new({
+  const BlurredRRect({
     super.key,
     this.enabled = true,
     required this.borderRadius,
@@ -74,7 +74,7 @@ class BlurredOval extends StatelessWidget {
   final bool enabled;
   final Widget child;
 
-  const new({
+  const BlurredOval({
     super.key,
     this.enabled = true,
     required this.child,

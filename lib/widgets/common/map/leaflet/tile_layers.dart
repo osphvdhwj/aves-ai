@@ -8,7 +8,7 @@ import 'package:vector_map_tiles/vector_map_tiles.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart' as vtr;
 
 class OsmLibertyLayer extends StatefulWidget {
-  const new({super.key});
+  const OsmLibertyLayer({super.key});
 
   @override
   State<OsmLibertyLayer> createState() => _OsmLibertyLayerState();

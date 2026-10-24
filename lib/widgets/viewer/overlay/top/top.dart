@@ -31,7 +31,7 @@ class ViewerTopOverlay extends StatelessWidget {
   static const Color componentBorderColor = Colors.white30;
   static const double componentDimension = 96;
 
-  const new({
+  const ViewerTopOverlay({
     super.key,
     required this.entries,
     required this.index,
@@ -173,7 +173,7 @@ class ViewerTopOverlay extends StatelessWidget {
 class ZoomLevelIndicator extends StatelessWidget {
   final ValueNotifier<ViewState> viewStateNotifier;
 
-  const new({
+  const ZoomLevelIndicator({
     super.key,
     required this.viewStateNotifier,
   });

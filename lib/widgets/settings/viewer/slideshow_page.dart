@@ -21,7 +21,7 @@ class ViewerSlideshowPage extends StatelessWidget {
     SettingKeys.slideshowVideoPlaybackKey,
   ];
 
-  const new({super.key});
+  const ViewerSlideshowPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -19,7 +19,7 @@ class EmbeddedDataOpener extends StatelessWidget with FeedbackMixin {
   final AvesEntry entry;
   final Widget child;
 
-  const new({
+  const EmbeddedDataOpener({
     super.key,
     required this.enabled,
     required this.entry,

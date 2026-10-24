@@ -29,7 +29,7 @@ class XmpNamespace extends Equatable {
   @override
   List<Object?> get props => [nsUri, nsPrefix];
 
-  new({
+  XmpNamespace({
     required this.nsUri,
     required this.schemaRegistryPrefixes,
     required this.rawProps,

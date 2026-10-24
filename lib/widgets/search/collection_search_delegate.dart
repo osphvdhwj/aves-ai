@@ -68,7 +68,7 @@ class CollectionSearchDelegate extends AvesSearchDelegate with FeedbackMixin, Va
     TypeFilter.raw,
   ];
 
-  new({
+  CollectionSearchDelegate({
     required super.searchFieldLabel,
     required super.searchFieldStyle,
     required this.source,

@@ -15,7 +15,7 @@ class DrawerFixedListTab<T> extends StatefulWidget {
   final ItemWidgetBuilder<T> leading;
   final ItemWidgetBuilder<T> title;
 
-  const new({
+  const DrawerFixedListTab({
     super.key,
     required this.items,
     required this.visibleItems,

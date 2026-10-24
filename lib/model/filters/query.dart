@@ -38,7 +38,7 @@ class QueryFilter extends CollectionFilter {
   static const opLower = '<';
   static const opGreater = '>';
 
-  new(this.query, this.calendar, {this.colorful = true, this.live = false, super.reversed = false}) {
+  QueryFilter(this.query, this.calendar, {this.colorful = true, this.live = false, super.reversed = false}) {
     // allow regex queries wrapped with `/.../`
     var matches = _regexRegex.allMatches(query);
     if (matches.length == 1) {

@@ -14,7 +14,7 @@ class SpringAnimatedValue extends StatefulWidget {
   final Duration fallbackDuration;
   final Widget Function(BuildContext context, double value) builder;
 
-  const new({
+  const SpringAnimatedValue({
     super.key,
     required this.value,
     this.fallbackDuration = const Duration(milliseconds: 300),
@@ -90,7 +90,7 @@ class SpringScale extends StatelessWidget {
   final Widget child;
   final Alignment alignment;
 
-  const new({
+  const SpringScale({
     super.key,
     required this.scale,
     required this.child,
@@ -115,7 +115,7 @@ class SpringOpacity extends StatelessWidget {
   final double opacity;
   final Widget child;
 
-  const new({
+  const SpringOpacity({
     super.key,
     required this.opacity,
     required this.child,

@@ -19,7 +19,7 @@ class EntryPrinter with FeedbackMixin {
 
   static const _fit = pdf.BoxFit.contain;
 
-  new(this.entry);
+  EntryPrinter(this.entry);
 
   Future<void> print(BuildContext context) async {
     final documentName = entry.bestTitle ?? context.l10n.appName;

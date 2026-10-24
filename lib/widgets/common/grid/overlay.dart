@@ -10,7 +10,7 @@ class GridItemSelectionOverlay<T> extends StatelessWidget {
   final BorderRadius? borderRadius;
   final EdgeInsets? padding;
 
-  const new({
+  const GridItemSelectionOverlay({
     super.key,
     required this.item,
     this.borderRadius,

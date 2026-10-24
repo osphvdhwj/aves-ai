@@ -11,7 +11,7 @@ class ViewerThumbnailPreview extends StatefulWidget {
   /// on tap, and suppresses the auto-navigation on scroll.
   final void Function(int index)? onTapOverride;
 
-  const new({
+  const ViewerThumbnailPreview({
     super.key,
     required this.entries,
     required this.displayedIndex,

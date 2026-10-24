@@ -8,7 +8,7 @@ import 'package:material_ui/material_ui.dart';
 class WallpaperSettingsDialog extends StatefulWidget {
   static const routeName = '/dialog/wallpaper_settings';
 
-  const new({super.key});
+  const WallpaperSettingsDialog({super.key});
 
   @override
   State<WallpaperSettingsDialog> createState() => _WallpaperSettingsDialogState();

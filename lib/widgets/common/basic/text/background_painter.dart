@@ -12,7 +12,7 @@ class TextBackgroundPainter extends StatelessWidget {
   final TextAlign textAlign;
   final Widget child;
 
-  const new({
+  const TextBackgroundPainter({
     super.key,
     required this.spans,
     required this.style,

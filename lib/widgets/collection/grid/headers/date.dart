@@ -12,7 +12,7 @@ class DaySectionHeader<T> extends StatelessWidget {
   final bool selectable;
   final int? count;
 
-  const new({
+  const DaySectionHeader({
     super.key,
     required this.sectionKey,
     required this.date,
@@ -53,7 +53,7 @@ class MonthSectionHeader<T> extends StatelessWidget {
   final bool selectable;
   final int? count;
 
-  const new({
+  const MonthSectionHeader({
     super.key,
     required this.sectionKey,
     required this.date,

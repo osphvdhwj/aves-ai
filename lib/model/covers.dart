@@ -330,7 +330,7 @@ class CoverProps extends Equatable {
   @override
   List<Object?> get props => [entryId, packageName, color];
 
-  const new(this.entryId, this.packageName, this.color);
+  const CoverProps(this.entryId, this.packageName, this.color);
 }
 
 @immutable
@@ -341,7 +341,7 @@ class CoverRow extends Equatable {
   @override
   List<Object?> get props => [filter, coverProps];
 
-  const new({
+  const CoverRow({
     required this.filter,
     required this.coverProps,
   });

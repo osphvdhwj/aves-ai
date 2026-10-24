@@ -14,7 +14,7 @@ class OutlinedText extends StatelessWidget {
 
   static const widgetSpanAlignment = PlaceholderAlignment.middle;
 
-  const new({
+  const OutlinedText({
     super.key,
     required this.textSpans,
     double? outlineWidth,

@@ -17,7 +17,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class SettingsMobilePage extends StatefulWidget {
-  const new({super.key});
+  const SettingsMobilePage({super.key});
 
   @override
   State<SettingsMobilePage> createState() => _SettingsMobilePageState();

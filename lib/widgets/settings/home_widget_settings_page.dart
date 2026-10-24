@@ -27,7 +27,7 @@ class HomeWidgetSettingsPage extends StatefulWidget {
 
   final int widgetId;
 
-  const new({
+  const HomeWidgetSettingsPage({
     super.key,
     required this.widgetId,
   });
@@ -233,7 +233,7 @@ class _WidgetShapeBorder extends ShapeBorder {
 
   static const _devicePixelRatio = 1.0;
 
-  const new(this.outline, this.shape, this.outlineColors, this.cornerRadius);
+  const _WidgetShapeBorder(this.outline, this.shape, this.outlineColors, this.cornerRadius);
 
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
@@ -267,7 +267,7 @@ class HomeWidgetOutlineSelector extends StatefulWidget {
   final ValueSetter<WidgetOutline> setter;
   final Map<Brightness, Map<WidgetOutline, Color?>> outlineColorsByBrightness;
 
-  const new({
+  const HomeWidgetOutlineSelector({
     super.key,
     required this.getter,
     required this.setter,

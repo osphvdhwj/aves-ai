@@ -15,7 +15,7 @@ class VideoTrackSelectionDialog extends StatefulWidget {
 
   final Map<MediaTrackSummary, bool> tracks;
 
-  const new({
+  const VideoTrackSelectionDialog({
     super.key,
     required this.tracks,
   });

@@ -20,7 +20,7 @@ class TextSelectPage extends StatefulWidget {
 
   final AvesEntry entry;
 
-  const new({super.key, required this.entry});
+  const TextSelectPage({super.key, required this.entry});
 
   @override
   State<TextSelectPage> createState() => _TextSelectPageState();

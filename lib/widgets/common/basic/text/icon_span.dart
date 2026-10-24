@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class IconSpan extends WidgetSpan {
-  new({
+  IconSpan({
     required IconData icon,
     double? size,
     List<Shadow>? shadows,

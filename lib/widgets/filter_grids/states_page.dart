@@ -20,7 +20,7 @@ class StateListPage extends StatelessWidget {
 
   final Set<String> countryCodes;
 
-  const new({
+  const StateListPage({
     super.key,
     required this.countryCodes,
   });

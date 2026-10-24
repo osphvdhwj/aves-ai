@@ -9,7 +9,7 @@ enum SearchBody { suggestions, results }
 
 // adapted from Flutter `_SearchPageRoute` in `/material/search.dart`
 class SearchPageRoute<T> extends PageRoute<T> {
-  new({
+  SearchPageRoute({
     required this.delegate,
     this.background,
   }) : super(settings: RouteSettings(name: delegate.routeName)) {

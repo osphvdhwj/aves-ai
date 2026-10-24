@@ -60,5 +60,5 @@ class StatesChangedEvent;
 class StateSummaryInvalidatedEvent {
   final Set<String>? stateCodes;
 
-  const new(this.stateCodes);
+  const StateSummaryInvalidatedEvent(this.stateCodes);
 }

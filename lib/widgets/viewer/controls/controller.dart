@@ -42,7 +42,7 @@ class ViewerController with CastMixin {
     Tween<double>(begin: 1.2, end: 1),
   ];
 
-  new({
+  ViewerController({
     ScaleLevel initialScale = const ScaleLevel(ref: ScaleReference.contained),
     this.transition = ViewerTransition.parallax,
     this.repeat = false,
@@ -144,7 +144,7 @@ class _AutopilotAnimators {
   final AnimationController controller;
   final CurvedAnimation animation;
 
-  new({
+  _AutopilotAnimators({
     required this.controller,
     required this.animation,
   });

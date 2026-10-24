@@ -12,7 +12,7 @@ class OverlayButton extends StatefulWidget {
   final FocusNode? focusNode;
   final Widget child;
 
-  const new({
+  const OverlayButton({
     super.key,
     this.scale = kAlwaysCompleteAnimation,
     this.borderRadius,
@@ -136,7 +136,7 @@ class ScalingOverlayTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget child;
 
-  const new({
+  const ScalingOverlayTextButton({
     super.key,
     required this.scale,
     this.onPressed,
@@ -159,7 +159,7 @@ class OverlayTextButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget child;
 
-  const new({
+  const OverlayTextButton({
     super.key,
     this.onPressed,
     required this.child,

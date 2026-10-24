@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 // cf https://github.com/flutter/flutter/issues/49027
 // adapted from Flutter `RenderSliverFixedExtentBoxAdaptor` in `/rendering/sliver_fixed_extent_list.dart`
 class SectionedListSliver<T> extends StatelessWidget {
-  const new({super.key});
+  const SectionedListSliver({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class SectionedListSliver<T> extends StatelessWidget {
 class _SliverKnownExtentList extends SliverMultiBoxAdaptorWidget {
   final List<SectionLayout> sectionLayouts;
 
-  const new({
+  const _SliverKnownExtentList({
     required super.delegate,
     required this.sectionLayouts,
   });
@@ -68,7 +68,7 @@ class _RenderSliverKnownExtentBoxAdaptor extends RenderSliverMultiBoxAdaptor {
     markNeedsLayout();
   }
 
-  new({
+  _RenderSliverKnownExtentBoxAdaptor({
     required super.childManager,
     required this._sectionLayouts,
   });

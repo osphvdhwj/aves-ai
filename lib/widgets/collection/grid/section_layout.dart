@@ -9,7 +9,7 @@ class SectionedEntryListLayoutProvider extends SectionedListLayoutProvider<AvesE
   final CollectionLens collection;
   final bool selectable;
 
-  new({
+  SectionedEntryListLayoutProvider({
     super.key,
     required this.collection,
     required this.selectable,

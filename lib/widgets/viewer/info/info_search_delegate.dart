@@ -19,7 +19,7 @@ class InfoSearchDelegate extends AvesSearchDelegate {
 
   static const pageRouteName = '/info/search';
 
-  new({
+  InfoSearchDelegate({
     required super.searchFieldLabel,
     required super.searchFieldStyle,
     required this.entry,

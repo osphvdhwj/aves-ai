@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class PlaceListPage extends StatelessWidget {
   static const routeName = '/places';
 
-  const new({super.key});
+  const PlaceListPage({super.key});
 
   @override
   Widget build(BuildContext context) {

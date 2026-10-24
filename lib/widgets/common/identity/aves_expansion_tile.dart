@@ -15,7 +15,7 @@ class AvesExpansionTile extends StatelessWidget {
   final bool initiallyExpanded, showHighlight;
   final List<Widget> children;
 
-  const new({
+  const AvesExpansionTile({
     super.key,
     String? value,
     this.leading,

@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 class OverlayDescriptionRow extends StatelessWidget {
   final String description;
 
-  const new({
+  const OverlayDescriptionRow({
     super.key,
     required this.description,
   });

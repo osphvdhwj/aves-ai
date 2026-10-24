@@ -9,7 +9,7 @@ class FilterGroupCrumbLine extends StatelessWidget {
   final void Function(Uri? groupUri) onTap;
   final WidgetBuilder? lastCrumbBuilder;
 
-  const new({
+  const FilterGroupCrumbLine({
     super.key,
     required this.groupUri,
     required this.onTap,

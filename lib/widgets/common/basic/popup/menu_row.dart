@@ -4,7 +4,7 @@ class MenuRow extends StatelessWidget {
   final String text;
   final Widget? icon;
 
-  const new({
+  const MenuRow({
     super.key,
     required this.text,
     this.icon,

@@ -40,7 +40,7 @@ class ChipsSection extends StatefulWidget {
   final ValueNotifier<EntryAction?> isEditingMetadataNotifier;
   final AFilterCallback onFilterSelection;
 
-  const new({
+  const ChipsSection({
     super.key,
     required this.entry,
     this.collection,

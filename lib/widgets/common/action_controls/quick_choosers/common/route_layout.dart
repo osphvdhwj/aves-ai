@@ -10,7 +10,7 @@ class QuickChooserRouteLayout extends SingleChildLayoutDelegate {
 
   static const double _kMenuScreenPadding = 8.0;
 
-  new(
+  QuickChooserRouteLayout(
     this.triggerRect,
     this.menuPosition,
     this.padding,

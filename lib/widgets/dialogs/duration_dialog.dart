@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class DurationDialog extends StatefulWidget {
   final int initialSeconds;
 
-  const new({
+  const DurationDialog({
     super.key,
     required this.initialSeconds,
   });

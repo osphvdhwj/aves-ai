@@ -65,7 +65,7 @@ class const DraggableThumbLabel<T>({
 
 const double _crumbLabelMaxWidth = 96;
 const double _thumbLabelMaxWidth = 144;
-const EdgeInsets _padding = .symmetric(vertical: 4, horizontal: 8);
+const EdgeInsets _padding = EdgeInsets.symmetric(vertical: 4, horizontal: 8);
 
 Widget _buildText(String text, {required bool isCrumb}) => FadingLine(
   text,

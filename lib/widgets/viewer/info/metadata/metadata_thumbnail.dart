@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class MetadataThumbnails extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const MetadataThumbnails({
     super.key,
     required this.entry,
   });

@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 class CompassPainter extends CustomPainter {
   final Color color;
 
-  const new({
+  const CompassPainter({
     required this.color,
   });
 

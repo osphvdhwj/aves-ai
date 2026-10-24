@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class MapOverlayButton extends StatelessWidget {
   final ValueWidgetBuilder<VisualDensity> builder;
 
-  const new({
+  const MapOverlayButton({
     super.key,
     required this.builder,
   });

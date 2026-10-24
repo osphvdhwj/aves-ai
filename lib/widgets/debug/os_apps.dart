@@ -12,7 +12,7 @@ import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugOSAppSection extends StatefulWidget {
-  const new({super.key});
+  const DebugOSAppSection({super.key});
 
   @override
   State<DebugOSAppSection> createState() => _DebugOSAppSectionState();

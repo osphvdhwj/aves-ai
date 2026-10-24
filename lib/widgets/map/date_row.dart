@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 class MapDateRow extends StatelessWidget {
   final AvesEntry? entry;
 
-  const new({
+  const MapDateRow({
     super.key,
     required this.entry,
   });

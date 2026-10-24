@@ -8,7 +8,7 @@ class VideoSpeedDialog extends StatefulWidget {
 
   final double current, min, max;
 
-  const new({
+  const VideoSpeedDialog({
     super.key,
     required this.current,
     required this.min,

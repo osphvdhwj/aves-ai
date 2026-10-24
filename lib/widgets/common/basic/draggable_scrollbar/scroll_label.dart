@@ -6,7 +6,7 @@ class ScrollLabel extends StatelessWidget {
   final Color backgroundColor;
   final Widget child;
 
-  const new({
+  const ScrollLabel({
     super.key,
     required this.child,
     required this.animation,

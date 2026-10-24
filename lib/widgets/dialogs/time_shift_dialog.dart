@@ -9,7 +9,7 @@ class TimeShiftDialog extends StatefulWidget {
 
   final Duration initialValue;
 
-  const new({
+  const TimeShiftDialog({
     super.key,
     required this.initialValue,
   });

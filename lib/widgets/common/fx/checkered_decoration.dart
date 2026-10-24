@@ -5,7 +5,7 @@ class CheckeredPainter extends CustomPainter {
   final double checkSize;
   final Offset offset;
 
-  new({
+  CheckeredPainter({
     Color light = const Color(0xFF999999),
     Color dark = const Color(0xFF666666),
     this.checkSize = 20,

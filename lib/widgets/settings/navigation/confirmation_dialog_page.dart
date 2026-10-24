@@ -15,7 +15,7 @@ class ConfirmationDialogPage extends StatelessWidget {
     SettingKeys.confirmCreateVaultKey,
   ];
 
-  const new({super.key});
+  const ConfirmationDialogPage({super.key});
 
   @override
   Widget build(BuildContext context) {

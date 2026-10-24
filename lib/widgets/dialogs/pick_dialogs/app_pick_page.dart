@@ -15,7 +15,7 @@ class AppPickPage extends StatefulWidget {
 
   final String? initialValue;
 
-  const new({
+  const AppPickPage({
     super.key,
     required this.initialValue,
   });

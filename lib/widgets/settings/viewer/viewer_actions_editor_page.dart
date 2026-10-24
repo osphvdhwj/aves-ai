@@ -12,7 +12,7 @@ class ViewerActionEditorPage extends StatefulWidget {
 
   static const List<String> settingKeys = [SettingKeys.viewerQuickActionsKey];
 
-  const new({super.key});
+  const ViewerActionEditorPage({super.key});
 
   @override
   State<ViewerActionEditorPage> createState() => _ViewerActionEditorPageState();

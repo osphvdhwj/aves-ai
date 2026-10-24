@@ -78,7 +78,7 @@ class TranslationOverlayDialog extends StatelessWidget {
   final Widget media;
   final List<TranslatedTextBlock> blocks;
 
-  const new({
+  const TranslationOverlayDialog({
     super.key,
     required this.entry,
     required this.media,
@@ -113,7 +113,7 @@ class _Overlay extends StatelessWidget {
   final Widget media;
   final List<TranslatedTextBlock> blocks;
 
-  const new({required this.media, required this.blocks});
+  const _Overlay({required this.media, required this.blocks});
 
   @override
   Widget build(BuildContext context) {

@@ -638,7 +638,7 @@ typedef TvMediaQueryModifier = MediaQueryData Function(MediaQueryData);
 class LocationReceivedEvent {
   final LatLng location;
 
-  const new(this.location);
+  const LocationReceivedEvent(this.location);
 }
 
 class AvesAppContentDecorator extends StatefulWidget {
@@ -646,7 +646,7 @@ class AvesAppContentDecorator extends StatefulWidget {
   final CollectionSource source;
   final Widget? child;
 
-  const new({
+  const AvesAppContentDecorator({
     super.key,
     required this.initialized,
     required this.source,

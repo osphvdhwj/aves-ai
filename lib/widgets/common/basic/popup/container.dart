@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 class PopupMenuItemContainer<T> extends PopupMenuEntry<T> {
   final Widget child;
 
-  const new({
+  const PopupMenuItemContainer({
     super.key,
     this.height = kMinInteractiveDimension,
     required this.child,

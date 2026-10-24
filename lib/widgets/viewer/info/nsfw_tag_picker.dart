@@ -30,7 +30,7 @@ class _NsfwTagPicker extends StatefulWidget {
   final AvesEntry entry;
   final EntryInfoActionDelegate actionDelegate;
 
-  const new({required this.entry, required this.actionDelegate});
+  const _NsfwTagPicker({required this.entry, required this.actionDelegate});
 
   @override
   State<_NsfwTagPicker> createState() => _NsfwTagPickerState();

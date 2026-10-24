@@ -14,7 +14,7 @@ class TagQuickChooser extends StatelessWidget with FilterQuickChooserMixin<Colle
   final PopupMenuPosition chooserPosition;
   final Stream<Offset> pointerGlobalPosition;
 
-  const new({
+  const TagQuickChooser({
     super.key,
     required this.valueNotifier,
     required this.options,

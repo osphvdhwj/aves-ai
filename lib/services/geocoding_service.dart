@@ -42,7 +42,7 @@ class Address extends Equatable {
   @override
   List<Object?> get props => [addressLine, adminArea, countryCode, countryName, featureName, locality, postalCode, subAdminArea, subLocality, subThoroughfare, thoroughfare];
 
-  const new({
+  const Address({
     this.addressLine,
     this.adminArea,
     this.countryCode,

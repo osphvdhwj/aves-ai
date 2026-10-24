@@ -29,7 +29,7 @@ class AvesHighlightView extends StatelessWidget {
   /// Specify text styles such as font family and font size
   final TextStyle? textStyle;
 
-  new({
+  AvesHighlightView({
     super.key,
     required String input,
     this.language,

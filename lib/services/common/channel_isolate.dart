@@ -14,7 +14,7 @@ class ChannelIsolate {
   late Future<SendPort> _isolateRequestPort;
   final String channelName;
 
-  new(this.channelName) {
+  ChannelIsolate(this.channelName) {
     _isolateRequestPort = _initRequestPort();
   }
 
@@ -108,7 +108,7 @@ class IsolateChannelRequest extends Equatable {
   @override
   List<Object?> get props => [id, method, arguments];
 
-  const new(this.id, this.channelName, this.method, this.arguments);
+  const IsolateChannelRequest(this.id, this.channelName, this.method, this.arguments);
 }
 
 @immutable
@@ -136,7 +136,7 @@ class _IsolateData {
   final RootIsolateToken token;
   final SendPort answerPort;
 
-  new({
+  _IsolateData({
     required this.token,
     required this.answerPort,
   });

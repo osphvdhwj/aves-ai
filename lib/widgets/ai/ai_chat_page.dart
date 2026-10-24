@@ -18,7 +18,7 @@ class AiChatPage extends StatefulWidget {
   /// null (opened from the drawer), chat is text-only.
   final AvesEntry? entry;
 
-  const new({super.key, this.entry});
+  const AiChatPage({super.key, this.entry});
 
   @override
   State<AiChatPage> createState() => _AiChatPageState();

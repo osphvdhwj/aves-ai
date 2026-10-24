@@ -41,7 +41,7 @@ class EntryPageView extends StatefulWidget {
   static const rasterMaxScale = ScaleLevel(factor: 5);
   static const vectorMaxScale = ScaleLevel(factor: 25);
 
-  const new({
+  const EntryPageView({
     super.key,
     required this.mainEntry,
     required this.pageEntry,

@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 class CountryChipSetActionDelegate extends ChipSetActionDelegate<LocationFilter> {
   final Iterable<FilterGridItem<LocationFilter>> _items;
 
-  new(Iterable<FilterGridItem<LocationFilter>> items) : _items = items;
+  CountryChipSetActionDelegate(Iterable<FilterGridItem<LocationFilter>> items) : _items = items;
 
   @override
   Iterable<FilterGridItem<LocationFilter>> get allItems => _items;

@@ -62,6 +62,7 @@ class AiService {
         entryIds: (map['entryIds'] as List?)?.cast<int>() ?? const [],
         error: map['errorMessage'] as String?,
         errorCode: code is int ? code : (code is num ? code.toInt() : null),
+        hint: map['hint'] as String?,
       );
     } on PlatformException catch (e, s) {
       await reportService.recordError(e, s);
@@ -80,6 +81,67 @@ class AiService {
       'path': e.path,
       'mimeType': e.mimeType,
     }).toList();
+  }
+
+  /// Sends one personalization training event to the companion's
+  /// auto-training engine (find_like / find_dislike / nsfw_safe /
+  /// nsfw_explicit). Fire and forget: failures are logged, never thrown.
+  Future<void> feedback({
+    required String type,
+    int? entryId,
+    String? query,
+    double? score,
+  }) async {
+    try {
+      await _platform.invokeMethod('feedback', {
+        'type': type,
+        if (entryId != null) 'entryIds': [entryId],
+        if (query != null && query.isNotEmpty) 'query': query,
+        if (score != null) 'score': score,
+      });
+    } on PlatformException catch (e, s) {
+      await reportService.recordError(e, s);
+    } catch (e, s) {
+      await reportService.recordError(e, s);
+    }
+  }
+
+  /// Batch-embeds [entries] into the companion's CLIP vector index in
+  /// chunks, so each AIDL call stays well under the companion's budget.
+  /// Returns the total embedded/skipped counts. Throws on companion
+  /// failure so the caller can stop and report.
+  Future<({int embedded, int skipped})> indexBuild(
+    List<AvesEntry> entries, {
+    int chunkSize = 25,
+    void Function(int done, int total)? onProgress,
+    bool Function()? isCancelled,
+  }) async {
+    var embedded = 0;
+    var skipped = 0;
+    final total = entries.length;
+    for (var i = 0; i < total; i += chunkSize) {
+      if (isCancelled?.call() ?? false) break;
+      final end = i + chunkSize < total ? i + chunkSize : total;
+      final chunk = entries.sublist(i, end);
+      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('indexBuild', {
+        'entries': entriesPayload(chunk),
+      });
+      final map = result?.cast<String, dynamic>() ?? const <String, dynamic>{};
+      embedded += (map['embedded'] as num?)?.toInt() ?? 0;
+      skipped += (map['skipped'] as num?)?.toInt() ?? 0;
+      onProgress?.call(end, total);
+    }
+    return (embedded: embedded, skipped: skipped);
+  }
+
+  /// Number of vectors in the companion's index; -1 when unreachable.
+  Future<int> indexCount() async {
+    try {
+      final result = await _platform.invokeMethod<Map<dynamic, dynamic>>('indexCount');
+      return (result?['count'] as num?)?.toInt() ?? -1;
+    } on PlatformException {
+      return -1;
+    }
   }
 }
 
@@ -123,15 +185,21 @@ class AiChatReply {
   /// companion.
   final int? errorCode;
 
+  /// Companion hint attached to empty results, e.g. `index_empty` when
+  /// the vector index needs building before /find can match anything.
+  final String? hint;
+
   const AiChatReply({
     required this.text,
     this.entryIds = const [],
     this.error,
     this.errorCode,
+    this.hint,
   });
 
   bool get isModelMissing => errorCode == 2;
   bool get isUnsupported => errorCode == 1;
+  bool get isIndexEmpty => hint?.startsWith('index_empty') ?? false;
 }
 
 final aiService = AiService();

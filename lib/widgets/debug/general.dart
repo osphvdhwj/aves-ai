@@ -11,7 +11,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class DebugGeneralSection extends StatefulWidget {
-  const new({super.key});
+  const DebugGeneralSection({super.key});
 
   @override
   State<DebugGeneralSection> createState() => _DebugGeneralSectionState();
@@ -100,7 +100,7 @@ class _DebugGeneralSectionState extends State<DebugGeneralSection> with Automati
 }
 
 class _TaskQueueOverlay extends StatelessWidget {
-  const new();
+  const _TaskQueueOverlay();
 
   @override
   Widget build(BuildContext context) {

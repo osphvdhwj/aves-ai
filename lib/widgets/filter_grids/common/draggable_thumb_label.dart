@@ -12,7 +12,7 @@ class FilterDraggableThumbLabel<T extends CollectionFilter> extends StatelessWid
   final SortFactor sortFactor;
   final double offsetY;
 
-  const new({
+  const FilterDraggableThumbLabel({
     super.key,
     required this.sortFactor,
     required this.offsetY,

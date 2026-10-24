@@ -11,7 +11,7 @@ class EmptyContent extends StatelessWidget {
   final double fontSize;
   final bool safeBottom;
 
-  const new({
+  const EmptyContent({
     super.key,
     this.icon,
     required this.text,

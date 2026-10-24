@@ -32,7 +32,7 @@ class SwipeActionFeedback extends StatelessWidget {
   final SwipeAction action;
   final ValueNotifier<double?> valueNotifier;
 
-  const new({
+  const SwipeActionFeedback({
     super.key,
     required this.action,
     required this.valueNotifier,

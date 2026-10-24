@@ -21,7 +21,7 @@ class EditorImage extends StatefulWidget {
   final ValueNotifier<ViewState> viewStateNotifier;
   final AvesEntry entry;
 
-  const new({
+  const EditorImage({
     super.key,
     required this.magnifierController,
     required this.transformController,

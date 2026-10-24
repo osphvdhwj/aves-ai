@@ -14,7 +14,7 @@ class PageNavTile extends StatelessWidget {
   final AvesNavItem navItem;
   final bool Function()? isSelected;
 
-  const new({
+  const PageNavTile({
     super.key,
     this.leading,
     this.title,

@@ -15,7 +15,7 @@ class OverlayCoordinateFilterChip extends StatefulWidget {
   final ValueNotifier<ZoomedBounds> boundsNotifier;
   final double padding;
 
-  const new({
+  const OverlayCoordinateFilterChip({
     super.key,
     required this.boundsNotifier,
     required this.padding,

@@ -11,7 +11,7 @@ class MapInfoRow extends StatelessWidget {
   static const double iconPadding = 8.0;
   static const double _interRowPadding = 2.0;
 
-  const new({
+  const MapInfoRow({
     super.key,
     required this.entryNotifier,
   });

@@ -16,7 +16,7 @@ class TvMetadataPage extends StatefulWidget {
   final AvesEntry entry;
   final Map<String, MetadataDirectory> metadata;
 
-  const new({
+  const TvMetadataPage({
     super.key,
     required this.entry,
     required this.metadata,

@@ -60,5 +60,5 @@ class CountriesChangedEvent;
 class CountrySummaryInvalidatedEvent {
   final Set<String>? countryCodes;
 
-  const new(this.countryCodes);
+  const CountrySummaryInvalidatedEvent(this.countryCodes);
 }

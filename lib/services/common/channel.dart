@@ -5,7 +5,7 @@ import 'package:streams_channel/streams_channel.dart';
 class AvesMethodChannel extends MethodChannel {
   static bool kDebug = false;
 
-  const new(super.name);
+  const AvesMethodChannel(super.name);
 
   @override
   Future<T?> invokeMethod<T>(String method, [arguments]) {
@@ -17,7 +17,7 @@ class AvesMethodChannel extends MethodChannel {
 }
 
 class AvesStreamsChannel extends StreamsChannel {
-  new(super.name);
+  AvesStreamsChannel(super.name);
 
   @override
   Stream receiveBroadcastStream([arguments]) {

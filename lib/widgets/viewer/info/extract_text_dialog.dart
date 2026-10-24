@@ -28,7 +28,7 @@ Future<void> showExtractTextDialog(BuildContext context, AvesEntry entry) {
 class _ExtractTextDialog extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({super.key, required this.entry});
+  const _ExtractTextDialog({super.key, required this.entry});
 
   @override
   State<_ExtractTextDialog> createState() => _ExtractTextDialogState();

@@ -10,7 +10,7 @@ class OverlayPositionTitleRow extends StatelessWidget {
   final String? collectionPosition;
   final MultiPageController? multiPageController;
 
-  const new({
+  const OverlayPositionTitleRow({
     super.key,
     required this.entry,
     required this.collectionPosition,

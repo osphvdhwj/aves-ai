@@ -22,7 +22,7 @@ class InfoRowGroup extends StatefulWidget {
     return theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant).merge(_keyStyle);
   }
 
-  const new({
+  const InfoRowGroup({
     super.key,
     required this.info,
     this.maxValueLength = defaultMaxValueLength,

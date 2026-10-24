@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class StorageAccessPage extends StatefulWidget {
   static const routeName = '/settings/storage_access';
 
-  const new({super.key});
+  const StorageAccessPage({super.key});
 
   @override
   State<StorageAccessPage> createState() => _StorageAccessPageState();
@@ -95,7 +95,7 @@ class _StorageAccessPageState extends State<StorageAccessPage> {
 }
 
 class _Header extends StatelessWidget {
-  const new();
+  const _Header();
 
   @override
   Widget build(BuildContext context) {

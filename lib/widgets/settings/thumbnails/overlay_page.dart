@@ -27,7 +27,7 @@ class ThumbnailOverlayPage extends StatelessWidget {
     SettingKeys.thumbnailTagIconKey,
   ];
 
-  const new({super.key});
+  const ThumbnailOverlayPage({super.key});
 
   @override
   Widget build(BuildContext context) {

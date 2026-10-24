@@ -17,7 +17,7 @@ class FavouriteToggler extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
-  const new({
+  const FavouriteToggler({
     super.key,
     required this.entries,
     this.isMenuItem = false,
@@ -108,7 +108,7 @@ class FavouriteTogglerCaption extends StatefulWidget {
   final Set<AvesEntry> entries;
   final bool enabled;
 
-  const new({
+  const FavouriteTogglerCaption({
     super.key,
     required this.entries,
     required this.enabled,

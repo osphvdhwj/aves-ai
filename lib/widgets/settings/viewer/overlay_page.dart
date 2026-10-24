@@ -26,7 +26,7 @@ class ViewerOverlayPage extends StatelessWidget {
     SettingKeys.showInfoThumbnailKey,
   ];
 
-  const new({super.key});
+  const ViewerOverlayPage({super.key});
 
   @override
   Widget build(BuildContext context) {

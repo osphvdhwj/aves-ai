@@ -14,7 +14,7 @@ class TagGroupFilter extends GroupBaseFilter with TagBaseFilter {
 
   static TagBaseFilter root = _RootTagGroupFilter._private(reversed: false);
 
-  new(super.uri, super.filter, {super.reversed = false});
+  TagGroupFilter(super.uri, super.filter, {super.reversed = false});
 
   factory empty(Uri uri) => TagGroupFilter(uri, SetOrFilter(const {}));
 

@@ -24,7 +24,7 @@ class MultiPageController {
 
   set page(int? page) => pageNotifier.value = page;
 
-  new(this.entry) {
+  MultiPageController(this.entry) {
     if (kFlutterMemoryAllocationsEnabled) {
       LeakTracking.dispatchObjectCreated(
         library: 'aves',

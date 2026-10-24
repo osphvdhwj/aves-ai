@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 class CastDialog extends StatefulWidget {
   static const routeName = '/dialog/cast';
 
-  const new({super.key});
+  const CastDialog({super.key});
 
   @override
   State<CastDialog> createState() => _CastDialogState();

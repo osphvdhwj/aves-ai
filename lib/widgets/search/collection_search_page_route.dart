@@ -11,7 +11,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class CollectionSearchPageRoute extends SearchPageRoute {
-  new({
+  CollectionSearchPageRoute({
     required BuildContext context,
     CollectionLens? parentCollection,
     bool canPop = true,

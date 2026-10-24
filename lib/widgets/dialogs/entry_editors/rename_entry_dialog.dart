@@ -12,7 +12,7 @@ class RenameEntryDialog extends StatefulWidget {
 
   final AvesEntry entry;
 
-  const new({
+  const RenameEntryDialog({
     super.key,
     required this.entry,
   });

@@ -57,7 +57,7 @@ class GeoMap extends StatefulWidget {
   onMarkerLongPress;
   final void Function(BuildContext context)? openMapPage;
 
-  const new({
+  const GeoMap({
     super.key,
     required this.controller,
     this.collection,
@@ -92,7 +92,7 @@ class _GeoMapState extends State<GeoMap> {
   late final ValueNotifier<ZoomedBounds> _boundsNotifier;
   Fluster<GeoEntry<AvesEntry>>? _defaultMarkerCluster;
   Fluster<GeoEntry<AvesEntry>>? _slowMarkerCluster;
-  final AChangeNotifier _clusterChangeNotifier = .new();
+  final AChangeNotifier _clusterChangeNotifier = AChangeNotifier();
 
   final ValueNotifier<List<GeoTrack>> _tracksNotifier = ValueNotifier([]);
 

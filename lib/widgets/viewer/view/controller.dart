@@ -12,7 +12,7 @@ class ViewStateController with HistogramMixin {
 
   ViewState get viewState => viewStateNotifier.value;
 
-  new({
+  ViewStateController({
     required this.entry,
     required ViewState initialViewState,
   }) {

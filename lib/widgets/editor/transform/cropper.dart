@@ -26,7 +26,7 @@ class Cropper extends StatefulWidget {
   static const double handleDimension = kMinInteractiveDimension;
   static const EdgeInsets imageMargin = EdgeInsets.all(kMinInteractiveDimension);
 
-  const new({
+  const Cropper({
     super.key,
     required this.magnifierController,
     required this.transformController,

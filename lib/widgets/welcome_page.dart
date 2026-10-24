@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 /// Kept as a stub so stale imports still resolve; not reachable from the app.
 @Deprecated('Aves + skips the welcome page; use HomePage directly.')
 class WelcomePage extends StatelessWidget {
-  const new({super.key});
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) => const HomePage();

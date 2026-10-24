@@ -11,7 +11,7 @@ class MapDecorator extends StatelessWidget {
   static const mapBackground = Color(0xFFDBD5D3);
   static const mapLoadingGrid = Color(0xFFC4BEBB);
 
-  const new({
+  const MapDecorator({
     super.key,
     required this.child,
   });

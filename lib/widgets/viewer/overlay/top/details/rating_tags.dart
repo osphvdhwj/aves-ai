@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 class OverlayRatingTagsRow extends AnimatedWidget {
   final AvesEntry entry;
 
-  new({
+  OverlayRatingTagsRow({
     super.key,
     required this.entry,
   }) : super(listenable: entry.metadataChangeNotifier);

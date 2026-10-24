@@ -25,7 +25,7 @@ class AvesDialog extends StatefulWidget {
   static const EdgeInsets actionsPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 24);
   static const EdgeInsets buttonPadding = EdgeInsets.symmetric(horizontal: 8);
 
-  const new({
+  const AvesDialog({
     super.key,
     this.title,
     this.scrollController,
@@ -159,7 +159,7 @@ class _AvesDialogState extends State<AvesDialog> {
 class DialogTitle extends StatelessWidget {
   final String title;
 
-  const new({
+  const DialogTitle({
     super.key,
     required this.title,
   });
@@ -234,7 +234,7 @@ class CancelButton<T> extends StatelessWidget {
   final String? text;
   final T? result;
 
-  const new({
+  const CancelButton({
     super.key,
     this.text,
     this.result,
@@ -254,7 +254,7 @@ class OkButton<T> extends StatelessWidget {
   final String? text;
   final T? result;
 
-  const new({
+  const OkButton({
     super.key,
     this.text,
     this.result,
@@ -274,7 +274,7 @@ class AvesMessageDialog extends StatelessWidget {
   final String message;
   final List<Widget> actions;
 
-  const new({
+  const AvesMessageDialog({
     super.key,
     required this.message,
     required this.actions,

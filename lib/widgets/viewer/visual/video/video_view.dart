@@ -6,7 +6,7 @@ class VideoView extends StatefulWidget {
   final AvesEntry entry;
   final AvesVideoController controller;
 
-  const new({
+  const VideoView({
     super.key,
     required this.entry,
     required this.controller,

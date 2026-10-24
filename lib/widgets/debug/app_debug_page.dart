@@ -39,7 +39,7 @@ import 'package:provider/provider.dart';
 class AppDebugPage extends StatelessWidget {
   static const routeName = '/debug';
 
-  const new({super.key});
+  const AppDebugPage({super.key});
 
   @override
   Widget build(BuildContext context) {

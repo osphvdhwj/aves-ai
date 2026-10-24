@@ -50,7 +50,7 @@ class ViewerButtons extends StatelessWidget {
 
   static double _buttonSize(BuildContext context) => OverlayButton.getSize(context);
 
-  const new({
+  const ViewerButtons({
     super.key,
     required this.mainEntry,
     required this.pageEntry,
@@ -116,7 +116,7 @@ class _TvButtonRowContent extends StatelessWidget {
   final Animation<double> scale;
   final AvesEntry mainEntry, pageEntry;
 
-  const new({
+  const _TvButtonRowContent({
     required this.actionDelegate,
     required this.scale,
     required this.mainEntry,
@@ -218,7 +218,7 @@ class ViewerButtonRowContent extends StatefulWidget {
 
   static const double padding = 8;
 
-  const new({
+  const ViewerButtonRowContent({
     super.key,
     required this.actionDelegate,
     required this.quickActions,

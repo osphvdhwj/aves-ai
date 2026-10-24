@@ -9,7 +9,7 @@ class MapStyleEditorDialog extends StatefulWidget {
 
   final EntryMapStyle? initialValue;
 
-  const new({
+  const MapStyleEditorDialog({
     super.key,
     this.initialValue,
   });

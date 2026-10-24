@@ -19,7 +19,7 @@ class Upnp {
 class UpnpProtocolInfo {
   late final Set<UpnpProtocolInfoEntry> entries;
 
-  new(String text) {
+  UpnpProtocolInfo(String text) {
     entries = text.split(',').where((v) => v.isNotEmpty).map(UpnpProtocolInfoEntry.new).toSet();
   }
 }
@@ -28,7 +28,7 @@ class UpnpProtocolInfo {
 class UpnpProtocolInfoEntry {
   late final String protocol, network, contentFormat, additionalInfo;
 
-  new(String text) {
+  UpnpProtocolInfoEntry(String text) {
     final parts = text.split(':');
     protocol = parts[0];
     network = parts[1];

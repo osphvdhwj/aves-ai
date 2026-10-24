@@ -15,7 +15,7 @@ class PlayToggler extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
-  const new({
+  const PlayToggler({
     super.key,
     required this.controller,
     this.isMenuItem = false,
@@ -107,7 +107,7 @@ class PlayTogglerCaption extends StatelessWidget {
   final AvesVideoController? controller;
   final bool enabled;
 
-  const new({
+  const PlayTogglerCaption({
     super.key,
     required this.controller,
     required this.enabled,

@@ -17,7 +17,7 @@ class ShareQuickChooser extends StatelessWidget {
 
   static const _itemPadding = EdgeInsetsDirectional.only(end: 8);
 
-  const new({
+  const ShareQuickChooser({
     super.key,
     required this.valueNotifier,
     required this.options,

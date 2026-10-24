@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 class TimeShiftSelector extends StatefulWidget {
   final TimeShiftController controller;
 
-  const new({
+  const TimeShiftSelector({
     super.key,
     required this.controller,
   });
@@ -147,5 +147,5 @@ class TimeShiftController {
   final Duration initialValue;
   Duration value;
 
-  new({required this.initialValue}) : value = initialValue;
+  TimeShiftController({required this.initialValue}) : value = initialValue;
 }

@@ -11,7 +11,7 @@ class EditEntryRatingDialog extends StatefulWidget {
 
   final AvesEntry entry;
 
-  const new({
+  const EditEntryRatingDialog({
     super.key,
     required this.entry,
   });

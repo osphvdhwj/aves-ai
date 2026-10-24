@@ -15,7 +15,7 @@ class SlowMotionBar extends StatefulWidget {
   final AvesVideoController? controller;
   final Animation<double> scale;
 
-  const new({
+  const SlowMotionBar({
     super.key,
     required this.controller,
     required this.scale,
@@ -131,7 +131,7 @@ class _SlowMotionRangePainter extends CustomPainter {
   static const double _slowLinePeriod = 16;
   static const double _slowLineAmplitude = 4;
 
-  new({
+  _SlowMotionRangePainter({
     required this.range,
     required this.handleColor,
     required this.lineColor,

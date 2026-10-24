@@ -13,7 +13,7 @@ class MetadataSectionSliver extends StatefulWidget {
   final AvesEntry entry;
   final ValueNotifier<Map<String, MetadataDirectory>> metadataNotifier;
 
-  const new({
+  const MetadataSectionSliver({
     super.key,
     required this.entry,
     required this.metadataNotifier,

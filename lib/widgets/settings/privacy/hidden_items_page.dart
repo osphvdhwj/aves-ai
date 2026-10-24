@@ -19,7 +19,7 @@ class HiddenItemsPage extends StatelessWidget {
     SettingKeys.deactivatedHiddenFiltersKey,
   ];
 
-  const new({super.key});
+  const HiddenItemsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class HiddenItemsPage extends StatelessWidget {
 class _Banner extends StatelessWidget {
   final String bannerText;
 
-  const new({required this.bannerText});
+  const _Banner({required this.bannerText});
 
   @override
   Widget build(BuildContext context) {

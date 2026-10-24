@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 class OverlayLocationRow extends AnimatedWidget {
   final AvesEntry entry;
 
-  new({
+  OverlayLocationRow({
     super.key,
     required this.entry,
   }) : super(listenable: entry.addressChangeNotifier);

@@ -7,5 +7,5 @@ class ViewerShowNextEvent;
 class ViewerOverlayToggleEvent {
   final bool? visible;
 
-  const new({required this.visible});
+  const ViewerOverlayToggleEvent({required this.visible});
 }

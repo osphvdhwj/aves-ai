@@ -14,7 +14,7 @@ class AppReference extends StatelessWidget {
   /// No external link chips on any layout.
   static List<Widget> buildLinks(BuildContext context) => const [];
 
-  const new({super.key});
+  const AppReference({super.key});
 
   @override
   Widget build(BuildContext context) {

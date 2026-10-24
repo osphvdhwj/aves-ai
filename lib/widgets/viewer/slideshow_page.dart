@@ -25,7 +25,7 @@ class SlideshowPage extends StatefulWidget {
 
   final CollectionLens collection;
 
-  const new({
+  const SlideshowPage({
     super.key,
     required this.collection,
   });
@@ -182,5 +182,5 @@ class _SlideshowPageState extends State<SlideshowPage> {
 class SlideshowActionNotification extends Notification {
   final SlideshowAction action;
 
-  new(this.action);
+  SlideshowActionNotification(this.action);
 }

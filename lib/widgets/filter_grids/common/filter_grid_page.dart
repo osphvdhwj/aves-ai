@@ -66,7 +66,7 @@ class FilterGridPage<T extends CollectionFilter> extends StatelessWidget {
   final FilterTileTapCallback<T> onTileTap;
   final StreamController<DraggableScrollbarEvent> _draggableScrollBarEventStreamController = StreamController.broadcast();
 
-  new({
+  FilterGridPage({
     super.key,
     this.settingsRouteKey,
     required this.appBar,
@@ -180,7 +180,7 @@ class _FilterGrid<T extends CollectionFilter> extends StatefulWidget {
   final HeroType heroType;
   final FilterTileTapCallback<T> onTileTap;
 
-  const new({
+  const _FilterGrid({
     super.key,
     required this.settingsRouteKey,
     required this.appBar,
@@ -267,7 +267,7 @@ class _FilterGridContent<T extends CollectionFilter> extends StatefulWidget {
   final HeroType heroType;
   final FilterTileTapCallback<T> onTileTap;
 
-  const new({
+  const _FilterGridContent({
     super.key,
     required this.appBar,
     required this.appBarHeight,
@@ -469,7 +469,7 @@ class _FilterSectionedContent<T extends CollectionFilter> extends StatefulWidget
   final ScrollController scrollController;
   final TileLayout tileLayout;
 
-  const new({
+  const _FilterSectionedContent({
     required this.appBar,
     required this.appBarHeightNotifier,
     required this.visibleSections,
@@ -610,7 +610,7 @@ class _FilterScaler<T extends CollectionFilter> extends StatelessWidget {
   final String? Function(BuildContext context, T filter) bannerBuilder;
   final Widget child;
 
-  const new({
+  const _FilterScaler({
     required this.scrollableKey,
     required this.appBarHeightNotifier,
     required this.tileLayout,
@@ -675,7 +675,7 @@ class _FilterScrollView<T extends CollectionFilter> extends StatelessWidget {
   final Widget Function() emptyBuilder;
   final ScrollController scrollController;
 
-  const new({
+  const _FilterScrollView({
     required this.scrollableKey,
     required this.appBar,
     required this.appBarHeightNotifier,

@@ -144,11 +144,11 @@ class CatalogMetadataChangedEvent;
 class TagsChangedEvent;
 
 class TagGroupSummaryInvalidatedEvent {
-  const new();
+  const TagGroupSummaryInvalidatedEvent();
 }
 
 class TagSummaryInvalidatedEvent {
   final Set<String>? tags;
 
-  const new(this.tags);
+  const TagSummaryInvalidatedEvent(this.tags);
 }

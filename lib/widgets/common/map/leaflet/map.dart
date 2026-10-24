@@ -36,7 +36,7 @@ class EntryLeafletMap<T> extends StatefulWidget {
   final MarkerTapCallback<T>? onMarkerTap;
   final MarkerLongPressCallback<T>? onMarkerLongPress;
 
-  const new({
+  const EntryLeafletMap({
     super.key,
     required this.controller,
     required this.clusterListenable,

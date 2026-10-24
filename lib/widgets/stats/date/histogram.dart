@@ -26,7 +26,7 @@ class Histogram extends StatefulWidget {
   final Duration animationDuration;
   final AFilterCallback onFilterSelection;
 
-  const new({
+  const Histogram({
     super.key,
     required this.entries,
     required this.animationDuration,
@@ -374,14 +374,14 @@ class _EntryByDate extends Equatable {
   @override
   List<Object?> get props => [date, entryCount];
 
-  const new({
+  const _EntryByDate({
     required this.date,
     required this.entryCount,
   });
 }
 
 class _CircleSymbolRenderer extends charts.CircleSymbolRenderer {
-  new({super.isSolid = true});
+  _CircleSymbolRenderer({super.isSolid = true});
 
   @override
   charts.Color? getSolidFillColor(charts.Color? fillColor) => fillColor;
@@ -393,7 +393,7 @@ class _DataInterpolationArg {
   final DateTime? firstDate, lastDate;
   final Map<DateTime, int> entryCountPerDate;
 
-  const new({
+  const _DataInterpolationArg({
     required this.calendar,
     required this.level,
     required this.firstDate,

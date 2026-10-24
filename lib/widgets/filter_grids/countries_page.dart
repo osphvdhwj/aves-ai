@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class CountryListPage extends StatelessWidget {
   static const routeName = '/countries';
 
-  const new({super.key});
+  const CountryListPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,7 @@ class ViewerLockedOverlay extends StatefulWidget {
   final AnimationController animationController;
   final EdgeInsets? viewInsets, viewPadding;
 
-  const new({
+  const ViewerLockedOverlay({
     super.key,
     required this.animationController,
     this.viewInsets,

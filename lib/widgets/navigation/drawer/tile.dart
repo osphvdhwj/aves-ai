@@ -8,7 +8,7 @@ import 'package:material_ui/material_ui.dart';
 class DrawerFilterIcon extends StatelessWidget {
   final CollectionFilter? filter;
 
-  const new({
+  const DrawerFilterIcon({
     super.key,
     required this.filter,
   });
@@ -27,7 +27,7 @@ class DrawerFilterIcon extends StatelessWidget {
 class DrawerFilterTitle extends StatelessWidget {
   final CollectionFilter? filter;
 
-  const new({
+  const DrawerFilterTitle({
     super.key,
     required this.filter,
   });
@@ -39,7 +39,7 @@ class DrawerFilterTitle extends StatelessWidget {
 class DrawerPageIcon extends StatelessWidget {
   final String route;
 
-  const new({
+  const DrawerPageIcon({
     super.key,
     required this.route,
   });
@@ -66,7 +66,7 @@ class DrawerPageIcon extends StatelessWidget {
 class DrawerPageTitle extends StatelessWidget {
   final String route;
 
-  const new({
+  const DrawerPageTitle({
     super.key,
     required this.route,
   });

@@ -2,27 +2,27 @@ import 'package:aves_model/aves_model.dart';
 import 'package:flutter/widgets.dart';
 
 class ShowPreviousIntent extends Intent {
-  const new();
+  const ShowPreviousIntent();
 }
 
 class ShowNextIntent extends Intent {
-  const new();
+  const ShowNextIntent();
 }
 
 class LeaveIntent extends Intent {
-  const new();
+  const LeaveIntent();
 }
 
 class ShowInfoIntent extends Intent {
-  const new();
+  const ShowInfoIntent();
 }
 
 class TvShowLessInfoIntent extends Intent {
-  const new();
+  const TvShowLessInfoIntent();
 }
 
 class TvShowMoreInfoIntent extends Intent {
-  const new();
+  const TvShowMoreInfoIntent();
 }
 
 class PlayPauseIntent extends Intent {
@@ -44,7 +44,7 @@ enum TvPlayPauseType {
 class EntryActionIntent extends Intent {
   final EntryAction action;
 
-  const new({
+  const EntryActionIntent({
     required this.action,
   });
 }

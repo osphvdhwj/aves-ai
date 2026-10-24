@@ -17,7 +17,7 @@ class AddShortcutDialog extends StatefulWidget {
   final CollectionLens? collection;
   final String defaultName;
 
-  const new({
+  const AddShortcutDialog({
     super.key,
     required this.defaultName,
     this.collection,

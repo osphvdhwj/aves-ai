@@ -14,7 +14,7 @@ class CollectionActionEditorPage extends StatefulWidget {
     SettingKeys.collectionSelectionQuickActionsKey,
   ];
 
-  const new({super.key});
+  const CollectionActionEditorPage({super.key});
 
   @override
   State<CollectionActionEditorPage> createState() => _CollectionActionEditorPageState();

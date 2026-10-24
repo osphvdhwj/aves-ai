@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 class MapStyleSelectionDialog extends StatefulWidget {
   static const routeName = '/dialog/map_style_selection';
 
-  const new({super.key});
+  const MapStyleSelectionDialog({super.key});
 
   @override
   State<MapStyleSelectionDialog> createState() => _MapStyleSelectionDialogState();

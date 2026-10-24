@@ -36,7 +36,7 @@ class CleanerPage extends StatefulWidget {
   final CollectionLens? collection;
   final AvesEntry entry;
 
-  const new({super.key, this.collection, required this.entry});
+  const CleanerPage({super.key, this.collection, required this.entry});
 
   @override
   State<CleanerPage> createState() => _CleanerPageState();
@@ -249,7 +249,7 @@ class CleanerBucketPage extends StatelessWidget {
   final CleanerBucket bucket;
   final List<AvesEntry> entries;
 
-  const new({super.key, required this.bucket, required this.entries});
+  const CleanerBucketPage({super.key, required this.bucket, required this.entries});
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +306,7 @@ class _BucketTile extends StatelessWidget {
   final VoidCallback onTap;
   final List<AvesEntry> preview;
 
-  const new({required this.bucket, required this.count, required this.onTap, this.preview = const []});
+  const _BucketTile({required this.bucket, required this.count, required this.onTap, this.preview = const []});
 
   @override
   Widget build(BuildContext context) {

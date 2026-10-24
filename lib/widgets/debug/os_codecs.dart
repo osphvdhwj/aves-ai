@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugOSCodecSection extends StatefulWidget {
-  const new({super.key});
+  const DebugOSCodecSection({super.key});
 
   @override
   State<DebugOSCodecSection> createState() => _DebugOSCodecSectionState();

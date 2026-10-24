@@ -51,7 +51,7 @@ class EntryActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
   final CollectionLens? collection;
   final EntryInfoActionDelegate _metadataActionDelegate = EntryInfoActionDelegate();
 
-  new(this.mainEntry, this.pageEntry, this.collection);
+  EntryActionDelegate(this.mainEntry, this.pageEntry, this.collection);
 
   bool isVisible({
     required AppMode appMode,

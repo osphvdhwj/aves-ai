@@ -25,7 +25,7 @@ class AppBottomNavBar extends StatefulWidget {
   static const double _barHeight = 76.0;
   static double get height => _barHeight + AvesFloatingBar.margin.vertical;
 
-  const new({
+  const AppBottomNavBar({
     super.key,
     required this.events,
     this.currentCollection,
@@ -159,7 +159,7 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
 }
 
 class NavBarPaddingSliver extends StatelessWidget {
-  const new({super.key});
+  const NavBarPaddingSliver({super.key});
 
   @override
   Widget build(BuildContext context) {

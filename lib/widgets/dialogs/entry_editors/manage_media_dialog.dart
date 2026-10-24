@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 class ManageMediaDialog extends StatefulWidget {
   static const routeName = '/dialog/manage_media';
 
-  const new({super.key});
+  const ManageMediaDialog({super.key});
 
   @override
   State<ManageMediaDialog> createState() => _ManageMediaDialogState();

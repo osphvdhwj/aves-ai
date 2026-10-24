@@ -13,7 +13,7 @@ class AInkResponse extends StatelessWidget {
   /// Creates an area of a [Material] that responds to touch.
   ///
   /// Must have an ancestor [Material] widget in which to cause ink reactions.
-  const new({
+  const AInkResponse({
     super.key,
     this.child,
     this.onTap,
@@ -444,7 +444,7 @@ abstract class _ParentInkResponseState {
 }
 
 class _ParentInkResponseProvider extends InheritedWidget {
-  const new({required this.state, required super.child});
+  const _ParentInkResponseProvider({required this.state, required super.child});
 
   final _ParentInkResponseState state;
 
@@ -460,7 +460,7 @@ typedef _GetRectCallback = RectCallback? Function(RenderBox referenceBox);
 typedef _CheckContext = bool Function(BuildContext context);
 
 class _InkResponseStateWidget extends StatefulWidget {
-  const new({
+  const _InkResponseStateWidget({
     this.child,
     this.onTap,
     this.onTapDown,

@@ -9,7 +9,7 @@ class MapItemTrackToggler extends StatelessWidget {
   final bool isMenuItem;
   final VoidCallback? onPressed;
 
-  const new({
+  const MapItemTrackToggler({
     super.key,
     this.isMenuItem = false,
     this.onPressed,

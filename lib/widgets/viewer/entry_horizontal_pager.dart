@@ -22,7 +22,7 @@ class MultiEntryScroller extends StatefulWidget {
   final ValueChanged<int> onPageChanged;
   final void Function(AvesEntry mainEntry, AvesEntry? pageEntry) onViewDisposed;
 
-  const new({
+  const MultiEntryScroller({
     super.key,
     required this.collection,
     required this.viewerController,
@@ -147,7 +147,7 @@ class SingleEntryScroller extends StatefulWidget {
   final AvesEntry entry;
   final ViewerController viewerController;
 
-  const new({
+  const SingleEntryScroller({
     super.key,
     required this.entry,
     required this.viewerController,

@@ -15,7 +15,7 @@ class MultiPageInfo {
 
   int get pageCount => _pages.length;
 
-  new({
+  MultiPageInfo({
     required this.mainEntry,
     required List<SinglePageInfo> pages,
   }) : _pages = pages {
@@ -154,7 +154,7 @@ class SinglePageInfo implements Comparable<SinglePageInfo> {
   final int width, height;
   final int? rotationDegrees, durationMillis;
 
-  const new({
+  const SinglePageInfo({
     required this.index,
     required this.pageId,
     required this.isDefault,

@@ -9,7 +9,7 @@ class FilterQueryBar<T extends CollectionFilter> extends StatelessWidget {
   final ValueNotifier<String> queryNotifier;
   final FocusNode focusNode;
 
-  const new({
+  const FilterQueryBar({
     super.key,
     required this.queryNotifier,
     required this.focusNode,

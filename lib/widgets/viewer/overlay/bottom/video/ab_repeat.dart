@@ -8,7 +8,7 @@ class VideoABRepeatOverlay extends StatefulWidget {
   final AvesVideoController? controller;
   final Animation<double> scale;
 
-  const new({
+  const VideoABRepeatOverlay({
     super.key,
     required this.controller,
     required this.scale,

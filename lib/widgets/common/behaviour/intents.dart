@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class ScrollControllerAction extends CallbackAction<ScrollIntent> {
-  new({
+  ScrollControllerAction({
     required ScrollController scrollController,
   }) : super(onInvoke: (intent) => _onScrollIntent(intent, scrollController));
 

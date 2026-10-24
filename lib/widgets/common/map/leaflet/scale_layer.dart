@@ -11,7 +11,7 @@ class ScaleLayerOptions {
   final UnitSystem unitSystem;
   final Widget Function(double width, String distance) builder;
 
-  new({
+  ScaleLayerOptions({
     this.unitSystem = UnitSystem.metric,
     this.builder = defaultBuilder,
   });
@@ -29,7 +29,7 @@ class ScaleLayerWidget extends StatelessWidget {
 
   final Distance _distanceCalculator = const Distance();
 
-  const new({
+  const ScaleLayerWidget({
     super.key,
     required this.options,
   });
@@ -116,7 +116,7 @@ class ScaleBar extends StatelessWidget {
   static const double outlineWidth = .5;
   static const double barThickness = 1;
 
-  const new({
+  const ScaleBar({
     super.key,
     required this.distance,
     required this.width,

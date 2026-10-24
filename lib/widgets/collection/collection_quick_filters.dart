@@ -12,7 +12,7 @@ class CollectionQuickFilters extends StatelessWidget {
 
   static const double preferredHeight = 52.0;
 
-  const new({super.key, required this.collection});
+  const CollectionQuickFilters({super.key, required this.collection});
 
   @override
   Widget build(BuildContext context) {

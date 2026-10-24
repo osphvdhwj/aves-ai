@@ -11,7 +11,7 @@ class MarkdownContainer extends StatelessWidget {
   final TextDirection? textDirection;
   final ScrollController? scrollController;
 
-  const new({
+  const MarkdownContainer({
     super.key,
     required this.data,
     this.textDirection,

@@ -15,7 +15,7 @@ class NamingPattern {
   static const processorOptionSeparator = ',';
   static const optionKeyValueSeparator = '=';
 
-  const new(this.processors);
+  const NamingPattern(this.processors);
 
   factory from({
     required String userPattern,
@@ -138,7 +138,7 @@ class NamingPattern {
 
 @immutable
 abstract class NamingProcessor extends Equatable {
-  const new();
+  const NamingProcessor();
 
   @override
   List<Object?> get props => [];
@@ -155,7 +155,7 @@ class LiteralNamingProcessor extends NamingProcessor {
   @override
   List<Object?> get props => [text];
 
-  const new(this.text);
+  const LiteralNamingProcessor(this.text);
 
   @override
   String? process(AvesEntry entry, int index, Map<String, Object?> fieldValues) => text;
@@ -171,7 +171,7 @@ class DateNamingProcessor extends NamingProcessor {
   List<Object?> get props => [format.pattern];
 
   // format using date pattern with Gregorian calendar
-  new(String pattern, String localeName) : format = DateFormat(pattern, localeName);
+  DateNamingProcessor(String pattern, String localeName) : format = DateFormat(pattern, localeName);
 
   @override
   String? process(AvesEntry entry, int index, Map<String, Object?> fieldValues) {
@@ -190,7 +190,7 @@ class TagsNamingProcessor extends NamingProcessor {
   @override
   List<Object?> get props => [separator];
 
-  new(String separator) : separator = separator.isEmpty ? defaultSeparator : separator;
+  TagsNamingProcessor(String separator) : separator = separator.isEmpty ? defaultSeparator : separator;
 
   @override
   String? process(AvesEntry entry, int index, Map<String, Object?> fieldValues) {
@@ -212,7 +212,7 @@ class MetadataFieldNamingProcessor extends NamingProcessor {
   @override
   List<Object?> get props => [field];
 
-  new(String field) {
+  MetadataFieldNamingProcessor(String field) {
     this.field = MetadataField.values.safeByName(field, ignoreCase: true);
   }
 
@@ -229,7 +229,7 @@ class MetadataFieldNamingProcessor extends NamingProcessor {
 class NameNamingProcessor extends NamingProcessor {
   static const key = 'name';
 
-  const new();
+  const NameNamingProcessor();
 
   @override
   String? process(AvesEntry entry, int index, Map<String, Object?> fieldValues) => entry.fileNameWithoutExtension;
@@ -267,7 +267,7 @@ class CounterNamingProcessor extends NamingProcessor {
   @override
   List<Object?> get props => [start, padding];
 
-  const new({
+  const CounterNamingProcessor({
     required this.start,
     required this.padding,
   });
@@ -286,7 +286,7 @@ class HashNamingProcessor extends NamingProcessor {
   @override
   List<Object?> get props => [function];
 
-  new(String function) {
+  HashNamingProcessor(String function) {
     this.function = MetadataField.values.safeByName('hash$function', ignoreCase: true);
   }
 

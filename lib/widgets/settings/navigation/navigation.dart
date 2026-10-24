@@ -51,7 +51,7 @@ class _HomeOption {
   final Set<CollectionFilter> customCollection;
   final String? customExplorerPath;
 
-  const new(
+  const _HomeOption(
     this.page, {
     this.customCollection = const {},
     this.customExplorerPath,

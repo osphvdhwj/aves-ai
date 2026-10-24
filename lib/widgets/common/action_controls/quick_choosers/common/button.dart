@@ -14,7 +14,7 @@ abstract class ChooserQuickButton<T> extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
-  const new({
+  const ChooserQuickButton({
     super.key,
     required this.blurred,
     this.onChooserValue,

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class AvesListSubtitle extends StatelessWidget {
   final String data;
 
-  const new(
+  const AvesListSubtitle(
     this.data, {
     super.key,
   });

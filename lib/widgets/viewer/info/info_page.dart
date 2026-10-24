@@ -40,7 +40,7 @@ class InfoPage extends StatefulWidget {
   final ValueNotifier<bool> isScrollingNotifier;
   final ValueNotifier<double> pageInViewNotifier;
 
-  const new({
+  const InfoPage({
     super.key,
     required this.collection,
     required this.entryNotifier,
@@ -162,7 +162,7 @@ class _InfoPageContent extends StatefulWidget {
   final VoidCallback goToViewer;
   final ValueChanged<AvesEntry>? onEntrySelected;
 
-  const new({
+  const _InfoPageContent({
     required this.collection,
     required this.entry,
     required this.isScrollingNotifier,
@@ -366,7 +366,7 @@ class _InfoBottomThumbnail extends StatelessWidget {
   final AvesEntry currentEntry;
   final ValueChanged<AvesEntry>? onEntrySelected;
 
-  const new({
+  const _InfoBottomThumbnail({
     super.key,
     required this.collection,
     required this.currentEntry,

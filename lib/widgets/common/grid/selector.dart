@@ -19,7 +19,7 @@ class GridSelectionGestureDetector<T> extends StatefulWidget {
   final ValueNotifier<double> appBarHeightNotifier;
   final Widget child;
 
-  const new({
+  const GridSelectionGestureDetector({
     super.key,
     required this.scrollableKey,
     this.selectable = true,

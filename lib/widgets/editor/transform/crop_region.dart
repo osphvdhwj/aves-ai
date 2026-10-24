@@ -15,7 +15,7 @@ class CropRegion extends Equatable {
   @override
   List<Object?> get props => [topLeft, topRight, bottomRight, bottomLeft];
 
-  const new({
+  const CropRegion({
     required this.topLeft,
     required this.topRight,
     required this.bottomRight,

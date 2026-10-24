@@ -77,7 +77,7 @@ class _AlbumPickPage extends StatefulWidget {
   final Uri? initialGroup;
   final GroupUriPredicate? isValidGroupPick;
 
-  const new({
+  const _AlbumPickPage({
     required this.source,
     required this.moveType,
     required this.chipTypes,

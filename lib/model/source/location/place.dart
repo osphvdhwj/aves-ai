@@ -54,5 +54,5 @@ class PlacesChangedEvent;
 class PlaceSummaryInvalidatedEvent {
   final Set<String>? places;
 
-  const new(this.places);
+  const PlaceSummaryInvalidatedEvent(this.places);
 }

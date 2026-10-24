@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class TvEdgeFocus extends StatelessWidget {
   final FocusNode? focusNode;
 
-  const new({
+  const TvEdgeFocus({
     super.key,
     this.focusNode,
   });

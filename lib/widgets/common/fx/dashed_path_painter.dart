@@ -12,7 +12,7 @@ class DashedPathPainter extends CustomPainter {
   final double dashLength;
   late DashedPathProperties _dashedPathProperties;
 
-  new({
+  DashedPathPainter({
     required this.originalPath,
     required this.pathColor,
     this.strokeWidth = 3.0,
@@ -71,7 +71,7 @@ class DashedPathProperties {
   double _remainingDashGapLength;
   bool _previousWasDash;
 
-  new({
+  DashedPathProperties({
     required this.path,
     required double dashLength,
     required double dashGapLength,

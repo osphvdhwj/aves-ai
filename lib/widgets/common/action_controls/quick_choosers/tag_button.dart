@@ -14,7 +14,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class TagButton extends ChooserQuickButton<CollectionFilter> {
-  const new({
+  const TagButton({
     super.key,
     required super.blurred,
     super.onChooserValue,

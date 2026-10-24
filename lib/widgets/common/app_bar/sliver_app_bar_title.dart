@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 class SliverAppBarTitleWrapper extends StatelessWidget {
   final Widget child;
 
-  const new({
+  const SliverAppBarTitleWrapper({
     super.key,
     required this.child,
   });

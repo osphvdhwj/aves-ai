@@ -19,7 +19,7 @@ class ScreenSaverPage extends StatefulWidget {
 
   final CollectionSource source;
 
-  const new({
+  const ScreenSaverPage({
     super.key,
     required this.source,
   });

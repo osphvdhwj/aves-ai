@@ -11,7 +11,7 @@ class WheelSelector<T> extends StatefulWidget {
   final TextAlign textAlign;
   final String Function(T v) format;
 
-  const new({
+  const WheelSelector({
     super.key,
     required this.valueNotifier,
     required this.values,
@@ -159,7 +159,7 @@ class _WheelSelectorState<T> extends State<WheelSelector<T>> {
 }
 
 class _AdjustValueIntent extends Intent {
-  const new({
+  const _AdjustValueIntent({
     required this.type,
   });
 

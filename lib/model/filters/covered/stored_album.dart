@@ -29,7 +29,7 @@ class StoredAlbumFilter extends CollectionFilter with CoveredFilter, AlbumBaseFi
   @override
   List<Object?> get props => [album, reversed];
 
-  new(this.album, this.displayName, {super.reversed = false}) {
+  StoredAlbumFilter(this.album, this.displayName, {super.reversed = false}) {
     _test = (entry) => entry.directory == album;
   }
 

@@ -71,7 +71,7 @@ class _LineBetweenPointers {
   /// Creates a [_LineBetweenPointers]. None of the [pointerStartLocation], [pointerStartId]
   /// [pointerEndLocation] and [pointerEndId] must be null. [pointerStartId] and [pointerEndId]
   /// should be different.
-  new({
+  _LineBetweenPointers({
     this.pointerStartLocation = Offset.zero,
     this.pointerStartId = 0,
     this.pointerEndLocation = Offset.zero,
@@ -99,7 +99,7 @@ class EagerScaleGestureRecognizer extends OneSequenceGestureRecognizer {
   /// Create a gesture recognizer for interactions intended for scaling content.
   ///
   /// {@macro flutter.gestures.GestureRecognizer.supportedDevices}
-  new({
+  EagerScaleGestureRecognizer({
     super.debugOwner,
     super.supportedDevices,
     super.allowedButtonsFilter,

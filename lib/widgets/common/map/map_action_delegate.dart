@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 class MapActionDelegate with FeedbackMixin {
   final AvesMapController controller;
 
-  const new(this.controller);
+  const MapActionDelegate(this.controller);
 
   bool _isMapPage(BuildContext context) => context.currentRouteName == MapPage.routeName;
 

@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 class SettingsSectionPage extends StatelessWidget {
   final SettingsSection section;
 
-  const new({super.key, required this.section});
+  const SettingsSectionPage({super.key, required this.section});
 
   @override
   Widget build(BuildContext context) {

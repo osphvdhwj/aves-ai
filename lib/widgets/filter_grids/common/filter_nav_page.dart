@@ -33,7 +33,7 @@ class FilterNavigationPage<T extends CollectionFilter, CSAD extends ChipSetActio
   final Set<T>? newFilters;
   final Widget Function() emptyBuilder;
 
-  const new({
+  const FilterNavigationPage({
     super.key,
     required this.source,
     required this.title,

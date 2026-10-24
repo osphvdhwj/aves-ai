@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 class AboutPage extends StatelessWidget {
   static const routeName = '/about';
 
-  const new({super.key});
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {

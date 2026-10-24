@@ -32,7 +32,7 @@ class SettingsTilePermissions extends SettingsTile {
 }
 
 class SettingsTilePermissionsSubtitle extends StatefulWidget {
-  const new({super.key});
+  const SettingsTilePermissionsSubtitle({super.key});
 
   @override
   State<SettingsTilePermissionsSubtitle> createState() => _SettingsTilePermissionsSubtitleState();

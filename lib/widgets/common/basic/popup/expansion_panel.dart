@@ -11,7 +11,7 @@ class PopupMenuExpansionPanel<T> extends PopupMenuEntry<T> {
   final String title;
   final List<PopupMenuEntry<T>> items;
 
-  const new({
+  const PopupMenuExpansionPanel({
     super.key,
     this.enabled = true,
     this.height = kMinInteractiveDimension,

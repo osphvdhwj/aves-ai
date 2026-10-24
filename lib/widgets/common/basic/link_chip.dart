@@ -13,7 +13,7 @@ class LinkChip extends StatelessWidget {
   final TextStyle? textStyle;
   final VoidCallback? onTap;
 
-  const new({
+  const LinkChip({
     super.key,
     this.leading,
     required this.text,

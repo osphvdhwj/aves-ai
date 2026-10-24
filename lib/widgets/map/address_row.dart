@@ -13,7 +13,7 @@ import 'info_row.dart';
 class MapAddressRow extends StatefulWidget {
   final AvesEntry? entry;
 
-  const new({
+  const MapAddressRow({
     super.key,
     required this.entry,
   });

@@ -15,7 +15,7 @@ import 'package:aves/theme/m3e_tokens.dart';
 import 'package:provider/provider.dart';
 
 class DebugSettingsSection extends StatefulWidget {
-  const new({super.key});
+  const DebugSettingsSection({super.key});
 
   @override
   State<DebugSettingsSection> createState() => _DebugSettingsSectionState();

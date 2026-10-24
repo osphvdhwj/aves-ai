@@ -21,7 +21,7 @@ class VideoCover extends StatefulWidget {
   )
   magnifierBuilder;
 
-  const new({
+  const VideoCover({
     super.key,
     required this.mainEntry,
     required this.pageEntry,

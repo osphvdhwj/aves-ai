@@ -15,7 +15,7 @@ class AboutNavTile extends StatelessWidget {
   final WidgetBuilder builder;
   final String routeName;
 
-  const new({
+  const AboutNavTile({
     super.key,
     required this.icon,
     required this.accentColor,

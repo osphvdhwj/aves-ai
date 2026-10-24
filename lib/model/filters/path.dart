@@ -19,7 +19,7 @@ class PathFilter extends CollectionFilter {
   @override
   List<Object?> get props => [path, reversed];
 
-  new(String path, {super.reversed = false}) {
+  PathFilter(String path, {super.reversed = false}) {
     this.path = path.endsWith(pContext.separator) ? path : '$path${pContext.separator}';
     _rootAlbum = this.path.substring(0, this.path.length - 1);
     _test = (entry) {

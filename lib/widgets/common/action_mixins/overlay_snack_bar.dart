@@ -19,7 +19,7 @@ const Curve _snackBarM3FadeInCurve = Interval(0.4, 0.6, curve: Curves.easeInCirc
 const Curve _snackBarFadeOutCurve = Interval(0.72, 1.0, curve: Curves.fastOutSlowIn);
 
 class OverlaySnackBar extends StatefulWidget {
-  const new({
+  const OverlaySnackBar({
     super.key,
     required this.content,
     this.backgroundColor,
@@ -523,7 +523,7 @@ class _OverlaySnackBarState extends State<OverlaySnackBar> {
 
 // dart format off
 class _SnackbarDefaultsM3 extends SnackBarThemeData {
-  new(this.context);
+  _SnackbarDefaultsM3(this.context);
 
   final BuildContext context;
   late final ThemeData _theme = Theme.of(context);

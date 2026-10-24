@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 @immutable
 abstract class EquatableNotification extends Notification with Equatable {
-  const new();
+  const EquatableNotification();
 
   @override
   List<Object?> get props => [];
@@ -20,7 +20,7 @@ class LockViewNotification extends EquatableNotification {
   @override
   List<Object?> get props => [locked];
 
-  const new({required this.locked});
+  const LockViewNotification({required this.locked});
 }
 
 @immutable
@@ -39,7 +39,7 @@ class ShowPreviousEntryNotification extends EquatableNotification {
   @override
   List<Object?> get props => [animate];
 
-  const new({required this.animate});
+  const ShowPreviousEntryNotification({required this.animate});
 }
 
 @immutable
@@ -49,7 +49,7 @@ class ShowNextEntryNotification extends EquatableNotification {
   @override
   List<Object?> get props => [animate];
 
-  const new({required this.animate});
+  const ShowNextEntryNotification({required this.animate});
 }
 
 @immutable
@@ -60,7 +60,7 @@ class ShowEntryNotification extends EquatableNotification {
   @override
   List<Object?> get props => [animate, index];
 
-  const new({
+  const ShowEntryNotification({
     required this.animate,
     required this.index,
   });
@@ -79,7 +79,7 @@ class ToggleOverlayNotification extends EquatableNotification {
   @override
   List<Object?> get props => [visible];
 
-  const new({this.visible});
+  const ToggleOverlayNotification({this.visible});
 }
 
 @immutable
@@ -97,7 +97,7 @@ class VideoActionNotification extends EquatableNotification {
   @override
   List<Object?> get props => [controller, entry, action];
 
-  const new({
+  const VideoActionNotification({
     required this.controller,
     required this.entry,
     required this.action,
@@ -111,7 +111,7 @@ class CastNotification extends EquatableNotification {
   @override
   List<Object?> get props => [enabled];
 
-  const new(this.enabled);
+  const CastNotification(this.enabled);
 }
 
 @immutable
@@ -121,7 +121,7 @@ class SelectFilterNotification extends EquatableNotification {
   @override
   List<Object?> get props => [filter];
 
-  const new(this.filter);
+  const SelectFilterNotification(this.filter);
 }
 
 @immutable
@@ -131,7 +131,7 @@ class DecomposeFilterNotification extends EquatableNotification {
   @override
   List<Object?> get props => [filter];
 
-  const new(this.filter);
+  const DecomposeFilterNotification(this.filter);
 }
 
 @immutable
@@ -141,7 +141,7 @@ class EntryDeletedNotification extends EquatableNotification {
   @override
   List<Object?> get props => [entries];
 
-  const new(this.entries);
+  const EntryDeletedNotification(this.entries);
 }
 
 @immutable
@@ -152,7 +152,7 @@ class EntryMovedNotification extends EquatableNotification {
   @override
   List<Object?> get props => [moveType, entries];
 
-  const new(this.moveType, this.entries);
+  const EntryMovedNotification(this.moveType, this.entries);
 }
 
 @immutable
@@ -163,7 +163,7 @@ class FullImageLoadedNotification extends EquatableNotification {
   @override
   List<Object?> get props => [entry, image];
 
-  const new(this.entry, this.image);
+  const FullImageLoadedNotification(this.entry, this.image);
 }
 
 @immutable

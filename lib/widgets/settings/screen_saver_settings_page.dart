@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 class ScreenSaverSettingsPage extends StatelessWidget {
   static const routeName = '/settings/screen_saver';
 
-  const new({super.key});
+  const ScreenSaverSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

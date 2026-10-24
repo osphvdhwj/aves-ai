@@ -32,7 +32,7 @@ class LocationSection extends StatefulWidget {
   final AFilterCallback onFilterSelection;
   final EntryInfoActionDelegate actionDelegate;
 
-  const new({
+  const LocationSection({
     super.key,
     required this.collection,
     required this.entry,
@@ -258,7 +258,7 @@ class _LocationSectionState extends State<LocationSection> {
 class _AddressInfoGroup extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({required this.entry});
+  const _AddressInfoGroup({required this.entry});
 
   @override
   State<_AddressInfoGroup> createState() => _AddressInfoGroupState();

@@ -8,7 +8,7 @@ import 'package:material_ui/material_ui.dart';
 class VideoSettingsPage extends StatefulWidget {
   static const routeName = '/settings/video';
 
-  const new({super.key});
+  const VideoSettingsPage({super.key});
 
   @override
   State<VideoSettingsPage> createState() => _VideoSettingsPageState();

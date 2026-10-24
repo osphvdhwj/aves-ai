@@ -19,7 +19,7 @@ class TransformControlPanel extends StatefulWidget {
   final VoidCallback onCancel;
   final void Function(Transformation transformation) onApply;
 
-  const new({
+  const TransformControlPanel({
     super.key,
     required this.entry,
     required this.onCancel,
@@ -114,7 +114,7 @@ class _TransformControlPanelState extends State<TransformControlPanel> with Tick
 }
 
 class CropControlPanel extends StatelessWidget {
-  const new({super.key});
+  const CropControlPanel({super.key});
 
   static double preferredHeight(BuildContext context) => CropAspectRatio.values.map((v) {
     return CaptionedButton.getSize(context, v.getText(context), showCaption: true).height;
@@ -153,7 +153,7 @@ class CropControlPanel extends StatelessWidget {
 }
 
 class RotationControlPanel extends StatelessWidget {
-  const new({super.key});
+  const RotationControlPanel({super.key});
 
   @override
   Widget build(BuildContext context) {

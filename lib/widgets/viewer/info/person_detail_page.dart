@@ -20,7 +20,7 @@ class PersonDetailPage extends StatefulWidget {
   final List<AvesEntry> photos;
   final ValueChanged<String>? onRename;
 
-  const new({
+  const PersonDetailPage({
     super.key,
     required this.cluster,
     this.photos = const [],

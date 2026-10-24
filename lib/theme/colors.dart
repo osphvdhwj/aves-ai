@@ -26,7 +26,7 @@ class AvesColorsProvider extends StatelessWidget {
 
   static final Map<(AvesThemeColorMode, bool), AvesColorsData> _schemeCache = {};
 
-  const new({
+  const AvesColorsProvider({
     super.key,
     this.allowMonochrome = true,
     required this.child,

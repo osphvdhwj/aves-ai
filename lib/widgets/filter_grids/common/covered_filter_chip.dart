@@ -37,7 +37,7 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
   final AFilterCallback? onTap;
   final HeroType heroType;
 
-  const new({
+  const CoveredFilterChip({
     super.key,
     required this.filter,
     required this.extent,

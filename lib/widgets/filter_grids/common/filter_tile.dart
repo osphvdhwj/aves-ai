@@ -23,7 +23,7 @@ class InteractiveFilterTile<T extends CollectionFilter> extends StatefulWidget {
   final HeroType heroType;
   final FilterTileTapCallback<T> onTap;
 
-  const new({
+  const InteractiveFilterTile({
     super.key,
     required this.gridItem,
     required this.chipExtent,
@@ -87,7 +87,7 @@ class FilterTile<T extends CollectionFilter> extends StatelessWidget {
   final AFilterCallback? onTap;
   final HeroType heroType;
 
-  const new({
+  const FilterTile({
     super.key,
     required this.gridItem,
     required this.chipExtent,

@@ -8,7 +8,7 @@ import 'package:material_ui/material_ui.dart';
 class SectionedFilterListLayoutProvider<T extends CollectionFilter> extends SectionedListLayoutProvider<FilterGridItem<T>> {
   final bool selectable;
 
-  const new({
+  const SectionedFilterListLayoutProvider({
     super.key,
     required this.sections,
     required this.showHeaders,

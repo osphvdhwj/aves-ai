@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class Licenses extends StatefulWidget {
-  const new({super.key});
+  const Licenses({super.key});
 
   @override
   State<Licenses> createState() => _LicensesState();
@@ -122,7 +122,7 @@ class _LicensesState extends State<Licenses> {
 class _LicenseRow extends StatelessWidget {
   final Dependency package;
 
-  const new({
+  const _LicenseRow({
     required this.package,
   });
 

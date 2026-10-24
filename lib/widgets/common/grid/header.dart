@@ -19,7 +19,7 @@ class SectionHeader<T> extends StatelessWidget {
   final String title;
   final bool selectable;
 
-  const new({
+  const SectionHeader({
     super.key,
     required this.sectionKey,
     this.leading,
@@ -189,7 +189,7 @@ class _SectionSelectableLeading<T> extends StatelessWidget {
   final WidgetBuilder? browsingBuilder;
   final VoidCallback? onPressed;
 
-  const new({
+  const _SectionSelectableLeading({
     super.key,
     this.selectable = true,
     required this.sectionKey,
@@ -245,7 +245,7 @@ class _SectionSelectingLeading<T> extends StatelessWidget {
   final SectionKey sectionKey;
   final VoidCallback? onPressed;
 
-  const new({
+  const _SectionSelectingLeading({
     super.key,
     required this.sectionKey,
     required this.onPressed,

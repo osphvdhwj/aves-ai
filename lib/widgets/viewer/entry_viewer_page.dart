@@ -16,7 +16,7 @@ class EntryViewerPage extends StatefulWidget {
   final CollectionLens? collection;
   final AvesEntry initialEntry;
 
-  const new({
+  const EntryViewerPage({
     super.key,
     this.collection,
     required this.initialEntry,

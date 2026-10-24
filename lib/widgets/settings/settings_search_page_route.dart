@@ -6,7 +6,7 @@ import 'package:aves/widgets/settings/settings_search_delegate.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsSearchPageRoute extends SearchPageRoute {
-  new({
+  SettingsSearchPageRoute({
     required BuildContext context,
     super.background,
   }) : super(

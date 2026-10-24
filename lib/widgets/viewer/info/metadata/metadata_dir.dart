@@ -18,7 +18,7 @@ class MetadataDirectory {
   static const mediaDirectory = 'Media'; // custom
   static const mpfImageDirectoryPrefix = 'MPF Image #'; // custom
 
-  const new(
+  const MetadataDirectory(
     this.name,
     this.allTags, {
     SplayTreeMap<String, String>? tags,

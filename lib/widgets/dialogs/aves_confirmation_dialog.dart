@@ -84,7 +84,7 @@ abstract class ConfirmationDialogDelegate {
 class MessageConfirmationDialogDelegate extends ConfirmationDialogDelegate {
   final String message;
 
-  new(this.message);
+  MessageConfirmationDialogDelegate(this.message);
 
   @override
   List<Widget> build(BuildContext context) => [
@@ -102,7 +102,7 @@ class _SkippableConfirmationDialog extends StatefulWidget {
   final ConfirmationDialogDelegate delegate;
   final String confirmationButtonLabel;
 
-  const new({
+  const _SkippableConfirmationDialog({
     required this.type,
     required this.delegate,
     required this.confirmationButtonLabel,

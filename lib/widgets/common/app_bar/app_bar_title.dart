@@ -4,7 +4,7 @@ class InteractiveAppBarTitle extends StatelessWidget {
   final GestureTapCallback? onTap;
   final Widget child;
 
-  const new({
+  const InteractiveAppBarTitle({
     super.key,
     this.onTap,
     required this.child,

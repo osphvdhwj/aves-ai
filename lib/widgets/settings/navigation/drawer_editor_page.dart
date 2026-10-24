@@ -46,7 +46,7 @@ class NavigationDrawerEditorPage extends StatefulWidget {
     SearchPage.routeName,
   ];
 
-  const new({super.key});
+  const NavigationDrawerEditorPage({super.key});
 
   @override
   State<NavigationDrawerEditorPage> createState() => _NavigationDrawerEditorPageState();

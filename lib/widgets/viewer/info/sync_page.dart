@@ -12,7 +12,7 @@ import 'package:material_ui/material_ui.dart';
 class SyncPage extends StatefulWidget {
   static const routeName = '/viewer/info/sync';
 
-  const new({super.key});
+  const SyncPage({super.key});
 
   @override
   State<SyncPage> createState() => _SyncPageState();

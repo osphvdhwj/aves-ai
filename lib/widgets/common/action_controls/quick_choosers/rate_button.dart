@@ -5,7 +5,7 @@ import 'package:aves_model/aves_model.dart';
 import 'package:material_ui/material_ui.dart';
 
 class RateButton extends ChooserQuickButton<int> {
-  const new({
+  const RateButton({
     super.key,
     required super.blurred,
     super.onChooserValue,

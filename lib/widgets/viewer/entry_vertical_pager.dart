@@ -47,7 +47,7 @@ class ViewerVerticalPageView extends StatefulWidget {
     ratio: 1.0,
   );
 
-  const new({
+  const ViewerVerticalPageView({
     super.key,
     required this.collection,
     required this.entryNotifier,

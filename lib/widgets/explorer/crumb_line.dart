@@ -10,7 +10,7 @@ class ExplorerCrumbLine extends StatelessWidget {
   final void Function(VolumeRelativeDirectory? combinedPath) onTap;
   final WidgetBuilder? lastCrumbBuilder;
 
-  const new({
+  const ExplorerCrumbLine({
     super.key,
     required this.directory,
     required this.onTap,

@@ -31,7 +31,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class BugReport extends StatefulWidget {
-  const new({super.key});
+  const BugReport({super.key});
 
   @override
   State<BugReport> createState() => _BugReportState();
@@ -71,7 +71,7 @@ class _BugReportState extends State<BugReport> {
 }
 
 class BugReportContent extends StatefulWidget {
-  const new({super.key});
+  const BugReportContent({super.key});
 
   @override
   State<BugReportContent> createState() => _BugReportContentState();

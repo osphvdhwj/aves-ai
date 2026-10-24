@@ -21,7 +21,7 @@ class SlideshowBottomOverlay extends StatelessWidget {
   final Size availableSize;
   final EdgeInsets? viewInsets, viewPadding;
 
-  const new({
+  const SlideshowBottomOverlay({
     super.key,
     required this.animationController,
     required this.availableSize,
@@ -54,7 +54,7 @@ class SlideshowButtons extends StatefulWidget {
   final EdgeInsets? viewInsets, viewPadding;
   final AnimationController animationController;
 
-  const new({
+  const SlideshowButtons({
     super.key,
     required this.availableSize,
     required this.viewInsets,

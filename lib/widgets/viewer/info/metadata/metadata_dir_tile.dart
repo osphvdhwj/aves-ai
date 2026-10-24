@@ -25,7 +25,7 @@ class MetadataDirTile extends StatelessWidget {
   final ValueNotifier<String?>? expandedDirectoryNotifier;
   final bool initiallyExpanded, showThumbnails;
 
-  const new({
+  const MetadataDirTile({
     super.key,
     required this.entry,
     required this.title,
@@ -71,7 +71,7 @@ class MetadataDirTileBody extends StatelessWidget {
   final MetadataDirectory dir;
   final bool showThumbnails;
 
-  const new({
+  const MetadataDirTileBody({
     super.key,
     required this.entry,
     required this.dir,

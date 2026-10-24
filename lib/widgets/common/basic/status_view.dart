@@ -14,7 +14,7 @@ class StatusView extends StatelessWidget {
   final VoidCallback? onAction;
   final bool isError;
 
-  const new({
+  const StatusView({
     super.key,
     required this.icon,
     required this.title,

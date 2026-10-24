@@ -30,7 +30,7 @@ import 'package:material_ui/material_ui.dart';
 class VideoActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMixin {
   final CollectionLens? collection;
 
-  new({
+  VideoActionDelegate({
     required this.collection,
   }) {
     if (kFlutterMemoryAllocationsEnabled) {

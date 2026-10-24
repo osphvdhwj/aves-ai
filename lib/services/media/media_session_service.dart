@@ -30,7 +30,7 @@ class PlatformMediaSessionService implements MediaSessionService, Disposable {
   final EventChannel _commandChannel = const OptionalEventChannel('deckers.thibault/aves/media_command');
   final StreamController _streamController = StreamController.broadcast();
 
-  new() {
+  PlatformMediaSessionService() {
     _subscriptions.add(_commandChannel.receiveBroadcastStream().listen((event) => _onMediaCommand(event as Map?)));
   }
 
@@ -126,7 +126,7 @@ class MediaCommandEvent extends Equatable {
   @override
   List<Object?> get props => [command];
 
-  const new(this.command);
+  const MediaCommandEvent(this.command);
 }
 
 @immutable
@@ -136,5 +136,5 @@ class MediaSeekCommandEvent extends MediaCommandEvent {
   @override
   List<Object?> get props => [...super.props, position];
 
-  const new(super.command, {required this.position});
+  const MediaSeekCommandEvent(super.command, {required this.position});
 }

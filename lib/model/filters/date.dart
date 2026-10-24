@@ -22,7 +22,7 @@ class DateFilter extends CollectionFilter {
   @override
   List<Object?> get props => [calendar, level, date, reversed];
 
-  new(this.calendar, this.level, this.date, {super.reversed = false}) {
+  DateFilter(this.calendar, this.level, this.date, {super.reversed = false}) {
     _effectiveDate = date ?? DateTime.now();
     final calOps = calendar.ops;
     switch (level) {

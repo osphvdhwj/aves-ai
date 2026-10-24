@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class DebugGroupsSection extends StatefulWidget {
-  const new({super.key});
+  const DebugGroupsSection({super.key});
 
   @override
   State<DebugGroupsSection> createState() => _DebugGroupsSectionState();

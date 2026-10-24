@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 class AboutSectionTitle extends StatelessWidget {
   final String text;
 
-  const new({
+  const AboutSectionTitle({
     super.key,
     required this.text,
   });

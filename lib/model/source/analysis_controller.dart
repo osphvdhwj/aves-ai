@@ -8,7 +8,7 @@ class AnalysisController {
 
   final ValueNotifier<bool> _stopSignal = ValueNotifier(false);
 
-  new({
+  AnalysisController({
     this.canStartService = true,
     this.entryIds,
     this.force = false,

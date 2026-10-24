@@ -14,7 +14,7 @@ class WeekDayFilter extends CollectionFilter {
   List<Object?> get props => [weekday, reversed];
 
   // `weekday` should be in [1, 7], with 1 as Monday
-  new(this.weekday, {super.reversed = false}) {
+  WeekDayFilter(this.weekday, {super.reversed = false}) {
     _test = (entry) => entry.bestDate?.weekday == weekday;
   }
 

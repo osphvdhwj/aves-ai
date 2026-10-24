@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class DraggableScrollbarNotification extends Notification {
   final DraggableScrollbarEvent event;
 
-  const new(this.event);
+  const DraggableScrollbarNotification(this.event);
 }
 
 enum DraggableScrollbarEvent { dragStart, dragEnd }

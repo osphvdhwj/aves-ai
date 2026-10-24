@@ -6,7 +6,7 @@ class LabeledCheckbox extends StatefulWidget {
   final ValueChanged<bool?> onChanged;
   final String text;
 
-  const new({
+  const LabeledCheckbox({
     super.key,
     required this.value,
     required this.onChanged,

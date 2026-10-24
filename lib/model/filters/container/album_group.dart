@@ -14,7 +14,7 @@ class AlbumGroupFilter extends GroupBaseFilter with AlbumBaseFilter {
 
   static AlbumBaseFilter root = _RootAlbumGroupFilter._private(reversed: false);
 
-  new(super.uri, super.filter, {super.reversed = false});
+  AlbumGroupFilter(super.uri, super.filter, {super.reversed = false});
 
   factory empty(Uri uri) => AlbumGroupFilter(uri, SetOrFilter(const {}));
 

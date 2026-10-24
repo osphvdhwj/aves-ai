@@ -52,7 +52,7 @@ class MapPage extends StatelessWidget {
   final MappedGeoTiff? overlayEntry;
   final List<GeoTrack>? tracks;
 
-  const new({
+  const MapPage({
     super.key,
     required this.collection,
     this.initialLocation,
@@ -101,7 +101,7 @@ class _Content extends StatefulWidget {
   final MappedGeoTiff? overlayEntry;
   final List<GeoTrack>? tracks;
 
-  const new({
+  const _Content({
     required this.collection,
     this.initialLocation,
     this.initialZoom,

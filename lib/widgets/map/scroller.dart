@@ -16,7 +16,7 @@ class MapEntryScroller extends StatefulWidget {
   final ValueNotifier<int?> selectedIndexNotifier;
   final void Function(int index) onTap;
 
-  const new({
+  const MapEntryScroller({
     super.key,
     required this.regionCollectionNotifier,
     required this.dotEntryNotifier,

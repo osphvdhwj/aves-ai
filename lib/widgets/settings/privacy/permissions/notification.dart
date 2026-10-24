@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NotificationPermissionTile extends StatefulWidget {
-  const new({super.key});
+  const NotificationPermissionTile({super.key});
 
   @override
   State<NotificationPermissionTile> createState() => _NotificationPermissionTileState();

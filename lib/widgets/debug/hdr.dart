@@ -4,7 +4,7 @@ import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugHdrSection extends StatefulWidget {
-  const new({super.key});
+  const DebugHdrSection({super.key});
 
   @override
   State<DebugHdrSection> createState() => _DebugHdrSectionState();

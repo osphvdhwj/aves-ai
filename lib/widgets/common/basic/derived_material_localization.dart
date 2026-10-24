@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class MaterialLocalizationsRegionalizer extends StatefulWidget {
   final Widget child;
 
-  const new({
+  const MaterialLocalizationsRegionalizer({
     super.key,
     required this.child,
   });
@@ -54,7 +54,7 @@ class DerivedMaterialLocalizationsDelegate extends LocalizationsDelegate<Materia
   final ui.Locale locale;
   final MaterialLocalizations localizations;
 
-  const new(this.locale, this.localizations);
+  const DerivedMaterialLocalizationsDelegate(this.locale, this.localizations);
 
   @override
   bool isSupported(ui.Locale locale) => locale == this.locale;
@@ -72,7 +72,7 @@ class DerivedMaterialLocalizations extends MaterialLocalizations {
   final MaterialLocalizations parent;
   final int? _firstDayOfWeekIndex;
 
-  new({
+  DerivedMaterialLocalizations({
     required this.parent,
     this._firstDayOfWeekIndex,
   });

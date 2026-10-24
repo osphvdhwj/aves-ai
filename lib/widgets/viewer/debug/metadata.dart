@@ -15,7 +15,7 @@ import 'package:material_ui/material_ui.dart';
 class MetadataTab extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const MetadataTab({
     super.key,
     required this.entry,
   });

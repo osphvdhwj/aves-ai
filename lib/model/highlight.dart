@@ -5,7 +5,7 @@ import 'package:flutter/painting.dart';
 class HighlightInfo extends ChangeNotifier {
   final EventBus eventBus = EventBus();
 
-  new() {
+  HighlightInfo() {
     if (kFlutterMemoryAllocationsEnabled) ChangeNotifier.maybeDispatchObjectCreation(this);
   }
 
@@ -59,7 +59,7 @@ class TrackEvent<T> {
   final bool animate;
   final Object? highlightItem;
 
-  const new(
+  const TrackEvent(
     this.item,
     this.predicate,
     this.alignment,

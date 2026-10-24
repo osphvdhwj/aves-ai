@@ -11,7 +11,7 @@ import 'package:community_charts_flutter/community_charts_flutter.dart' as chart
 class TimeAxisSpec {
   final List<charts.TickSpec<DateTime>> tickSpecs;
 
-  new(this.tickSpecs);
+  TimeAxisSpec(this.tickSpecs);
 
   factory forLevel({
     required AvesLocale locale,

@@ -14,7 +14,7 @@ class CrumbLine<T> extends StatefulWidget {
 
   static const EdgeInsets padding = EdgeInsets.only(top: 4, bottom: 8);
 
-  const new({
+  const CrumbLine({
     super.key,
     required this.split,
     required this.combine,

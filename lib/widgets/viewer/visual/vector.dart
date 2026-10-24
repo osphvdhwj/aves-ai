@@ -18,7 +18,7 @@ class VectorImageView extends StatefulWidget {
   final ValueNotifier<ViewState> viewStateNotifier;
   final ImageErrorWidgetBuilder errorBuilder;
 
-  const new({
+  const VectorImageView({
     super.key,
     required this.entry,
     required this.viewStateNotifier,
@@ -305,7 +305,7 @@ class _RegionTile extends StatefulWidget {
   final Color? backgroundColor;
   final _BackgroundFrameBuilder? backgroundFrameBuilder;
 
-  const new({
+  const _RegionTile({
     required this.entry,
     required this.tileRect,
     required this.regionRect,
@@ -397,7 +397,7 @@ class _CheckeredBackgroundDecoration extends Decoration {
   final double checkSize;
   final Offset offset;
 
-  const new({
+  const _CheckeredBackgroundDecoration({
     required this.viewportSize,
     required this.checkSize,
     required this.offset,
@@ -412,7 +412,7 @@ class _CheckeredBackgroundDecoration extends Decoration {
 class _CheckeredBackgroundDecorationPainter extends BoxPainter {
   final _CheckeredBackgroundDecoration decoration;
 
-  const new(this.decoration, VoidCallback? onChanged) : super(onChanged);
+  const _CheckeredBackgroundDecorationPainter(this.decoration, VoidCallback? onChanged) : super(onChanged);
 
   static const deflation = Offset(.5, .5);
 

@@ -20,7 +20,7 @@ class AiTagsSection extends StatefulWidget {
   final AvesEntry entry;
   final EntryInfoActionDelegate actionDelegate;
 
-  const new({super.key, required this.entry, required this.actionDelegate});
+  const AiTagsSection({super.key, required this.entry, required this.actionDelegate});
 
   @override
   State<AiTagsSection> createState() => _AiTagsSectionState();

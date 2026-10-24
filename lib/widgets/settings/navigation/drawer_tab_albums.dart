@@ -13,7 +13,7 @@ import 'package:material_ui/material_ui.dart';
 class DrawerAlbumTab extends StatefulWidget {
   final List<AlbumBaseFilter> items;
 
-  const new({
+  const DrawerAlbumTab({
     super.key,
     required this.items,
   });

@@ -14,7 +14,7 @@ class ItemPicker extends StatelessWidget {
   final AvesEntry entry;
   final GestureTapCallback? onTap;
 
-  const new({
+  const ItemPicker({
     super.key,
     required this.extent,
     required this.entry,

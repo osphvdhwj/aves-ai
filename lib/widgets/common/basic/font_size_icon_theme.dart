@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class FontSizeIconTheme extends StatelessWidget {
   final Widget child;
 
-  const new({
+  const FontSizeIconTheme({
     super.key,
     required this.child,
   });

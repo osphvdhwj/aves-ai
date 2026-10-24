@@ -47,7 +47,7 @@ class FilterGridAppBar<T extends CollectionFilter, CSAD extends ChipSetActionDel
   final ScrollController scrollController;
   final void Function(BuildContext context, T filter)? onGroupCrumbTap;
 
-  const new({
+  const FilterGridAppBar({
     super.key,
     required this.source,
     required this.title,

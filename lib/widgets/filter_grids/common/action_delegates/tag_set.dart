@@ -22,7 +22,7 @@ import 'package:provider/provider.dart';
 class TagChipSetActionDelegate extends ChipSetActionDelegate<TagBaseFilter> {
   final Iterable<FilterGridItem<TagBaseFilter>> _items;
 
-  new(Iterable<FilterGridItem<TagBaseFilter>> items) : _items = items;
+  TagChipSetActionDelegate(Iterable<FilterGridItem<TagBaseFilter>> items) : _items = items;
 
   @override
   Iterable<FilterGridItem<TagBaseFilter>> get allItems => _items;

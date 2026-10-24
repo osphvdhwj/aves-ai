@@ -14,7 +14,7 @@ class ObjectsPage extends StatelessWidget {
   /// Optional counts from the companion, keyed by category id.
   final Map<String, int> counts;
 
-  const new({super.key, this.counts = const {}});
+  const ObjectsPage({super.key, this.counts = const {}});
 
   static const _categories = <(String, String, IconData)>[
     ('food', 'Food & drink', Symbols.restaurant),

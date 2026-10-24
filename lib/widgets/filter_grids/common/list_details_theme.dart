@@ -18,7 +18,7 @@ class FilterListDetailsTheme extends StatelessWidget {
   static const double titleIconPadding = 8;
   static const double titleDetailPadding = 6;
 
-  const new({
+  const FilterListDetailsTheme({
     super.key,
     required this.extent,
     required this.child,
@@ -106,7 +106,7 @@ class FilterListDetailsThemeData {
   final double titleIconSize;
   final IconThemeData captionIconTheme;
 
-  const new({
+  const FilterListDetailsThemeData({
     required this.extent,
     required this.titleMaxLines,
     required this.isMinExtent,

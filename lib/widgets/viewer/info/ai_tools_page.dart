@@ -22,7 +22,7 @@ class AiToolsPage extends StatefulWidget {
   final CollectionLens? collection;
   final AvesEntry entry;
 
-  const new({super.key, this.collection, required this.entry});
+  const AiToolsPage({super.key, this.collection, required this.entry});
 
   @override
   State<AiToolsPage> createState() => _AiToolsPageState();

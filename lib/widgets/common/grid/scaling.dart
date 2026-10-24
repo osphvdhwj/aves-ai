@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 class ScalerMetadata<T> {
   final T item;
 
-  const new(this.item);
+  const ScalerMetadata(this.item);
 }
 
 class GridScaleGestureDetector<T> extends StatefulWidget {
@@ -30,7 +30,7 @@ class GridScaleGestureDetector<T> extends StatefulWidget {
   final Object Function(T item)? highlightItem;
   final Widget child;
 
-  const new({
+  const GridScaleGestureDetector({
     super.key,
     required this.scrollableKey,
     required this.tileLayout,

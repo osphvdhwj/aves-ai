@@ -6,7 +6,7 @@ import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugOSPathSection extends StatefulWidget {
-  const new({super.key});
+  const DebugOSPathSection({super.key});
 
   @override
   State<DebugOSPathSection> createState() => _DebugOSPathSectionState();

@@ -46,7 +46,7 @@ import 'package:provider/provider.dart';
 class AlbumChipSetActionDelegate extends ChipSetActionDelegate<AlbumBaseFilter> with EntryEditorMixin, EntryStorageMixin {
   final Iterable<FilterGridItem<AlbumBaseFilter>> _items;
 
-  new(Iterable<FilterGridItem<AlbumBaseFilter>> items) : _items = items;
+  AlbumChipSetActionDelegate(Iterable<FilterGridItem<AlbumBaseFilter>> items) : _items = items;
 
   @override
   Iterable<FilterGridItem<AlbumBaseFilter>> get allItems => _items;

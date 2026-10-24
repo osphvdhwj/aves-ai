@@ -12,7 +12,7 @@ class OverlayDateRow extends StatelessWidget {
   final AvesEntry entry;
   final MultiPageController? multiPageController;
 
-  const new({
+  const OverlayDateRow({
     super.key,
     required this.entry,
     required this.multiPageController,

@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 class ExplorerActionDelegate with FeedbackMixin {
   final VolumeRelativeDirectory directory;
 
-  new({required this.directory});
+  ExplorerActionDelegate({required this.directory});
 
   bool isVisible(
     ExplorerAction action, {

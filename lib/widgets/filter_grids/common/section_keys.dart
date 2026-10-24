@@ -13,7 +13,7 @@ class ChipSectionKey extends SectionKey with Equatable {
   @override
   List<Object?> get props => [title];
 
-  const new({
+  const ChipSectionKey({
     this.title = '',
   });
 
@@ -64,7 +64,7 @@ class MimeTypeSectionKey extends ChipSectionKey {
 class StorageVolumeSectionKey extends ChipSectionKey {
   final StorageVolume? volume;
 
-  new(BuildContext context, this.volume) : super(title: volume?.getDescription(context) ?? context.l10n.sectionUnknown);
+  StorageVolumeSectionKey(BuildContext context, this.volume) : super(title: volume?.getDescription(context) ?? context.l10n.sectionUnknown);
 
   @override
   Widget? get leading => (volume?.isRemovable ?? false) ? const Icon(AIcons.storageCard) : null;

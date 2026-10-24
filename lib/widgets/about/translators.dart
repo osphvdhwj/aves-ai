@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AboutTranslators extends StatelessWidget {
-  const new({super.key});
+  const AboutTranslators({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class _RandomTextSpanHighlighter extends StatefulWidget {
   final List<String> spans;
   final Color color;
 
-  const new({
+  const _RandomTextSpanHighlighter({
     required this.spans,
     required this.color,
   });

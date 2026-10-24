@@ -9,7 +9,7 @@ class ImageOpEvent extends Equatable {
   @override
   List<Object?> get props => [success, skipped, uri];
 
-  const new({
+  const ImageOpEvent({
     required this.success,
     required this.skipped,
     required this.uri,
@@ -33,7 +33,7 @@ class MoveOpEvent extends ImageOpEvent {
   @override
   List<Object?> get props => [success, skipped, uri, newFields, deleted];
 
-  const new({
+  const MoveOpEvent({
     required super.success,
     required super.skipped,
     required super.uri,
@@ -62,7 +62,7 @@ class ExportOpEvent extends MoveOpEvent {
   @override
   List<Object?> get props => [success, skipped, uri, pageId, newFields];
 
-  const new({
+  const ExportOpEvent({
     required super.success,
     required super.skipped,
     required super.uri,

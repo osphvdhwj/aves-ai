@@ -32,7 +32,7 @@ class ExportCollectionStatsPage extends StatefulWidget {
 
   final Set<AvesEntry> entries;
 
-  const new({
+  const ExportCollectionStatsPage({
     super.key,
     required this.entries,
   });

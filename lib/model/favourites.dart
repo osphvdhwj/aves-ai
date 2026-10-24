@@ -111,7 +111,7 @@ class FavouriteRow extends Equatable {
   @override
   List<Object?> get props => [entryId];
 
-  const new({
+  const FavouriteRow({
     required this.entryId,
   });
 

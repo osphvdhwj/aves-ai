@@ -20,7 +20,7 @@ class VideoProgressBar extends StatefulWidget {
 
   static const padding = EdgeInsets.symmetric(horizontal: 16);
 
-  const new({
+  const VideoProgressBar({
     super.key,
     required this.controller,
     required this.scale,

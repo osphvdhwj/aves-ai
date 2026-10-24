@@ -15,7 +15,7 @@ class AlbumSectionHeader extends StatelessWidget {
   final bool selectable;
   final int? count;
 
-  const new({
+  const AlbumSectionHeader({
     super.key,
     required this.directory,
     required this.albumName,

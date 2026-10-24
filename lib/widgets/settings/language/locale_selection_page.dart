@@ -15,7 +15,7 @@ import 'package:material_ui/material_ui.dart';
 class LocaleSelectionPage extends StatefulWidget {
   static const routeName = '/settings/locale';
 
-  const new({super.key});
+  const LocaleSelectionPage({super.key});
 
   @override
   State<LocaleSelectionPage> createState() => _LocaleSelectionPageState();

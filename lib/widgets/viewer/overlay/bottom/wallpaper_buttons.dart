@@ -25,7 +25,7 @@ class WallpaperButtons extends StatelessWidget with FeedbackMixin {
   final AvesEntry entry;
   final Animation<double> scale;
 
-  const new({
+  const WallpaperButtons({
     super.key,
     required this.entry,
     required this.scale,

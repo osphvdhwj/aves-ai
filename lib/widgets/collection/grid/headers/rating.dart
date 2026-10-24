@@ -9,7 +9,7 @@ class RatingSectionHeader<T> extends StatelessWidget {
   final bool selectable;
   final int? count;
 
-  const new({
+  const RatingSectionHeader({
     super.key,
     required this.rating,
     required this.selectable,

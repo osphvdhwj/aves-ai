@@ -22,7 +22,7 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
   final Set<CollectionFilter?>? filters;
   final bool Function() isSelected;
 
-  const new({
+  const CollectionNavTile({
     super.key,
     required this.leading,
     required this.title,
@@ -99,7 +99,7 @@ class AlbumNavTile extends StatelessWidget {
   final AlbumBaseFilter filter;
   final bool Function() isSelected;
 
-  const new({
+  const AlbumNavTile({
     super.key,
     required this.filter,
     required this.isSelected,

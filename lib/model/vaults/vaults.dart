@@ -19,8 +19,8 @@ class Vaults {
   Set<VaultDetails> _rows = {};
   final Set<String> _unlockedDirPaths = {};
 
-  final AChangeNotifier contentChangeNotifier = .new();
-  final AChangeNotifier lockStateChangeNotifier = .new();
+  final AChangeNotifier contentChangeNotifier = AChangeNotifier();
+  final AChangeNotifier lockStateChangeNotifier = AChangeNotifier();
 
   static const _fileScheme = 'file';
 

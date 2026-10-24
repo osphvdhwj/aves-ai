@@ -12,7 +12,7 @@ import 'package:material_ui/material_ui.dart';
 class ThumbnailsTab extends StatefulWidget {
   final AvesEntry entry;
 
-  const new({
+  const ThumbnailsTab({
     super.key,
     required this.entry,
   });

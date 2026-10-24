@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class SettingsTvPage extends StatelessWidget {
-  const new({super.key});
+  const SettingsTvPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class SettingsTvPage extends StatelessWidget {
 }
 
 class _Content extends StatefulWidget {
-  const new();
+  const _Content();
 
   @override
   State<_Content> createState() => _ContentState();
@@ -125,7 +125,7 @@ class _ContentState extends State<_Content> {
 class _Section extends StatelessWidget {
   final Future<List<SettingsTile>> loader;
 
-  const new({required this.loader});
+  const _Section({required this.loader});
 
   @override
   Widget build(BuildContext context) {

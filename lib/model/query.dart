@@ -4,11 +4,11 @@ import 'package:aves_utils/aves_utils.dart';
 import 'package:flutter/foundation.dart';
 
 class Query extends ChangeNotifier {
-  final AChangeNotifier _focusRequestNotifier = .new();
+  final AChangeNotifier _focusRequestNotifier = AChangeNotifier();
   final ValueNotifier<String> _queryNotifier = ValueNotifier('');
   final StreamController<bool> _enabledStreamController = StreamController.broadcast();
 
-  new({required bool enabled, required String? initialValue}) {
+  Query({required bool enabled, required String? initialValue}) {
     if (kFlutterMemoryAllocationsEnabled) ChangeNotifier.maybeDispatchObjectCreation(this);
     _enabled = enabled;
     if (initialValue != null && initialValue.isNotEmpty) {

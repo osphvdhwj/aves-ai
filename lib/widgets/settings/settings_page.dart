@@ -37,7 +37,7 @@ class SettingsPage extends StatelessWidget {
     LanguageSection(),
   ];
 
-  const new({super.key});
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class SettingsPage extends StatelessWidget {
 class SettingsListView extends StatelessWidget {
   final List<Widget> children;
 
-  const new({
+  const SettingsListView({
     super.key,
     required this.children,
   });

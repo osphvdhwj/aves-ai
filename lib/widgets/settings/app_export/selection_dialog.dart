@@ -8,7 +8,7 @@ class AppExportItemSelectionDialog extends StatefulWidget {
   final String title;
   final Set<AppExportItem>? selectableItems, initialSelection;
 
-  const new({
+  const AppExportItemSelectionDialog({
     super.key,
     required this.title,
     this.selectableItems,

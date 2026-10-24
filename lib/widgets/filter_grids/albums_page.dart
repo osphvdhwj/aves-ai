@@ -28,7 +28,7 @@ class AlbumListPage extends StatelessWidget {
 
   final Uri? initialGroup;
 
-  const new({
+  const AlbumListPage({
     super.key,
     required this.initialGroup,
   });

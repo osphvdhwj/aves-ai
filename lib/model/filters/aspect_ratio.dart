@@ -17,7 +17,7 @@ class AspectRatioFilter extends CollectionFilter {
   @override
   List<Object?> get props => [threshold, op, reversed];
 
-  new(this.threshold, this.op, {super.reversed = false}) {
+  AspectRatioFilter(this.threshold, this.op, {super.reversed = false}) {
     switch (op) {
       case QueryFilter.opEqual:
         _test = (entry) => entry.displayAspectRatio == threshold;

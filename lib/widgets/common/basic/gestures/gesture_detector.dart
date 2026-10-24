@@ -18,7 +18,7 @@ class AGestureDetector extends StatelessWidget {
   ///
   /// By default, gesture detectors contribute semantic information to the tree
   /// that is used by assistive technology.
-  new({
+  AGestureDetector({
     super.key,
     this.child,
     this.onTapDown,

@@ -10,7 +10,7 @@ class EditEntryTitleDescriptionDialog extends StatefulWidget {
 
   final String initialTitle, initialDescription;
 
-  const new({
+  const EditEntryTitleDescriptionDialog({
     super.key,
     required this.initialTitle,
     required this.initialDescription,

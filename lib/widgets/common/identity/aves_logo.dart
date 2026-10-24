@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class AvesLogo extends StatelessWidget {
   final double size;
 
-  const new({
+  const AvesLogo({
     super.key,
     required this.size,
   });

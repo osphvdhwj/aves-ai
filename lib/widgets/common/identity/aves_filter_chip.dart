@@ -34,7 +34,7 @@ class AvesFilterDecoration {
   final Radius radius;
   final Widget widget;
 
-  const new({
+  const AvesFilterDecoration({
     required this.radius,
     required this.widget,
   });
@@ -66,7 +66,7 @@ class AvesFilterChip extends StatefulWidget {
   static const double fontSize = 14;
   static const double decoratedContentVerticalPadding = 6;
 
-  const new({
+  const AvesFilterChip({
     super.key,
     required this.filter,
     this.showLeading = true,

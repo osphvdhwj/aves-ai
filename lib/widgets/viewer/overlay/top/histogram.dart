@@ -11,7 +11,7 @@ class ImageHistogram extends StatefulWidget {
   final ViewStateController viewStateController;
   final ImageProvider image;
 
-  const new({
+  const ImageHistogram({
     super.key,
     required this.viewStateController,
     required this.image,
@@ -93,7 +93,7 @@ class _HistogramPainter extends CustomPainter {
 
   late final Paint fill, borderStroke;
 
-  new({
+  _HistogramPainter({
     required this.levels,
     this.borderColor = Colors.white,
   }) {

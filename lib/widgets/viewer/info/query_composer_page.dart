@@ -17,7 +17,7 @@ import 'package:material_ui/material_ui.dart';
 class QueryComposerPage extends StatefulWidget {
   static const routeName = '/viewer/info/query_composer';
 
-  const new({super.key});
+  const QueryComposerPage({super.key});
 
   @override
   State<QueryComposerPage> createState() => _QueryComposerPageState();

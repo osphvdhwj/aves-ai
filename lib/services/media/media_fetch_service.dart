@@ -413,7 +413,7 @@ class ImageRequest extends Equatable {
   @override
   List<Object?> get props => [uri, mimeType, rotationDegrees, isFlipped, isAnimated, pageId, sizeBytes, onBytesReceived];
 
-  const new(
+  const ImageRequest(
     this.uri,
     this.mimeType, {
     required this.rotationDegrees,

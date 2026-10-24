@@ -24,7 +24,7 @@ class MimeFilter extends CollectionFilter {
   @override
   List<Object?> get props => [mime, reversed];
 
-  new(this.mime, {super.reversed = false}) {
+  MimeFilter(this.mime, {super.reversed = false}) {
     IconData? icon;
     var lowMime = mime.toLowerCase();
     if (lowMime.endsWith('/*')) {

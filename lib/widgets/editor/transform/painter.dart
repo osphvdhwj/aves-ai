@@ -7,7 +7,7 @@ class CropperPainter extends CustomPainter {
   final double gridOpacity;
   final int gridDivision;
 
-  const new({
+  const CropperPainter({
     required this.rect,
     required this.gridOpacity,
     required this.gridDivision,
@@ -93,7 +93,7 @@ class ScrimPainter extends CustomPainter {
   final Path excludePath;
   final double opacity;
 
-  const new({
+  const ScrimPainter({
     required this.excludePath,
     required this.opacity,
   });

@@ -11,7 +11,7 @@ class QuickChooser extends StatelessWidget {
   static const margin = EdgeInsets.all(8);
   static const padding = EdgeInsets.symmetric(horizontal: 8);
 
-  const new({
+  const QuickChooser({
     super.key,
     required this.blurred,
     required this.child,

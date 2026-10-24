@@ -20,7 +20,7 @@ class ItemPickPage extends StatefulWidget {
   final CollectionLens collection;
   final bool canRemoveFilters;
 
-  const new({
+  const ItemPickPage({
     super.key,
     required this.collection,
     required this.canRemoveFilters,

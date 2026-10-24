@@ -19,7 +19,7 @@ class RemoveEntryMetadataDialog extends StatefulWidget {
 
   final bool showJpegTypes;
 
-  const new({
+  const RemoveEntryMetadataDialog({
     super.key,
     required this.showJpegTypes,
   });

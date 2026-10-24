@@ -9,6 +9,7 @@ import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/services/ai_service.dart';
+import 'package:aves/services/common/services.dart';
 import 'package:aves/widgets/common/search/delegate.dart';
 import 'package:aves/widgets/common/search/page.dart';
 import 'package:aves/widgets/search/ai_filters_bar.dart';
@@ -28,7 +29,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
   List<AiPrompt> _rotating = const [];
   List<String> _dynamic = const [];
 
-  new({
+  AiSearchDelegate({
     required super.searchFieldLabel,
     required super.searchFieldStyle,
     super.canPop,
@@ -226,6 +227,15 @@ class AiSearchDelegate extends AvesSearchDelegate {
             .whereType<AvesEntry>()
             .toList();
         if (entries.isEmpty) {
+          if (reply.isIndexEmpty) {
+            return StatusView(
+              icon: Symbols.model_training,
+              title: 'Search index is empty',
+              subtitle: 'Build it once so the companion can rank your photos by meaning.',
+              actionLabel: 'Build index',
+              onAction: () => _buildIndexAndRetry(context),
+            );
+          }
           return _EmptyResults(
             text: reply.text,
             onPrompt: (p) => _onPrompt(context, p),
@@ -261,6 +271,23 @@ class AiSearchDelegate extends AvesSearchDelegate {
     _lastQuery = null;
     _resultFuture = null;
     showResults(context);
+  }
+
+  /// One-tap CLIP index build over the current collection's images, then
+  /// re-runs the query that triggered it.
+  Future<void> _buildIndexAndRetry(BuildContext context) async {
+    final source = context.read<CollectionSource>();
+    final entries = source.visibleEntries.where((e) => e.isImage).toList();
+    if (entries.isEmpty) {
+      _retry(context);
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _IndexBuildDialog(entries: entries),
+    );
+    _retry(context);
   }
 
   Widget _sectionTitle(ThemeData theme, String text) => Padding(
@@ -337,7 +364,7 @@ class _HeroCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
 
-  const new({
+  const _HeroCard({
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -458,7 +485,7 @@ class _PromptGrid extends StatelessWidget {
   final List<_GridPrompt> prompts;
   final ValueChanged<String> onTap;
 
-  const new({
+  const _PromptGrid({
     required this.prompts,
     required this.onTap,
   });
@@ -493,7 +520,7 @@ class _PromptTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const new({
+  const _PromptTile({
     required this.text,
     required this.icon,
     required this.onTap,
@@ -584,7 +611,7 @@ class _QuickActions extends StatelessWidget {
     _ => Symbols.auto_awesome,
   };
 
-  const new({required this.onTap, required this.onInsert});
+  const _QuickActions({required this.onTap, required this.onInsert});
 
   @override
   Widget build(BuildContext context) {
@@ -702,7 +729,7 @@ class _FaceRow extends StatelessWidget {
 
   static const _circleDim = 76.0;
 
-  const new({super.key, this.people, this.onPick, this.onSeeAll});
+  const _FaceRow({super.key, this.people, this.onPick, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
@@ -792,7 +819,7 @@ class _PersonCircle extends StatelessWidget {
   final double borderWidth;
   final VoidCallback onTap;
 
-  const new({
+  const _PersonCircle({
     required this.label,
     required this.icon,
     required this.bg,
@@ -838,7 +865,7 @@ class _PersonCircle extends StatelessWidget {
 class _ResultsHeader extends StatelessWidget {
   final int count;
 
-  const new({super.key, required this.count});
+  const _ResultsHeader({super.key, required this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -881,8 +908,9 @@ class _ResultsHeader extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 class _ResultGrid extends StatelessWidget {
   final List<AvesEntry> entries;
+  final String query;
 
-  const new({super.key, required this.entries});
+  const _ResultGrid({super.key, required this.entries, required this.query});
 
   @override
   Widget build(BuildContext context) {
@@ -925,6 +953,9 @@ class _ResultGrid extends StatelessWidget {
   }
 
   void _openViewer(BuildContext context, AvesEntry entry) {
+    // Personalization signal for the companion's auto-training: the user
+    // picked this result for this query.
+    aiService.feedback(type: 'find_like', entryId: entry.id, query: query);
     Navigator.maybeOf(context)?.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: EntryViewerPage.routeName),
@@ -935,10 +966,87 @@ class _ResultGrid extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
+// index build progress
+// ─────────────────────────────────────────────────────────────
+class _IndexBuildDialog extends StatefulWidget {
+  final List<AvesEntry> entries;
+
+  const _IndexBuildDialog({super.key, required this.entries});
+
+  @override
+  State<_IndexBuildDialog> createState() => _IndexBuildDialogState();
+}
+
+class _IndexBuildDialogState extends State<_IndexBuildDialog> {
+  int _done = 0;
+  bool _cancelled = false;
+  bool _running = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _run();
+  }
+
+  Future<void> _run() async {
+    try {
+      await aiService.indexBuild(
+        widget.entries,
+        onProgress: (done, total) {
+          if (mounted) setState(() => _done = done);
+        },
+        isCancelled: () => _cancelled,
+      );
+    } catch (e, s) {
+      await reportService.recordError(e, s);
+      _error = e.toString();
+    }
+    if (mounted) setState(() => _running = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final total = widget.entries.length;
+    return AlertDialog(
+      title: const Text('Building search index'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LinearProgressIndicator(value: total == 0 ? 1 : _done / total),
+          const SizedBox(height: 12),
+          Text(
+            _error != null
+                ? 'Index build failed: $_error'
+                : _cancelled
+                    ? 'Cancelled after $_done of $total photos.'
+                    : _running
+                        ? 'Embedded $_done of $total photos…'
+                        : 'Done — processed $total photos. Search is ready.',
+          ),
+        ],
+      ),
+      actions: [
+        if (_running)
+          TextButton(
+            onPressed: _cancelled ? null : () => setState(() => _cancelled = true),
+            child: const Text('Cancel'),
+          ),
+        if (!_running)
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // loading / error / empty
 // ─────────────────────────────────────────────────────────────
 class _LoadingState extends StatefulWidget {
-  const new({super.key});
+  const _LoadingState({super.key});
 
   @override
   State<_LoadingState> createState() => _LoadingStateState();
@@ -1013,7 +1121,7 @@ class _EmptyResults extends StatelessWidget {
     'Photos of friends',
   ];
 
-  const new({super.key, required this.text, required this.onPrompt});
+  const _EmptyResults({super.key, required this.text, required this.onPrompt});
 
   @override
   Widget build(BuildContext context) {
@@ -1056,7 +1164,7 @@ class _HistoryChips extends StatelessWidget {
   final List<String> queries;
   final ValueChanged<String> onTap;
 
-  const new({
+  const _HistoryChips({
     super.key,
     required this.queries,
     required this.onTap,
@@ -1227,7 +1335,7 @@ class _FilteredResultsViewState extends State<_FilteredResultsView> {
                   title: 'No results match the filters',
                   subtitle: 'Clear one of the chips above to see more.',
                 )
-              : _ResultGrid(entries: _filtered),
+              : _ResultGrid(entries: _filtered, query: widget.query),
         ),
       ],
     );

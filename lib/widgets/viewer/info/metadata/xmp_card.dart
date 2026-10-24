@@ -19,7 +19,7 @@ class XmpCard extends StatefulWidget {
   final String Function(XmpProp prop) formatValue;
   final Map<String, InfoValueSpanBuilder> Function(int? index)? spanBuilders;
 
-  new({
+  XmpCard({
     super.key,
     required this.title,
     required Map<int?, XmpExtractedCard> structByIndex,

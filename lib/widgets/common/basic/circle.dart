@@ -7,7 +7,7 @@ class CircularIndicator extends StatefulWidget {
   final Color background, foreground;
   final Widget center;
 
-  const new({
+  const CircularIndicator({
     super.key,
     required this.radius,
     required this.lineWidth,
@@ -52,7 +52,7 @@ class _Circle extends StatelessWidget {
   final double radius, lineWidth, percent;
   final Color color;
 
-  const new({
+  const _Circle({
     required this.radius,
     required this.lineWidth,
     required this.percent,
@@ -77,7 +77,7 @@ class _CirclePainter extends CustomPainter {
   final double radius, lineWidth, percent;
   final Color color;
 
-  const new({
+  const _CirclePainter({
     required this.radius,
     required this.lineWidth,
     required this.percent,

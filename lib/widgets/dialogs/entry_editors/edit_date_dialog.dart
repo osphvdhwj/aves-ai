@@ -27,7 +27,7 @@ class EditEntryDateDialog extends StatefulWidget {
   final AvesEntry entry;
   final CollectionLens? collection;
 
-  const new({
+  const EditEntryDateDialog({
     super.key,
     required this.entry,
     this.collection,

@@ -49,7 +49,7 @@ class EntryViewerStack extends StatefulWidget {
   final AvesEntry initialEntry;
   final ViewerController viewerController;
 
-  const new({
+  const EntryViewerStack({
     super.key,
     this.collection,
     required this.initialEntry,
@@ -64,7 +64,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
   late int _currentEntryIndex;
   late ValueNotifier<int> _currentVerticalPage;
   late PageController _horizontalPager, _verticalPager;
-  final AChangeNotifier _verticalScrollNotifier = .new();
+  final AChangeNotifier _verticalScrollNotifier = AChangeNotifier();
   bool _overlayInitialized = false;
   final ValueNotifier<bool> _overlayVisible = ValueNotifier(true);
   final ValueNotifier<bool> _viewLocked = ValueNotifier(false);

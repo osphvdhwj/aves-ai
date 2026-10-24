@@ -10,7 +10,7 @@ class FilterDebugPage extends StatefulWidget {
 
   final CollectionFilter filter;
 
-  const new({
+  const FilterDebugPage({
     super.key,
     required this.filter,
   });

@@ -22,7 +22,7 @@ class PressableScale extends StatefulWidget {
   /// a `ListTile` with its own `onTap`.
   final bool passthrough;
 
-  const new({
+  const PressableScale({
     super.key,
     required this.child,
     this.onTap,

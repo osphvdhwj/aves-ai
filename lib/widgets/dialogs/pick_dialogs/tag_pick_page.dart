@@ -67,7 +67,7 @@ class _TagPickPage extends StatefulWidget {
   final Uri? initialGroup;
   final GroupUriPredicate? isValidGroupPick;
 
-  const new({
+  const _TagPickPage({
     required this.source,
     required this.chipTypes,
     required this.initialGroup,

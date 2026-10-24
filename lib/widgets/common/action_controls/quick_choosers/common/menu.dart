@@ -24,7 +24,7 @@ class MenuQuickChooser<T> extends StatefulWidget {
 
   static const int maxVisibleOptionCount = 5;
 
-  new({
+  MenuQuickChooser({
     super.key,
     required this.valueNotifier,
     required List<T> options,

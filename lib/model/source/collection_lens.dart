@@ -37,8 +37,8 @@ class CollectionLens with ChangeNotifier {
   late bool sortReverse;
   late EntrySectionFactor sectionFactor;
   late ACalendar calendar;
-  final AChangeNotifier filterChangeNotifier = .new();
-  final AChangeNotifier layoutChangeNotifier = .new();
+  final AChangeNotifier filterChangeNotifier = AChangeNotifier();
+  final AChangeNotifier layoutChangeNotifier = AChangeNotifier();
   final Set<StreamSubscription> _subscriptions = {};
   int? id;
   bool listenToSource, stackBursts, stackDevelopedRaws, fixedSort;
@@ -57,7 +57,7 @@ class CollectionLens with ChangeNotifier {
 
   Set<CollectionFilter> get visibleFilters => filters.where((v) => !(v is QueryFilter && v.live) && v is! TrashFilter).toSet();
 
-  new({
+  CollectionLens({
     required this.source,
     Set<CollectionFilter?>? filters,
     this.id,

@@ -41,7 +41,7 @@ class EntryDir {
   bool ambiguous = false;
   String? _resolved;
 
-  new(this.asIs) : asIsLower = asIs?.toLowerCase();
+  EntryDir(this.asIs) : asIsLower = asIs?.toLowerCase();
 
   String? get resolved {
     if (!ambiguous) return asIs;

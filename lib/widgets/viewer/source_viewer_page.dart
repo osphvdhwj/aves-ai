@@ -9,7 +9,7 @@ class SourceViewerPage extends StatefulWidget {
 
   final Future<String> Function() loader;
 
-  const new({
+  const SourceViewerPage({
     super.key,
     required this.loader,
   });

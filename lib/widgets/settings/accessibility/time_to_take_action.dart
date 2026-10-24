@@ -7,7 +7,7 @@ import 'package:aves_model/aves_model.dart';
 import 'package:material_ui/material_ui.dart';
 
 class TimeToTakeActionTile extends StatefulWidget {
-  const new({super.key});
+  const TimeToTakeActionTile({super.key});
 
   static const List<String> settingKeys = [SettingKeys.timeToTakeActionKey];
 

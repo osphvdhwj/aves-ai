@@ -144,7 +144,7 @@ class DynamicAlbumRow extends Equatable {
   @override
   List<Object?> get props => [name, filter];
 
-  const new({
+  const DynamicAlbumRow({
     required this.name,
     required this.filter,
   });
@@ -174,5 +174,5 @@ class DynamicAlbumRow extends Equatable {
 class DynamicAlbumChangedEvent {
   final Map<DynamicAlbumFilter, DynamicAlbumFilter?> changes;
 
-  const new(this.changes);
+  const DynamicAlbumChangedEvent(this.changes);
 }

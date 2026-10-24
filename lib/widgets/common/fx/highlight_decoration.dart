@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 class HighlightDecoration extends Decoration {
   final Color color;
 
-  const new({required this.color});
+  const HighlightDecoration({required this.color});
 
   @override
   BoxPainter createBoxPainter([VoidCallback? onChanged]) {
@@ -14,7 +14,7 @@ class HighlightDecoration extends Decoration {
 class _HighlightDecorationPainter extends BoxPainter {
   final HighlightDecoration decoration;
 
-  const new(this.decoration, VoidCallback? onChanged) : super(onChanged);
+  const _HighlightDecorationPainter(this.decoration, VoidCallback? onChanged) : super(onChanged);
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {

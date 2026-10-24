@@ -17,7 +17,7 @@ import 'package:material_ui/material_ui.dart' hide Flow;
 // For example, your app (version code 94) in the "Show All Licenses" section text is cut off from the bottom of the screen.
 // ```
 class TvLicensePage extends StatefulWidget {
-  const new({super.key});
+  const TvLicensePage({super.key});
 
   @override
   State<TvLicensePage> createState() => _TvLicensePageState();
@@ -191,7 +191,7 @@ class _LicenseData {
 
 // adapted from Flutter `_PackageLicensePage` in `/material/about.dart`
 class _PackageLicensePage extends StatefulWidget {
-  const new({
+  const _PackageLicensePage({
     required this.packageName,
     required this.licenseEntries,
     required this.scrollController,
@@ -361,7 +361,7 @@ class _PackageLicensePageState extends State<_PackageLicensePage> {
 // adapted from Flutter `_PackageLicensePageTitle` in `/material/about.dart`
 // unmodified, modulo format & lints
 class _PackageLicensePageTitle extends StatelessWidget {
-  const new({
+  const _PackageLicensePageTitle({
     required this.title,
     required this.subtitle,
     required this.theme,

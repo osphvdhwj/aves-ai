@@ -26,7 +26,7 @@ class CatalogMetadata {
   static const _isSlowMotion = 1 << 7;
   static const _hasLocalMetadataEditMask = 1 << 8;
 
-  new({
+  CatalogMetadata({
     required this.id,
     this.mimeType,
     this.dateMillis,

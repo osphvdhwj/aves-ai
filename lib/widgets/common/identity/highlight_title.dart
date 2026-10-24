@@ -8,7 +8,7 @@ class HighlightTitle extends StatelessWidget {
   final bool enabled;
   final bool showHighlight;
 
-  const new({
+  const HighlightTitle({
     super.key,
     required this.title,
     this.color,

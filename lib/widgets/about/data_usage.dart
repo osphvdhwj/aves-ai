@@ -14,7 +14,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 
 class AboutDataUsage extends StatefulWidget {
-  const new({super.key});
+  const AboutDataUsage({super.key});
 
   @override
   State<AboutDataUsage> createState() => _AboutDataUsageState();
@@ -133,7 +133,7 @@ class DataUsageDonut extends StatelessWidget {
   static const String internal = 'internal';
   static const String external = 'external';
 
-  const new({
+  const DataUsageDonut({
     super.key,
     required this.title,
     required this.byTypes,

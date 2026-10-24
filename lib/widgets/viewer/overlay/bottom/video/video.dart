@@ -20,7 +20,7 @@ class VideoControlOverlay extends StatefulWidget {
   final Animation<double> scale;
   final Function(EntryAction value) onActionSelected;
 
-  const new({
+  const VideoControlOverlay({
     super.key,
     required this.entry,
     required this.controller,

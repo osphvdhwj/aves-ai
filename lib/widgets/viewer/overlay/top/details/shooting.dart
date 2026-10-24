@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 class OverlayShootingRow extends StatelessWidget {
   final OverlayMetadata details;
 
-  const new({
+  const OverlayShootingRow({
     super.key,
     required this.details,
   });
