@@ -6,6 +6,7 @@ import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
+import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/services/ai_service.dart';
