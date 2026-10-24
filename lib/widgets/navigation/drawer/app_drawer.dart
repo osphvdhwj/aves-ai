@@ -148,6 +148,7 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
     ];
 
     return Drawer(
+      width: MediaQuery.sizeOf(context).width * 0.75, // narrower drawer
       backgroundColor: Colors.transparent,
       elevation: 0,
       shape: const RoundedRectangleBorder(),

@@ -215,7 +215,12 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                         title: _buildAppBarTitle(isSelecting),
                         actions: (context, maxWidth) => useTvLayout ? [] : _buildActions(context, selection, maxWidth),
                         bottom: PreferredSize(
-                          preferredSize: Size.fromHeight(_getAppBarContentHeight(context) - kToolbarHeight),
+                          preferredSize: Size.fromHeight(
+                            CollectionSearchBar.preferredHeight +
+                            CollectionQuickFilters.preferredHeight +
+                            (showFilterBar ? FilterBar.preferredHeight : 0.0) +
+                            (useTvLayout ? CaptionedButton.getTelevisionButtonHeight(context) : 0.0),
+                          ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [

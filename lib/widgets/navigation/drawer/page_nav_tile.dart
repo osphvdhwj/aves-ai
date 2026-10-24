@@ -33,30 +33,30 @@ class PageNavTile extends StatelessWidget {
         passthrough: true,
         scale: 0.97,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: ListTile(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeLarge)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge)),
             tileColor: context.currentRouteName == routeName && (isSelected?.call() ?? true)
                 ? Theme.of(context).colorScheme.secondaryContainer
-                : Colors.transparent,
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
             // key is expected by test driver
             key: Key('$routeName-tile'),
             leading: leading ?? DrawerPageIcon(route: routeName),
-        title: title ?? DrawerPageTitle(route: routeName),
-        trailing: trailing != null
-            ? Builder(
-                builder: (context) => DefaultTextStyle.merge(
-                  style: TextStyle(
-                    color: IconTheme.of(context).color!.withValues(alpha: .6),
-                  ),
-                  child: trailing!,
-                ),
-              )
-            : null,
-        onTap: () {
-          Navigator.maybeOf(context)?.pop();
-          navItem.goTo(context);
-        },
+            title: title ?? DrawerPageTitle(route: routeName),
+            trailing: trailing != null
+                ? Builder(
+                    builder: (context) => DefaultTextStyle.merge(
+                      style: TextStyle(
+                        color: IconTheme.of(context).color!.withValues(alpha: .6),
+                      ),
+                      child: trailing!,
+                    ),
+                  )
+                : null,
+            onTap: () {
+              Navigator.maybeOf(context)?.pop();
+              navItem.goTo(context);
+            },
             selected: context.currentRouteName == routeName && (isSelected?.call() ?? true),
           ),
         ),

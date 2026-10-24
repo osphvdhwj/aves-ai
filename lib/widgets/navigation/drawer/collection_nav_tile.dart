@@ -40,29 +40,29 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
         passthrough: true,
         scale: 0.97,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: ListTile(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeLarge)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge)),
             tileColor: context.currentRouteName == CollectionPage.routeName && isSelected()
                 ? Theme.of(context).colorScheme.secondaryContainer
-                : Colors.transparent,
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
             leading: leading,
-        title: title,
-        trailing: trailing != null
-            ? Builder(
-                builder: (context) {
-                  final trailingColor = IconTheme.of(context).color!.withValues(alpha: .6);
-                  return IconTheme.merge(
-                    data: IconThemeData(color: trailingColor),
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(color: trailingColor),
-                      child: trailing!,
-                    ),
-                  );
-                },
-              )
-            : null,
-          onTap: () => _goToCollection(context),
+            title: title,
+            trailing: trailing != null
+                ? Builder(
+                    builder: (context) {
+                      final trailingColor = IconTheme.of(context).color!.withValues(alpha: .6);
+                      return IconTheme.merge(
+                        data: IconThemeData(color: trailingColor),
+                        child: DefaultTextStyle.merge(
+                          style: TextStyle(color: trailingColor),
+                          child: trailing!,
+                        ),
+                      );
+                    },
+                  )
+                : null,
+            onTap: () => _goToCollection(context),
             selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
           ),
         ),
