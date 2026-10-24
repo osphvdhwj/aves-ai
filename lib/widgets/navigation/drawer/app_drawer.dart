@@ -182,7 +182,25 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                           size: textScaler.scale(iconTheme.size!),
                         ),
                         child: Column(
-                          children: drawerItems,
+                          children: drawerItems.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final widget = entry.value;
+                            return TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: Duration(milliseconds: 250 + (index * 40)),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: value,
+                                  child: Transform.translate(
+                                    offset: Offset(-24 * (1 - value), 0),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: widget,
+                            );
+                          }).toList(),
                         ),
                       ),
                     );
