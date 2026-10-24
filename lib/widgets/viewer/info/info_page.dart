@@ -17,12 +17,9 @@ import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/action/entry_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
-import 'package:aves/widgets/viewer/info/overview_tab.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/info_fade_in.dart';
-import 'package:aves/widgets/viewer/info/info_hero.dart';
-import 'package:aves/widgets/viewer/info/info_tabs.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
 import 'package:aves/widgets/viewer/info/header_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
@@ -258,6 +255,7 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
 
   @override
   Widget build(BuildContext context) {
+    final detailsSection = DetailsSection(entry: entry);
     final locationSection = LocationSection(
       collection: collection,
       entry: entry,
@@ -275,7 +273,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
       onFilterSelection: _onFilterSelection,
     );
 
-
     return NotificationListener<SelectFilterNotification>(
       onNotification: (notification) {
         _onFilterSelection(notification.filter);
@@ -284,98 +281,59 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
       child: Column(
         children: [
           Expanded(
-            child: NestedScrollView(
+            child: CustomScrollView(
               controller: widget.scrollController,
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  const SliverToBoxAdapter(
-                    child: TvEdgeFocus(),
-                  ),
-                  InfoAppBar(
+              slivers: [
+                const SliverToBoxAdapter(
+                  child: TvEdgeFocus(),
+                ),
+                InfoAppBar(
+                  entry: entry,
+                  collection: collection,
+                  actionDelegate: _actionDelegate,
+                  metadataNotifier: _metadataNotifier,
+                  onBackPressed: widget.goToViewer,
+                ),
+                SliverToBoxAdapter(
+                  child: _InfoTitleRow(entry: entry),
+                ),
+                SliverToBoxAdapter(
+                  child: InfoHeaderSection(
                     entry: entry,
                     collection: collection,
                     actionDelegate: _actionDelegate,
-                    metadataNotifier: _metadataNotifier,
-                    onBackPressed: widget.goToViewer,
+                    chipsSection: chipsSection,
                   ),
-                  SliverToBoxAdapter(
-                    child: InfoFadeIn(
-                      index: 0,
-                      child: InfoHeroImage(
-                        entry: entry,
-                        onShare: () => _viewerActionDelegate.onActionSelected(
-                          context,
-                          EntryAction.share,
-                        ),
-                      ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: detailsSection,
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: locationSection,
+                  ),
+                ),
+                MetadataSectionSliver(
+                  entry: entry,
+                  metadataNotifier: _metadataNotifier,
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: AiTagsSection(
+                      entry: entry,
+                      actionDelegate: _actionDelegate,
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: InfoFadeIn(
-                      index: 0,
-                      child: _InfoTitleRow(entry: entry),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: InfoFadeIn(
-                      index: 0,
-                      child: InfoHeaderSection(
-                        entry: entry,
-                        collection: collection,
-                        actionDelegate: _actionDelegate,
-                        chipsSection: chipsSection,
-                      ),
-                    ),
-                  ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _TabBarDelegate(
-                      TabBar(
-                        controller: _tabController,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        indicator: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
-                        ),
-                        indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                        labelColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                        unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                        tabs: const [
-                          Tab(text: 'Overview', icon: Icon(Symbols.home)),
-                          Tab(text: 'Metadata', icon: Icon(Symbols.info)),
-                          Tab(text: 'AI Tools', icon: Icon(Symbols.auto_awesome)),
-                          Tab(text: 'Actions', icon: Icon(Symbols.more_horiz)),
-                        ],
-                      ),
-                      Theme.of(context).colorScheme.surface,
-                    ),
-                  ),
-                ];
-              },
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  OverviewTab(
-                    entry: entry,
-                    collection: collection,
-                    locationSection: locationSection,
-                  ),
-                  InfoMetadataTab(
-                    entry: entry,
-                    metadataNotifier: _metadataNotifier,
-                  ),
-                  InfoAiToolsTab(
-                    entry: entry,
-                    collection: collection,
-                  ),
-                  InfoActionsTab(
-                    entry: entry,
-                    collection: collection,
-                    actionDelegate: _actionDelegate,
-                  ),
-                ],
-              ),
+                ),
+                if (!settings.useTvLayout)
+                  ColorSectionSliver(entry: entry),
+                const BottomPaddingSliver(),
+              ],
             ),
           ),
           if (settings.showOverlayThumbnailPreview && settings.showInfoThumbnail)

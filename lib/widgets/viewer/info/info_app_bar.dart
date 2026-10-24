@@ -1,6 +1,7 @@
 import 'package:aves/app_mode.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/props.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/selection.dart';
 import 'package:aves/model/settings/enums/accessibility_animations.dart';
 import 'package:aves/model/settings/settings.dart';
@@ -58,6 +59,8 @@ class InfoAppBar extends StatelessWidget {
     final useTvLayout = settings.useTvLayout;
     final animations = context.select<Settings, AccessibilityAnimations>((v) => v.accessibilityAnimations);
     return SliverAppBar(
+      expandedHeight: 280.0,
+      pinned: true,
       leading: useTvLayout
           ? null
           : FontSizeIconTheme(
@@ -113,7 +116,12 @@ class InfoAppBar extends StatelessWidget {
                 ),
               ),
             ],
-      floating: true,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Image(
+          image: entry.getThumbnail(extent: 1024),
+          fit: BoxFit.cover,
+        ),
+      ),
       // as of Flutter v3.44.4, `SliverAppBar` does not automatically pick up `systemOverlayStyle` from `AppBar` theme
       systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
     );
