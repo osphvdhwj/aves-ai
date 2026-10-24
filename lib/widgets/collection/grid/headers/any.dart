@@ -17,6 +17,7 @@ class const CollectionSectionHeader({
   required final SectionKey sectionKey,
   required final double height,
   required final bool selectable,
+  final int? count,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class const CollectionSectionHeader({
   }
 
   Widget? _buildHeader(BuildContext context) {
+    final count = collection.sections[sectionKey]?.length;
     switch (collection.sortFactor) {
       case .date:
         switch (collection.sectionFactor) {
@@ -43,6 +45,7 @@ class const CollectionSectionHeader({
               sectionKey: sectionKey,
               date: date,
               selectable: selectable,
+              count: count,
             );
           case .day:
             var k = sectionKey as EntryDateSectionKey;
@@ -52,6 +55,7 @@ class const CollectionSectionHeader({
               sectionKey: sectionKey,
               date: date,
               selectable: selectable,
+              count: count,
             );
           case .none:
             break;
@@ -67,6 +71,7 @@ class const CollectionSectionHeader({
           key: ValueKey(sectionKey),
           rating: (sectionKey as EntryRatingSectionKey).rating,
           selectable: selectable,
+          count: count,
         );
       case .size:
       case .duration:
@@ -86,6 +91,7 @@ class const CollectionSectionHeader({
       directory: directory,
       albumName: directory != null ? source.getStoredAlbumDisplayName(context, directory) : null,
       selectable: selectable,
+      count: count,
     );
   }
 

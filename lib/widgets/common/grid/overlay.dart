@@ -35,8 +35,8 @@ class GridItemSelectionOverlay<T> extends StatelessWidget {
                   duration: duration,
                   child: AnimatedSwitcher(
                     duration: duration,
-                    switchInCurve: Curves.easeOutBack,
-                    switchOutCurve: Curves.easeOutBack,
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeOutCubic,
                     transitionBuilder: (child, animation) => ScaleTransition(
                       scale: animation,
                       child: child,

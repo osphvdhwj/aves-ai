@@ -56,7 +56,11 @@ class _CastDialogState extends State<CastDialog> {
           ),
         ..._seenRenderers.values.map(
           (dev) => ListTile(
-            title: Text(dev.info.friendlyName),
+            title: Text(
+              dev.info.friendlyName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () => Navigator.maybeOf(context)?.pop<DLNADevice>(dev),
           ),
         ),

@@ -14,6 +14,7 @@ import 'package:aves/theme/icons.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/action_mixins/feedback.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/identity/buttons/captioned_button.dart';
 import 'package:aves/widgets/common/identity/empty.dart';
@@ -186,7 +187,10 @@ class _TagPickPageState extends State<_TagPickPage> with FeedbackMixin {
             selector: (context, v) => v.value,
             builder: (context, groupUri, child) {
               final isValid = widget.isValidGroupPick?.call(groupUri) ?? true;
-              return FloatingActionButton.extended(
+              return PressableScale(
+                passthrough: true,
+                scale: 0.92,
+                child: FloatingActionButton.extended(
                 onPressed: isValid
                     ? () {
                         final filter = groupUri != null ? tagGrouping.uriToFilter(groupUri) : TagGroupFilter.root;
@@ -198,6 +202,7 @@ class _TagPickPageState extends State<_TagPickPage> with FeedbackMixin {
                 backgroundColor: isValid ? null : Theme.of(context).disabledColor,
                 icon: const Icon(AIcons.apply),
                 label: Text(context.l10n.groupPickerUseThisGroupButton),
+                ),
               );
             },
           )

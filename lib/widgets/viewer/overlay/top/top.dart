@@ -14,6 +14,7 @@ import 'package:aves/widgets/viewer/page_entry_builder.dart';
 import 'package:aves/widgets/viewer/view/conductor.dart';
 import 'package:aves/widgets/viewer/view/controller.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -104,10 +105,20 @@ class ViewerTopOverlay extends StatelessWidget {
             if (showInfo)
               GestureDetector(
                 onTap: () => expandedNotifier.value = !expandedNotifier.value,
-                child: BlurredRect(
+                child: BlurredRRect(
                   enabled: blurred,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(context.m3e.shapeExtraLarge),
+                    bottomRight: Radius.circular(context.m3e.shapeExtraLarge),
+                  ),
                   child: Container(
-                    color: Themes.overlayBackgroundColor(brightness: Theme.of(context).brightness, blurred: blurred),
+                    decoration: BoxDecoration(
+                      color: Themes.overlayBackgroundColor(brightness: Theme.of(context).brightness, blurred: blurred),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(context.m3e.shapeExtraLarge),
+                        bottomRight: Radius.circular(context.m3e.shapeExtraLarge),
+                      ),
+                    ),
                     child: SafeArea(
                       bottom: false,
                       minimum: EdgeInsets.only(
@@ -170,11 +181,7 @@ class ZoomLevelIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blurred = settings.enableBlurEffect;
-    final border = AvesBorder.border(
-      context,
-      width: AvesBorder.curvedBorderWidth(context),
-    );
-    final borderRadius = BorderRadius.circular(4);
+    final borderRadius = BorderRadius.circular(context.m3e.shapeExtraLarge - 8);
     final zoomScaleFactor = MediaQuery.devicePixelRatioOf(context) * 100;
 
     return IgnorePointer(
@@ -195,11 +202,7 @@ class ZoomLevelIndicator extends StatelessWidget {
               }
               final zoom = ((viewState.scale ?? 0) * zoomScaleFactor).round();
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                foregroundDecoration: BoxDecoration(
-                  border: border,
-                  borderRadius: borderRadius,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
                   '$zoom${context.l10n.lengthUnitPercent}',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(

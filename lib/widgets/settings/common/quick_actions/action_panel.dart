@@ -1,5 +1,6 @@
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/themes.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class const ActionPanel({
@@ -20,12 +21,12 @@ class const ActionPanel({
             width: highlight ? 2 : 1,
           ),
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
       ),
       margin: const EdgeInsets.all(16),
       duration: ADurations.quickActionHighlightAnimation,
       child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
         child: child,
       ),
     );

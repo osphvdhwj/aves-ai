@@ -20,6 +20,51 @@ mixin HistorySettings on SettingsAccess {
 
   set searchHistory(List<CollectionFilter> newValue) => set(SettingKeys.searchHistoryKey, newValue.map((filter) => filter.toJsonString()).toList());
 
+  // AI search history — plain-text queries, most recent first, capped.
+  static const int aiSearchHistoryMax = 30;
+
+  List<String> get aiSearchHistory => getStringList(SettingKeys.aiSearchHistoryKey) ?? [];
+
+  set aiSearchHistory(List<String> newValue) => set(SettingKeys.aiSearchHistoryKey, newValue.take(aiSearchHistoryMax).toList());
+
+  void addAiSearchHistory(String query) {
+    final q = query.trim();
+    if (q.isEmpty) return;
+    final list = aiSearchHistory
+      ..remove(q)
+      ..insert(0, q);
+    aiSearchHistory = list;
+  }
+
+  // Saved searches — user-pinned queries, deduplicated, capped.
+  static const int savedSearchesMax = 50;
+
+  List<String> get savedSearches => getStringList(SettingKeys.savedSearchesKey) ?? [];
+
+  set savedSearches(List<String> newValue) => set(SettingKeys.savedSearchesKey, newValue.take(savedSearchesMax).toList());
+
+  bool isSavedSearch(String query) {
+    final q = query.trim();
+    if (q.isEmpty) return false;
+    return savedSearches.any((s) => s == q);
+  }
+
+  void toggleSavedSearch(String query) {
+    final q = query.trim();
+    if (q.isEmpty) return;
+    final list = savedSearches.toList();
+    if (list.remove(q)) {
+      savedSearches = list;
+    } else {
+      list.insert(0, q);
+      savedSearches = list;
+    }
+  }
+
+  void removeSavedSearch(String query) {
+    savedSearches = savedSearches.where((s) => s != query).toList();
+  }
+
   List<String> get recentSettingKeys => getStringList(SettingKeys.recentSettingKeysKey) ?? [];
 
   set recentSettingKeys(List<String> newValue) => set(SettingKeys.recentSettingKeysKey, newValue);

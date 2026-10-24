@@ -3,17 +3,11 @@ import 'dart:async';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/info.dart';
 import 'package:aves/model/settings/settings.dart';
-import 'package:aves/theme/durations.dart';
-import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
-import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir_tile.dart';
 import 'package:aves/widgets/viewer/info/metadata/tv_page.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 class MetadataSectionSliver extends StatefulWidget {
   final AvesEntry entry;
@@ -31,6 +25,7 @@ class MetadataSectionSliver extends StatefulWidget {
 
 class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   final ValueNotifier<String?> _expandedDirectoryNotifier = ValueNotifier(null);
+  final ValueNotifier<bool> _isLoadingNotifier = ValueNotifier(false);
 
   AvesEntry get entry => widget.entry;
 
@@ -57,6 +52,7 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   void dispose() {
     _unregisterWidget(widget);
     _expandedDirectoryNotifier.dispose();
+    _isLoadingNotifier.dispose();
     super.dispose();
   }
 
@@ -70,10 +66,9 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
 
   @override
   Widget build(BuildContext context) {
-    // use a `Column` inside a `SliverToBoxAdapter`, instead of a `SliverList`,
-    // so that we can have the metadata-dependent `AnimationLimiter` inside the metadata section
-    // warning: placing the `AnimationLimiter` as a parent to the `ScrollView`
-    // triggers dispose & reinitialization of other sections, including heavy widgets like maps
+    // Use a `Column` inside a `SliverToBoxAdapter` instead of a `SliverList`
+    // so the tiles rebuild cleanly when the entry changes without
+    // triggering dispose/reinit of other sections (e.g. maps).
     return SliverToBoxAdapter(
       child: NotificationListener<ScrollNotification>(
         // cancel notification bubbling so that the info page
@@ -84,20 +79,33 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
           builder: (context, metadata, child) {
             Widget content;
             if (metadata.isEmpty) {
-              content = const SizedBox();
-            } else {
-              final durations = context.watch<DurationsData>();
-              content = Column(
-                children: AnimationConfiguration.toStaggeredList(
-                  duration: durations.staggeredAnimation,
-                  delay: durations.staggeredAnimationDelay * timeDilation,
-                  childAnimationBuilder: (child) => SlideAnimation(
-                    verticalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: child,
+              content = ValueListenableBuilder<bool>(
+                valueListenable: _isLoadingNotifier,
+                builder: (context, loading, child) {
+                  if (!loading) return const SizedBox();
+                  final theme = Theme.of(context);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Reading metadata…',
+                          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        ),
+                      ],
                     ),
-                  ),
-                  children: settings.useTvLayout
+                  );
+                },
+              );
+            } else {
+              content = Column(
+                children: settings.useTvLayout
                       ? [
                           const SizedBox(height: 16),
                           AvesOutlinedButton(
@@ -116,9 +124,15 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                           ),
                         ]
                       : [
-                          const SectionRow(
-                            icon: AIcons.info,
-                            padding: EdgeInsets.only(top: 24, bottom: 8),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                            child: Text(
+                              'Metadata',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
                           ),
                           ...metadata.entries.map(
                             (kv) => MetadataDirTile(
@@ -129,16 +143,10 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
                             ),
                           ),
                         ],
-                ),
               );
             }
 
-            return AnimationLimiter(
-              // we update the limiter key after fetching the metadata of a new entry,
-              // in order to restart the staggered animation of the metadata section
-              key: ValueKey(metadata.length),
-              child: content,
-            );
+            return content;
           },
         ),
       ),
@@ -151,9 +159,14 @@ class _MetadataSectionSliverState extends State<MetadataSectionSliver> {
   }
 
   Future<void> _getMetadata() async {
-    final titledDirectories = await entry.getMetadataDirectories(context);
-    if (!mounted) return;
-    metadataNotifier.value = Map.fromEntries(titledDirectories);
-    _expandedDirectoryNotifier.value = null;
+    _isLoadingNotifier.value = true;
+    try {
+      final titledDirectories = await entry.getMetadataDirectories(context);
+      if (!mounted) return;
+      metadataNotifier.value = Map.fromEntries(titledDirectories);
+      _expandedDirectoryNotifier.value = null;
+    } finally {
+      if (mounted) _isLoadingNotifier.value = false;
+    }
   }
 }

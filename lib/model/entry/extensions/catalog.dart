@@ -28,7 +28,10 @@ extension ExtraAvesEntryCatalog on AvesEntry {
         };
         await applyNewFields(fields, persist: persist);
       }
-      catalogMetadata = CatalogMetadata(id: id);
+      // preserve local metadata edits for SVG (no EXIF/XMP in the file format)
+      if (!hasLocalMetadataEdit) {
+        catalogMetadata = CatalogMetadata(id: id);
+      }
     } else {
       // pre-processing
       if (isVideo || mimeType == MimeTypes.avif) {
@@ -44,7 +47,24 @@ extension ExtraAvesEntryCatalog on AvesEntry {
       }
 
       // cataloguing on platform
-      catalogMetadata = await metadataFetchService.getCatalogMetadata(this, background: background);
+      final newMetadata = await metadataFetchService.getCatalogMetadata(this, background: background);
+      if (newMetadata != null) {
+        if (hasLocalMetadataEdit) {
+          // if this file had metadata edited locally (e.g. via fallback for unsupported formats),
+          // merge the file's fresh data with our local edits
+          catalogMetadata = newMetadata.copyWith(
+            hasLocalMetadataEdit: true,
+            xmpTitle: catalogMetadata?.xmpTitle,
+            xmpSubjects: catalogMetadata?.xmpSubjects,
+            xmpDescription: catalogMetadata?.xmpDescription,
+            rating: catalogMetadata?.rating,
+            latitude: catalogMetadata?.latitude,
+            longitude: catalogMetadata?.longitude,
+          );
+        } else {
+          catalogMetadata = newMetadata;
+        }
+      }
 
       // post-processing
       if ((isVideo && (catalogMetadata?.dateMillis ?? 0) == 0) || (mimeType == MimeTypes.avif && durationMillis != null)) {

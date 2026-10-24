@@ -1,5 +1,6 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/themes.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/extensions/theme.dart';
 import 'package:aves/widgets/common/fx/blurred.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
@@ -69,55 +70,59 @@ class _OverlayButtonState extends State<OverlayButton> {
       blurred: blurred,
     );
 
-    return Theme(
-      data: theme.copyWith(
-        colorScheme: colorScheme.copyWith(
-          onSurfaceVariant: colorScheme.onSurface,
+    return PressableScale(
+      passthrough: true,
+      scale: 0.9,
+      child: Theme(
+        data: theme.copyWith(
+          colorScheme: colorScheme.copyWith(
+            onSurfaceVariant: colorScheme.onSurface,
+          ),
         ),
-      ),
-      child: ScaleTransition(
-        scale: widget.scale,
-        child: ValueListenableBuilder<bool>(
-          valueListenable: _focusedNotifier,
-          builder: (context, focused, child) {
-            final border = AvesBorder.border(
-              context,
-              width: AvesBorder.curvedBorderWidth(context) * (focused ? 3 : 1),
-            );
-            return borderRadius != null
-                ? BlurredRRect(
-                    enabled: blurred,
-                    borderRadius: borderRadius,
-                    child: Material(
-                      type: MaterialType.button,
+        child: ScaleTransition(
+          scale: widget.scale,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _focusedNotifier,
+            builder: (context, focused, child) {
+              final border = AvesBorder.border(
+                context,
+                width: AvesBorder.curvedBorderWidth(context) * (focused ? 3 : 1),
+              );
+              return borderRadius != null
+                  ? BlurredRRect(
+                      enabled: blurred,
                       borderRadius: borderRadius,
-                      color: overlayBackground,
-                      child: AnimatedContainer(
-                        foregroundDecoration: BoxDecoration(
-                          border: border,
-                          borderRadius: borderRadius,
+                      child: Material(
+                        type: MaterialType.button,
+                        borderRadius: borderRadius,
+                        color: overlayBackground,
+                        child: AnimatedContainer(
+                          foregroundDecoration: BoxDecoration(
+                            border: border,
+                            borderRadius: borderRadius,
+                          ),
+                          duration: const Duration(milliseconds: 200),
+                          child: widget.child,
                         ),
-                        duration: const Duration(milliseconds: 200),
-                        child: widget.child,
                       ),
-                    ),
-                  )
-                : BlurredOval(
-                    enabled: blurred,
-                    child: Material(
-                      type: MaterialType.circle,
-                      color: overlayBackground,
-                      child: AnimatedContainer(
-                        foregroundDecoration: BoxDecoration(
-                          border: border,
-                          shape: BoxShape.circle,
+                    )
+                  : BlurredOval(
+                      enabled: blurred,
+                      child: Material(
+                        type: MaterialType.circle,
+                        color: overlayBackground,
+                        child: AnimatedContainer(
+                          foregroundDecoration: BoxDecoration(
+                            border: border,
+                            shape: BoxShape.circle,
+                          ),
+                          duration: const Duration(milliseconds: 200),
+                          child: widget.child,
                         ),
-                        duration: const Duration(milliseconds: 200),
-                        child: widget.child,
                       ),
-                    ),
-                  );
-          },
+                    );
+            },
+          ),
         ),
       ),
     );
@@ -168,25 +173,29 @@ class OverlayTextButton extends StatelessWidget {
     final blurred = settings.enableBlurEffect;
     final theme = Theme.of(context);
     final foreground = theme.colorScheme.onSurface;
-    return BlurredRRect.all(
-      enabled: blurred,
-      borderRadius: _borderRadius,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all<Color>(Themes.overlayBackgroundColor(brightness: theme.brightness, blurred: blurred)),
-          foregroundColor: WidgetStateProperty.all<Color>(foreground),
-          overlayColor: theme.isDark ? WidgetStateProperty.all<Color>(Colors.white.withValues(alpha: .12)) : null,
-          minimumSize: _minSize,
-          iconColor: WidgetStateProperty.all<Color>(foreground),
-          side: WidgetStateProperty.all<BorderSide>(AvesBorder.curvedSide(context)),
-          shape: WidgetStateProperty.all<OutlinedBorder>(
-            const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(_borderRadius)),
+    return PressableScale(
+      passthrough: true,
+      scale: 0.94,
+      child: BlurredRRect.all(
+        enabled: blurred,
+        borderRadius: _borderRadius,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all<Color>(Themes.overlayBackgroundColor(brightness: theme.brightness, blurred: blurred)),
+            foregroundColor: WidgetStateProperty.all<Color>(foreground),
+            overlayColor: theme.isDark ? WidgetStateProperty.all<Color>(Colors.white.withValues(alpha: .12)) : null,
+            minimumSize: _minSize,
+            iconColor: WidgetStateProperty.all<Color>(foreground),
+            side: WidgetStateProperty.all<BorderSide>(AvesBorder.curvedSide(context)),
+            shape: WidgetStateProperty.all<OutlinedBorder>(
+              const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(_borderRadius)),
+              ),
             ),
           ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

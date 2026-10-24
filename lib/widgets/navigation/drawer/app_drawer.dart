@@ -15,10 +15,12 @@ import 'package:aves/theme/icons.dart';
 import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/utils/file_utils.dart';
 import 'package:aves/widgets/about/about_page.dart';
+import 'package:aves/widgets/ai/ai_chat_page.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/basic/text/outlined.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/extensions/media_query.dart';
+import 'package:aves/widgets/common/fx/blurred.dart';
 import 'package:aves/widgets/common/identity/aves_logo.dart';
 import 'package:aves/widgets/debug/app_debug_page.dart';
 import 'package:aves/widgets/explorer/explorer_page.dart';
@@ -35,6 +37,8 @@ import 'package:aves/widgets/settings/settings_page.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -124,6 +128,10 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
     final drawerItems = <Widget>[
       _buildHeader(context),
       _buildHomeLink(),
+      const PageNavTile(
+        key: Key('drawer-ai-chat'),
+        navItem: AvesNavItem(route: AiChatPage.routeName),
+      ),
       ..._buildTypeLinks(),
       _buildAlbumLinks(context),
       ..._buildPageLinks(context),
@@ -135,33 +143,73 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
         const Divider(),
         debugTile,
       ],
+      const Divider(),
+      _buildThemeSwitcher(context),
     ];
 
     return Drawer(
-      child: ListTileTheme.merge(
-        selectedColor: Theme.of(context).colorScheme.primary,
-        horizontalTitleGap: 20,
-        visualDensity: VisualDensity.comfortable,
-        child: Selector<MediaQueryData, double>(
-          selector: (context, mq) => mq.effectiveBottomPadding,
-          builder: (context, mqPaddingBottom, child) {
-            final textScaler = MediaQuery.textScalerOf(context);
-            final iconTheme = IconTheme.of(context);
-            return SingleChildScrollView(
-              controller: _scrollController,
-              // key is expected by test driver
-              key: const Key('drawer-scrollview'),
-              padding: EdgeInsets.only(bottom: mqPaddingBottom),
-              child: IconTheme(
-                data: iconTheme.copyWith(
-                  size: textScaler.scale(iconTheme.size!),
-                ),
-                child: Column(
-                  children: drawerItems,
+      width: MediaQuery.sizeOf(context).width * 0.75, // narrower drawer
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      shape: const RoundedRectangleBorder(),
+      child: SafeArea(
+        right: false,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: BlurredRRect(
+            enabled: settings.enableBlurEffect,
+            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
+            child: Material(
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
+              clipBehavior: Clip.antiAlias,
+              child: ListTileTheme.merge(
+                selectedColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                textColor: Theme.of(context).colorScheme.onSurface,
+                iconColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                horizontalTitleGap: 16,
+                visualDensity: VisualDensity.comfortable,
+                child: Selector<MediaQueryData, double>(
+                  selector: (context, mq) => mq.effectiveBottomPadding,
+                  builder: (context, mqPaddingBottom, child) {
+                    final textScaler = MediaQuery.textScalerOf(context);
+                    final iconTheme = IconTheme.of(context);
+                    return SingleChildScrollView(
+                      controller: _scrollController,
+                      key: const Key('drawer-scrollview'),
+                      padding: EdgeInsets.only(top: 16, bottom: 16 + mqPaddingBottom),
+                      child: IconTheme(
+                        data: iconTheme.copyWith(
+                          size: textScaler.scale(iconTheme.size!),
+                        ),
+                        child: Column(
+                          children: drawerItems.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final widget = entry.value;
+                            return TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: Duration(milliseconds: 250 + (index * 40)),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: value,
+                                  child: Transform.translate(
+                                    offset: Offset(-24 * (1 - value), 0),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: widget,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -169,6 +217,7 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
 
   Widget _buildHeader(BuildContext context) {
     final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
 
     Future<void> goTo(String routeName, WidgetBuilder pageBuilder) async {
       Navigator.maybeOf(context)?.pop();
@@ -181,26 +230,20 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
       );
     }
 
-    final colorScheme = Theme.of(context).colorScheme;
-    final onPrimary = colorScheme.onPrimary;
-
     final drawerButtonStyle = ButtonStyle(
       padding: WidgetStateProperty.all(const EdgeInsetsDirectional.only(start: 12, end: 16)),
+      foregroundColor: WidgetStateProperty.all<Color>(colorScheme.onSurfaceVariant),
+      overlayColor: WidgetStateProperty.all<Color>(colorScheme.onSurface.withValues(alpha: .08)),
+      iconColor: WidgetStateProperty.all<Color>(colorScheme.onSurfaceVariant),
+      side: WidgetStateProperty.all<BorderSide>(BorderSide(width: 1, color: colorScheme.outlineVariant)),
     );
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: colorScheme.primary,
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       child: SafeArea(
         bottom: false,
         child: OutlinedButtonTheme(
-          data: OutlinedButtonThemeData(
-            style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all<Color>(onPrimary),
-              overlayColor: WidgetStateProperty.all<Color>(onPrimary.withValues(alpha: .12)),
-              iconColor: WidgetStateProperty.all<Color>(onPrimary),
-              side: WidgetStateProperty.all<BorderSide>(BorderSide(width: 1, color: onPrimary.withValues(alpha: .24))),
-            ),
-          ),
+          data: OutlinedButtonThemeData(style: drawerButtonStyle),
           child: Column(
             crossAxisAlignment: .start,
             children: [
@@ -217,11 +260,10 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                         TextSpan(
                           text: l10n.appName,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 38,
-                            fontWeight: .w300,
-                            letterSpacing: canHaveLetterSpacing(context.localeName) ? 1 : 0,
-                            fontFeatures: const [FontFeature.enable('smcp')],
+                            color: colorScheme.onSurface,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ],
@@ -229,23 +271,19 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 children: [
                   OutlinedButton.icon(
-                    // key is expected by test driver
                     key: const Key('drawer-about-button'),
                     onPressed: () => goTo(AboutPage.routeName, (_) => const AboutPage()),
-                    style: drawerButtonStyle,
                     icon: const Icon(AIcons.info),
                     label: Text(l10n.drawerAboutButton),
                   ),
                   OutlinedButton.icon(
-                    // key is expected by test driver
                     key: const Key('drawer-settings-button'),
                     onPressed: () => goTo(SettingsPage.routeName, (_) => const SettingsPage()),
-                    style: drawerButtonStyle,
                     icon: const Icon(AIcons.settings),
                     label: Text(l10n.drawerSettingsButton),
                   ),
@@ -262,7 +300,7 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                   final profileSwitchingLabel = flags[2] as String;
                   if ((!canRequestInteractAcrossProfiles && !canSwitchProfile) || profileSwitchingLabel.isEmpty) return const SizedBox();
 
-                  return OutlinedButton(
+                  return OutlinedButton.icon(
                     onPressed: () async {
                       if (canSwitchProfile) {
                         await appProfileService.switchProfile();
@@ -270,11 +308,11 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
                         _profileSwitchPermissionRequested = await appProfileService.requestInteractAcrossProfiles();
                       }
                     },
-                    child: Text(profileSwitchingLabel),
+                    icon: const Icon(Icons.switch_account),
+                    label: Text(profileSwitchingLabel),
                   );
                 },
               ),
-              const SizedBox(height: 8),
             ],
           ),
         ),
@@ -426,4 +464,50 @@ class _AppDrawerState extends State<AppDrawer> with WidgetsBindingObserver {
     key: Key('drawer-debug'),
     navItem: AvesNavItem(route: AppDebugPage.routeName),
   );
+
+  Widget _buildThemeSwitcher(BuildContext context) {
+    final theme = settings.themeBrightness;
+    final colors = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildThemeBtn(context, AvesThemeBrightness.system, Symbols.brightness_auto, theme),
+            _buildThemeBtn(context, AvesThemeBrightness.light, Symbols.light_mode, theme),
+            _buildThemeBtn(context, AvesThemeBrightness.dark, Symbols.dark_mode, theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeBtn(BuildContext context, AvesThemeBrightness value, IconData icon, AvesThemeBrightness current) {
+    final selected = value == current;
+    final colors = Theme.of(context).colorScheme;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => settings.themeBrightness = value,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: selected ? colors.secondaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(context.m3e.shapeLarge),
+          ),
+          child: Icon(
+            icon,
+            color: selected ? colors.onSecondaryContainer : colors.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
 }

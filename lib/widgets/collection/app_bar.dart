@@ -5,8 +5,6 @@ import 'package:aves/app_mode.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/container/dynamic_album.dart';
 import 'package:aves/model/filters/container/set_and.dart';
-import 'package:aves/model/filters/filters.dart';
-import 'package:aves/model/filters/query.dart';
 import 'package:aves/model/filters/trash.dart';
 import 'package:aves/model/query.dart';
 import 'package:aves/model/selection.dart';
@@ -18,9 +16,10 @@ import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/aves_app.dart';
-import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/collection/entry_set_action_delegate.dart';
 import 'package:aves/widgets/collection/filter_bar.dart';
+import 'package:aves/widgets/collection/collection_search_bar.dart';
+import 'package:aves/widgets/collection/collection_quick_filters.dart';
 import 'package:aves/widgets/collection/layout_bar.dart';
 import 'package:aves/widgets/collection/query_bar.dart';
 import 'package:aves/widgets/common/action_controls/quick_choosers/move_button.dart';
@@ -46,6 +45,7 @@ import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -98,9 +98,7 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
 
   CollectionSource get source => collection.source;
 
-  Set<CollectionFilter> get visibleFilters => collection.filters.where((v) => !(v is QueryFilter && v.live) && v is! TrashFilter).toSet();
-
-  bool get showFilterBar => visibleFilters.isNotEmpty;
+  bool get showFilterBar => collection.visibleFilters.isNotEmpty;
 
   static const _trashSelectionQuickActions = <EntrySetAction>[
     .delete,
@@ -216,8 +214,16 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                         ),
                         title: _buildAppBarTitle(isSelecting),
                         actions: (context, maxWidth) => useTvLayout ? [] : _buildActions(context, selection, maxWidth),
-                        bottom: Column(
-                          children: [
+                        bottom: PreferredSize(
+                          preferredSize: Size.fromHeight(
+                            CollectionSearchBar.preferredHeight +
+                            CollectionQuickFilters.preferredHeight +
+                            (showFilterBar ? FilterBar.preferredHeight : 0.0) +
+                            (useTvLayout ? CaptionedButton.getTelevisionButtonHeight(context) : 0.0),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                             if (useTvLayout)
                               SizedBox(
                                 height: CaptionedButton.getTelevisionButtonHeight(context),
@@ -227,6 +233,14 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                                   children: _buildActions(context, selection, double.infinity),
                                 ),
                               ),
+                            SizedBox(
+                              height: CollectionSearchBar.preferredHeight,
+                              child: CollectionSearchBar(onTap: _goToSearch),
+                            ),
+                            SizedBox(
+                              height: CollectionQuickFilters.preferredHeight,
+                              child: CollectionQuickFilters(collection: collection),
+                            ),
                             if (showFilterBar)
                               NotificationListener(
                                 onNotification: (notification) {
@@ -246,7 +260,7 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                                   return false;
                                 },
                                 child: FilterBar(
-                                  filters: visibleFilters,
+                                  filters: collection.visibleFilters,
                                   interactive: true,
                                   onTap: onFilterTap,
                                   onRemove: onFilterTap,
@@ -260,8 +274,9 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                               ),
                           ],
                         ),
-                        transitionKey: isSelecting,
-                      );
+                      ),
+                      transitionKey: isSelecting,
+                    );
                     },
                   );
                 },
@@ -285,6 +300,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     if (settings.useTvLayout) {
       height += CaptionedButton.getTelevisionButtonHeight(context);
     }
+    height += CollectionSearchBar.preferredHeight;
+    height += CollectionQuickFilters.preferredHeight;
     if (showFilterBar) {
       height += FilterBar.preferredHeight;
     }
@@ -438,14 +455,14 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     return [
       if (fabAction != null) ...[
         toCaptionedButton(fabAction),
-        const Align(
+        Align(
           alignment: .topCenter,
           child: SizedBox(
             width: 16,
             height: kMinInteractiveDimension,
             child: Divider(
               thickness: 4,
-              radius: BorderRadius.all(Radius.circular(123)),
+              radius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraSmall)),
             ),
           ),
         ),
@@ -474,8 +491,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     final selectedItemCount = selection.selectedItemCount;
     final hasSelection = selectedItemCount > 0;
 
-    final browsingQuickActions = settings.collectionBrowsingQuickActions;
-    final selectionQuickActions = isTrash ? _trashSelectionQuickActions : settings.collectionSelectionQuickActions;
+    final browsingQuickActions = settings.collectionBrowsingQuickActions.where((a) => a != EntrySetAction.searchCollection);
+    final selectionQuickActions = (isTrash ? _trashSelectionQuickActions : settings.collectionSelectionQuickActions).where((a) => a != EntrySetAction.searchCollection);
     final quickActions = (isSelecting ? selectionQuickActions : browsingQuickActions).take(max(0, availableCount - 1)).toList();
     final quickActionButtons = quickActions
         .where(isVisible)
@@ -705,8 +722,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     Widget buildItem(EntrySetAction action) => Expanded(
       child: Material(
         color: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
         ),
         clipBehavior: Clip.antiAlias,
         child: PopupMenuItem(
@@ -833,11 +850,12 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
   }
 
   Future<void> _changeLayout() async {
+    final filters = collection.visibleFilters;
     final initialValue = (
-      settings.effectiveCollectionTileLayout,
-      settings.collectionSortFactor,
-      settings.collectionSectionFactor,
-      settings.collectionSortReverse,
+      settings.getStoredCollectionTileLayout(filters),
+      settings.getStoredCollectionSortFactor(filters),
+      settings.getStoredCollectionSectionFactor(filters),
+      settings.getStoredCollectionSortReverse(filters),
     );
     final extentController = context.read<TileExtentController>();
     final value = await showAvesDialog<(TileLayout, SortFactor, EntrySectionFactor, bool)>(
@@ -858,10 +876,10 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     // wait for the dialog to hide
     await Future.delayed(ADurations.dialogTransitionLoose * timeDilation);
     if (value != null && initialValue != value) {
-      settings.setTileLayout(CollectionPage.routeName, value.$1);
-      settings.collectionSortFactor = value.$2;
-      settings.collectionSectionFactor = value.$3;
-      settings.collectionSortReverse = value.$4;
+      settings.setStoredCollectionTileLayout(filters, value.$1);
+      settings.setStoredCollectionSortFactor(filters, value.$2);
+      settings.setStoredCollectionSectionFactor(filters, value.$3);
+      settings.setStoredCollectionSortReverse(filters, value.$4);
     }
   }
 

@@ -8,7 +8,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Kotlin source package name — stays as-is, used for class references
 val packageName = "deckers.thibault.aves"
+// Android applicationId — what the OS sees as the package name
+val appId = "com.harry.avesplus"
 
 // Keys
 
@@ -39,7 +42,12 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "deckers.thibault.aves"
     compileSdk = 37
-    ndkVersion = flutter.ndkVersion
+    // Pin to a specific NDK that ubuntu-latest runners have preinstalled.
+    // Flutter 3.47.6 defaults to NDK 28.2, which the runner has to
+    // download (~1 GB) and which was consistently getting corrupted.
+    // NDK 27.0.12077973 has been preinstalled on ubuntu-latest since
+    // 2024 and none of Aves + plugins require NDK 28 features.
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         // enable support for the new language APIs on older devices
@@ -60,7 +68,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = packageName
+        applicationId = appId
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -78,7 +86,10 @@ android {
 
     signingConfigs {
         val storeFilePath = keystoreProperties["storeFile"] as String?
-        if (storeFilePath != null) {
+        // Treat empty string the same as null. GitHub Actions passes empty
+        // env vars when secrets are missing, which would otherwise make
+        // `file("")` throw during Gradle config-time.
+        if (!storeFilePath.isNullOrEmpty()) {
             println("Create signing config for release using file=$storeFilePath")
             create("release") {
                 keyAlias = keystoreProperties["keyAlias"] as String
@@ -86,6 +97,8 @@ android {
                 storeFile = file(storeFilePath)
                 storePassword = keystoreProperties["storePassword"] as String
             }
+        } else {
+            println("No signing keystore configured — release builds will use the debug signing config.")
         }
     }
 
@@ -114,6 +127,7 @@ android {
     }
 
     buildFeatures {
+        aidl = true
         buildConfig = true
         resValues = true
     }
@@ -251,12 +265,4 @@ dependencies {
     ksp(libs.glideKsp)
 
     compileOnly(rootProject.findProject(":streams_channel")!!)
-}
-
-if (rootProject.extra["aves_useCrashlytics"] as Boolean) {
-    println("Building flavor with Crashlytics plugin")
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
-} else {
-    println("Building flavor without reporting plugin")
 }

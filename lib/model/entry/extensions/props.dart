@@ -141,15 +141,17 @@ extension ExtraAvesEntryProps on AvesEntry {
 
   bool get canEdit => !settings.isReadOnly && path != null && !trashed && (_isMediaStoreContent || _isVaultContent);
 
-  bool get canEditDate => canEdit && (isExifEditionSupported || isXmpEditionSupported);
+  // Modified to support editing metadata for ALL media types.
+  // The backend service will attempt the write and throw an error if the format is truly unsupported.
+  bool get canEditDate => canEdit;
 
-  bool get canEditLocation => canEdit && (isExifEditionSupported || mimeType == MimeTypes.mp4);
+  bool get canEditLocation => canEdit;
 
-  bool get canEditTitleDescription => canEdit && isXmpEditionSupported;
+  bool get canEditTitleDescription => canEdit;
 
-  bool get canEditRating => canEdit && isXmpEditionSupported;
+  bool get canEditRating => canEdit;
 
-  bool get canEditTags => canEdit && isXmpEditionSupported;
+  bool get canEditTags => canEdit;
 
   bool get canRotate => canEdit && (isExifEditionSupported || mimeType == MimeTypes.mp4);
 

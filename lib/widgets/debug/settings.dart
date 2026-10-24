@@ -1,4 +1,5 @@
 import 'package:aves/model/settings/settings.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
 import 'package:aves/widgets/common/identity/highlight_title.dart';
@@ -7,7 +8,10 @@ import 'package:aves/widgets/filter_grids/countries_page.dart';
 import 'package:aves/widgets/filter_grids/places_page.dart';
 import 'package:aves/widgets/filter_grids/tags_page.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
+import 'package:flutter/services.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:provider/provider.dart';
 
 class DebugSettingsSection extends StatefulWidget {
@@ -28,6 +32,14 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
         return AvesExpansionTile(
           title: 'Settings',
           children: [
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: HighlightTitle(title: 'AI Companion'),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: _AiDiagnostics(),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: ElevatedButton(
@@ -43,14 +55,15 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
               ),
             ),
             SwitchListTile(
-              value: settings.hasAcceptedTerms,
-              onChanged: (v) => settings.hasAcceptedTerms = v,
-              title: const Text('hasAcceptedTerms'),
-            ),
-            SwitchListTile(
               value: settings.canUseAnalysisService,
               onChanged: (v) => settings.canUseAnalysisService = v,
               title: const Text('canUseAnalysisService'),
+            ),
+            SwitchListTile(
+              value: settings.aiSearchEnabled,
+              onChanged: (v) => settings.aiSearchEnabled = v,
+              title: const Text('aiSearchEnabled'),
+              subtitle: const Text('replace search page with AI surface'),
             ),
             Padding(
               padding: const EdgeInsets.all(8),
@@ -162,4 +175,194 @@ class _DebugSettingsSectionState extends State<DebugSettingsSection> with Automa
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _AiDiagnostics extends StatefulWidget {
+  const _AiDiagnostics();
+
+  @override
+  State<_AiDiagnostics> createState() => _AiDiagnosticsState();
+}
+
+class _AiDiagnosticsState extends State<_AiDiagnostics> {
+  late Future<AiHealth> _healthFuture;
+  final TextEditingController _cmd = TextEditingController(text: '@ocr');
+  String _lastResult = '';
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _healthFuture = aiService.health();
+  }
+
+  @override
+  void dispose() {
+    _cmd.dispose();
+    super.dispose();
+  }
+
+  Future<void> _recheck() async {
+    setState(() {
+      _healthFuture = aiService.health(forceRefresh: true);
+    });
+  }
+
+  Future<void> _run() async {
+    if (_busy) return;
+    final text = _cmd.text.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _busy = true;
+      _lastResult = 'running...';
+    });
+    try {
+      final reply = await aiService.chat(text);
+      if (!mounted) return;
+      final buf = StringBuffer()
+        ..writeln('text:  ${reply.text}')
+        ..writeln('ids:   ${reply.entryIds}')
+        ..writeln('error: ${reply.error}')
+        ..writeln('code:  ${reply.errorCode}');
+      setState(() => _lastResult = buf.toString());
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _lastResult = 'threw: $e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final containerDecoration = BoxDecoration(
+      color: colors.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+          decoration: containerDecoration,
+          child: FutureBuilder<AiHealth>(
+            future: _healthFuture,
+            builder: (context, snap) {
+              if (snap.connectionState != ConnectionState.done) {
+                return const Text('querying companion...');
+              }
+              final h = snap.data;
+              if (h == null) return const Text('no result');
+              final healthText = [
+                'installed:    ${h.installed}',
+                'connected:    ${h.connected}',
+                'apiVersion:   ${h.apiVersion}',
+                'package:      ${h.companionPackage ?? '-'}',
+                'capabilities: ${h.capabilities.isEmpty ? '-' : h.capabilities.join(', ')}',
+                if (h.error != null) 'error:        ${h.error}',
+              ].join('\n');
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: InfoRowGroup(
+                        info: {
+                          'installed': '${h.installed}',
+                          'connected': '${h.connected}',
+                          'apiVersion': '${h.apiVersion}',
+                          'package': h.companionPackage ?? '-',
+                          'capabilities': h.capabilities.isEmpty ? '-' : h.capabilities.join(', '),
+                          if (h.error != null) 'error': h.error!,
+                        },
+                      )),
+                      IconButton(
+                        tooltip: 'Copy health',
+                        icon: const Icon(Symbols.content_copy, size: 18),
+                        onPressed: () async {
+                          await Clipboard.setData(ClipboardData(text: healthText));
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Health copied'), duration: Duration(seconds: 1)),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        tooltip: 'Recheck',
+                        icon: const Icon(Symbols.refresh, size: 18),
+                        onPressed: _recheck,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          decoration: containerDecoration,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(
+                  'Chat probe (no entry media attached)',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+              TextField(
+                controller: _cmd,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                decoration: const InputDecoration(
+                  hintText: '@ocr, /find dog, ...',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _busy ? null : _run,
+                    child: Text(_busy ? 'running...' : 'Run'),
+                  ),
+                  const Spacer(),
+                  if (_lastResult.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: _lastResult));
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Result copied'), duration: Duration(seconds: 1)),
+                        );
+                      },
+                      icon: const Icon(Symbols.content_copy, size: 16),
+                      label: const Text('Copy'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+                ),
+                child: SelectableText(
+                  _lastResult.isEmpty ? '(no result yet)' : _lastResult,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -1,9 +1,7 @@
-import 'dart:math';
 
 import 'package:aves/model/settings/settings.dart';
-import 'package:aves/theme/durations.dart';
-import 'package:aves/widgets/common/extensions/media_query.dart';
 import 'package:aves/widgets/settings/accessibility/accessibility.dart';
+import 'package:aves/widgets/settings/ai/ai.dart';
 import 'package:aves/widgets/settings/display/display.dart';
 import 'package:aves/widgets/settings/language/language.dart';
 import 'package:aves/widgets/settings/navigation/navigation.dart';
@@ -14,22 +12,28 @@ import 'package:aves/widgets/settings/settings_tv_page.dart';
 import 'package:aves/widgets/settings/thumbnails/thumbnails.dart';
 import 'package:aves/widgets/settings/video/video.dart';
 import 'package:aves/widgets/settings/viewer/viewer.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/settings/settings_search_page_route.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   static const routeName = '/settings';
 
   static final List<SettingsSection> sections = [
-    NavigationSection(),
+    // Personalization first — what users open Settings for most often.
+    DisplaySection(),
     ThumbnailsSection(),
     ViewerSection(),
     VideoSection(),
-    PrivacySection(),
+    // AI is a headline feature of Aves +, so it sits high.
+    AiSection(),
+    // Behaviour and navigation.
+    NavigationSection(),
     AccessibilitySection(),
-    DisplaySection(),
+    // Rarely-changed items at the bottom.
+    PrivacySection(),
     LanguageSection(),
   ];
 
@@ -63,25 +67,74 @@ class SettingsListView extends StatelessWidget {
           bodyMedium: const TextStyle(fontSize: 12),
         ),
       ),
-      child: Selector<MediaQueryData, double>(
-        selector: (context, mq) => max(mq.effectiveBottomPadding, mq.systemGestureInsets.bottom),
-        builder: (context, mqPaddingBottom, child) {
-          final durations = context.watch<DurationsData>();
-          return ListView(
-            padding: const EdgeInsets.all(8) + EdgeInsets.only(bottom: mqPaddingBottom),
-            children: AnimationConfiguration.toStaggeredList(
-              duration: durations.staggeredAnimation,
-              delay: durations.staggeredAnimationDelay * timeDilation,
-              childAnimationBuilder: (child) => SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: child,
-                ),
-              ),
-              children: children,
+      child: ListView(
+        padding: const EdgeInsets.only(top: 8, bottom: 32),
+        children: [
+          _SettingsHeader(),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Settings',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.4,
+              color: colors.onSurface,
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Customize how Aves + looks and behaves.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Inline search field. Modern 2026 settings pages put search
+          // in the header rather than only in the app bar. Tapping it
+          // opens the full settings search route.
+          PressableScale(
+            onTap: () {
+              Navigator.maybeOf(context)?.push(
+                SettingsSearchPageRoute(context: context),
+              );
+            },
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
+              ),
+              child: Row(
+                children: [
+                  Icon(Symbols.search, color: colors.onSurfaceVariant, size: 20),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Search settings',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

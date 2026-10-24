@@ -354,6 +354,8 @@ class AvesEntry with AvesEntryBase {
 
   CatalogMetadata? get catalogMetadata => _catalogMetadata;
 
+  bool get hasLocalMetadataEdit => _catalogMetadata?.hasLocalMetadataEdit ?? false;
+
   set catalogMetadata(CatalogMetadata? newMetadata) {
     final oldMimeType = mimeType;
     final oldDateModifiedMillis = dateModifiedMillis;

@@ -1,101 +1,56 @@
 import 'package:aves/model/device.dart';
-import 'package:aves/ref/locales.dart';
-import 'package:aves/theme/icons.dart';
-import 'package:aves/widgets/about/policy_page.dart';
-import 'package:aves/widgets/common/basic/link_chip.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/identity/aves_logo.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AppReference extends StatelessWidget {
-  static const avesGithub = 'https://github.com/deckerst/aves';
-  static const avesFaq = '$avesGithub/wiki/FAQ';
+  // Aves + uses this fork's own repository for any external references.
+  // No upstream deckerst links anywhere.
+  static const avesGithub = 'https://github.com/osphvdhwj/aves-ai';
+  static const avesFaq = '';
+
+  /// About page shows only app name, version, data usage, and licenses.
+  /// No external link chips on any layout.
+  static List<Widget> buildLinks(BuildContext context) => const [];
 
   const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          _buildAvesLine(context),
-          const SizedBox(height: 16),
-          Wrap(
-            alignment: .center,
-            spacing: 16,
-            crossAxisAlignment: .center,
-            children: AppReference.buildLinks(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvesLine(BuildContext context) {
-    final localeName = context.localeName;
-    final textScaler = MediaQuery.textScalerOf(context);
-    return Row(
-      mainAxisSize: .min,
-      children: [
-        AvesLogo(
-          size: textScaler.scale(_getAppTitleStyle(localeName).fontSize!) * 1.3,
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      child: Center(
+        child: Column(
+          children: [
+            const AvesLogo(size: 96),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.appName,
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: colors.secondaryContainer,
+                borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+              ),
+              child: Text(
+                device.packageVersion,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onSecondaryContainer,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        Text(
-          context.l10n.appName,
-          style: _getAppTitleStyle(localeName),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          device.packageVersion,
-          style: _getAppTitleStyle(localeName),
-        ),
-      ],
-    );
-  }
-
-  TextStyle _getAppTitleStyle(String localeName) => TextStyle(
-    fontSize: 20,
-    fontWeight: .normal,
-    letterSpacing: canHaveLetterSpacing(localeName) ? 1 : 0,
-    fontFeatures: const [FontFeature.enable('smcp')],
-  );
-
-  static List<Widget> buildLinks(BuildContext context) {
-    final l10n = context.l10n;
-    return [
-      const LinkChip(
-        leading: Icon(
-          AIcons.github,
-          size: 24,
-        ),
-        text: 'GitHub',
-        urlString: AppReference.avesGithub,
-      ),
-      LinkChip(
-        leading: const Icon(
-          AIcons.legal,
-          size: 22,
-        ),
-        text: l10n.aboutLinkLicense,
-        urlString: '${AppReference.avesGithub}/blob/main/LICENSE',
-      ),
-      LinkChip(
-        leading: const Icon(
-          AIcons.privacy,
-          size: 22,
-        ),
-        text: l10n.aboutLinkPolicy,
-        onTap: () => _goToPolicyPage(context),
-      ),
-    ];
-  }
-
-  static void _goToPolicyPage(BuildContext context) {
-    Navigator.maybeOf(context)?.push(
-      MaterialPageRoute(
-        settings: const RouteSettings(name: PolicyPage.routeName),
-        builder: (context) => const PolicyPage(),
       ),
     );
   }

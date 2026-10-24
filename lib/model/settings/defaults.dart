@@ -17,6 +17,8 @@ class SettingsDefaults {
   // app
   static const hasAcceptedTerms = false;
   static const canUseAnalysisService = true;
+  static const aiSearchEnabled = false;
+  static const showInfoThumbnail = true;
   static const isInstalledAppAccessAllowed = false;
   static const isErrorReportingAllowed = false;
   static const calendar = ACalendar.gregorian;
@@ -100,6 +102,7 @@ class SettingsDefaults {
 
   // info
   static const double infoMapZoom = 12.0;
+  static const bool showGooglePhotosBackup = true;
   static const coordinateFormat = CoordinateFormat.dms;
   static const unitSystem = UnitSystem.metric;
 

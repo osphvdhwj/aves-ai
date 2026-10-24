@@ -1,7 +1,11 @@
 import 'dart:async';
 
-import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
-import 'package:flutter/widgets.dart';
+import 'package:aves/widgets/common/basic/list_tiles/common.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/settings/settings_section_page.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract class SettingsSection {
   String get key;
@@ -12,27 +16,41 @@ abstract class SettingsSection {
 
   Future<List<SettingsTile>> tiles(BuildContext context);
 
-  Widget build(BuildContext sectionContext, ValueNotifier<String?> expandedNotifier) {
-    return FutureBuilder<List<SettingsTile>>(
-      future: tiles(sectionContext),
-      builder: (tileContext, snapshot) {
-        final tiles = snapshot.data;
-        if (tiles == null) return const SizedBox();
-
-        return AvesExpansionTile(
-          // key is expected by test driver
-          key: Key('section-$key'),
-          // use a fixed value instead of the title to identify this expansion tile
-          // so that the tile state is kept when the language is modified
-          value: key,
-          leading: icon(tileContext),
-          title: title(tileContext),
-          expandedNotifier: expandedNotifier,
-          showHighlight: false,
-          // reuse section context so that dialogs opened from tiles have the right text theme
-          children: tiles.map((v) => v.build(sectionContext)).toList(),
-        );
-      },
+  /// Builds the row that appears on the main Settings page.
+  /// This is now a navigation tile, not an expansion tile.
+  Widget build(BuildContext sectionContext) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: PressableScale(
+        onTap: () {
+          Navigator.of(sectionContext).push(
+            MaterialPageRoute(
+              settings: RouteSettings(name: '/settings/$key'),
+              builder: (context) => SettingsSectionPage(section: this),
+            ),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(sectionContext).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(sectionContext.m3e.shapeExtraLarge - 4),
+          ),
+          child: ListTile(
+            leading: icon(sectionContext),
+            title: Text(
+              title(sectionContext),
+              style: Theme.of(sectionContext).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: Icon(
+              Symbols.chevron_right,
+              color: Theme.of(sectionContext).colorScheme.onSurfaceVariant,
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(sectionContext.m3e.shapeExtraLarge - 4)),
+          ),
+        ),
+      ),
     );
   }
 }

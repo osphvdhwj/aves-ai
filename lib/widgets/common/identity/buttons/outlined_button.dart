@@ -1,3 +1,4 @@
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AvesOutlinedButton extends StatelessWidget {
@@ -27,7 +28,7 @@ class AvesOutlinedButton extends StatelessWidget {
         );
       }),
     );
-    return icon != null
+    final button = icon != null
         ? OutlinedButton.icon(
             onPressed: onPressed,
             style: style,
@@ -39,5 +40,10 @@ class AvesOutlinedButton extends StatelessWidget {
             style: style,
             child: Text(label),
           );
+    return PressableScale(
+      passthrough: true,
+      scale: 0.94,
+      child: button,
+    );
   }
 }

@@ -133,7 +133,7 @@ class VideoActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
                 if (navigator != null) {
                   final source = _collection.source;
                   final newUri = newFields[EntryFields.uri] as String?;
-                  navigator.pushAndRemoveUntil(
+                  navigator.push(
                     MaterialPageRoute(
                       settings: const RouteSettings(name: CollectionPage.routeName),
                       builder: (context) => CollectionPage(
@@ -142,7 +142,6 @@ class VideoActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAwareMix
                         highlightTest: (entry) => entry.uri == newUri,
                       ),
                     ),
-                    (route) => false,
                   );
                 }
               },

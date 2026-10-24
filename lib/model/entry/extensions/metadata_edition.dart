@@ -5,6 +5,7 @@ import 'package:aves/convert/convert.dart';
 import 'package:aves/locale/aves_locale.dart';
 import 'package:aves/model/device.dart';
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/model/metadata/catalog.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/metadata/date_modifier.dart';
 import 'package:aves/ref/metadata/exif.dart';
@@ -82,6 +83,14 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       }
     }
 
+    if (dataTypes.isEmpty && appliedModifier.setDateTime != null) {
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        dateMillis: appliedModifier.setDateTime!.millisecondsSinceEpoch,
+      );
+      dataTypes.addAll({EntryDataType.basic, EntryDataType.catalog});
+    }
+
     return dataTypes;
   }
 
@@ -124,13 +133,28 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       metadata[MetadataType.mp4] = Map<String, String?>.fromEntries(mp4Fields.entries.map((kv) => MapEntry(kv.key.toPlatform!, kv.value)));
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
-      dataTypes.addAll({
-        EntryDataType.catalog,
-        EntryDataType.address,
-      });
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.addAll({
+          EntryDataType.catalog,
+          EntryDataType.address,
+        });
+      }
     }
+
+    if (!success) {
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        clearLocation: latLng == null || latLng == removalLocation,
+        latitude: latLng?.latitude,
+        longitude: latLng?.longitude,
+      );
+      dataTypes.addAll({EntryDataType.catalog, EntryDataType.address});
+    }
+
     return dataTypes;
   }
 
@@ -252,12 +276,26 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
-      dataTypes.addAll({
-        EntryDataType.basic,
-        EntryDataType.catalog,
-      });
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.addAll({
+          EntryDataType.basic,
+          EntryDataType.catalog,
+        });
+      }
+    }
+
+    if (!success) {
+      // Fallback to local DB for unsupported formats
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        xmpTitle: editTitle ? (title ?? '') : catalogMetadata?.xmpTitle,
+        xmpDescription: editDescription ? (description ?? '') : catalogMetadata?.xmpDescription,
+      );
+      dataTypes.add(EntryDataType.catalog);
     }
 
     return dataTypes;
@@ -284,8 +322,20 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.add(EntryDataType.catalog);
+      }
+    }
+
+    if (!success) {
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        xmpSubjects: tags.join(';'),
+      );
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;
@@ -308,8 +358,20 @@ extension ExtraAvesEntryMetadataEdition on AvesEntry {
       });
     }
 
-    final newFields = await metadataEditService.editMetadata(this, metadata);
-    if (newFields.isNotEmpty) {
+    var success = false;
+    if (metadata.isNotEmpty) {
+      final newFields = await metadataEditService.editMetadata(this, metadata);
+      if (newFields.isNotEmpty) {
+        success = true;
+        dataTypes.add(EntryDataType.catalog);
+      }
+    }
+
+    if (!success) {
+      catalogMetadata = (catalogMetadata ?? CatalogMetadata(id: id)).copyWith(
+        hasLocalMetadataEdit: true,
+        rating: rating ?? 0,
+      );
       dataTypes.add(EntryDataType.catalog);
     }
     return dataTypes;

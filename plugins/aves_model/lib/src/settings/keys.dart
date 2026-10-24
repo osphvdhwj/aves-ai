@@ -21,6 +21,8 @@ class SettingKeys {
   // app
   static const hasAcceptedTermsKey = 'has_accepted_terms';
   static const canUseAnalysisServiceKey = 'can_use_analysis_service';
+  static const aiSearchEnabledKey = 'ai_search_enabled';
+  static const showInfoThumbnailKey = 'show_info_thumbnail';
   static const isInstalledAppAccessAllowedKey = 'is_installed_app_access_allowed';
   static const isErrorReportingAllowedKey = 'is_crashlytics_enabled';
   static const autoExportPathKey = 'auto_export_path';
@@ -39,6 +41,8 @@ class SettingKeys {
   static const recentSettingKeysKey = 'recent_setting_keys';
   static const recentDestinationAlbumsKey = 'recent_destination_albums';
   static const recentTagsKey = 'recent_tags';
+  static const aiSearchHistoryKey = 'ai_search_history';
+  static const savedSearchesKey = 'saved_searches';
 
   // debug
   static const debugShowViewerTilesKey = 'debug_show_viewer_tiles';
@@ -127,6 +131,7 @@ class SettingKeys {
   static const videoHardwareAccelerationKey = 'video_hardware_acceleration';
   static const videoLoopModeKey = 'video_loop';
   static const videoResumptionModeKey = 'video_resumption_mode';
+  static const videoThumbnailMethodsKey = 'video_thumbnail_methods';
   static const videoControlActionsKey = 'video_control_actions';
   static const videoGestureDoubleTapTogglePlayKey = 'video_gesture_double_tap_toggle_play';
   static const videoGestureSideDoubleTapSeekKey = 'video_gesture_side_double_tap_skip';
@@ -144,6 +149,7 @@ class SettingKeys {
   static const infoMapZoomKey = 'info_map_zoom';
   static const coordinateFormatKey = 'coordinates_format';
   static const unitSystemKey = 'unit_system';
+  static const showGooglePhotosBackupKey = 'show_google_photos_backup';
 
   // tag editor
 

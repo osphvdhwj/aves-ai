@@ -6,6 +6,9 @@ import 'package:aves/widgets/common/basic/query_bar.dart';
 import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
 import 'package:aves/widgets/viewer/info/common.dart';
 import 'package:collection/collection.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DebugOSAppSection extends StatefulWidget {
@@ -95,7 +98,7 @@ class _DebugOSAppSectionState extends State<DebugOSAppSection> with AutomaticKee
                                           color: snapshot.data ?? Colors.transparent,
                                           width: 2,
                                         ),
-                                        borderRadius: const BorderRadius.all(Radius.circular(6)),
+                                        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
                                       ),
                                       width: 20,
                                       height: 20,
@@ -108,7 +111,7 @@ class _DebugOSAppSectionState extends State<DebugOSAppSection> with AutomaticKee
                                 child: IconTheme(
                                   data: package.categoryLauncher ? enabledTheme : disabledTheme,
                                   child: const Icon(
-                                    Icons.launch_outlined,
+                                    Symbols.launch,
                                     size: iconSize,
                                   ),
                                 ),
@@ -118,7 +121,7 @@ class _DebugOSAppSectionState extends State<DebugOSAppSection> with AutomaticKee
                                 child: IconTheme(
                                   data: package.isSystem ? enabledTheme : disabledTheme,
                                   child: const Icon(
-                                    Icons.android,
+                                    Symbols.android,
                                     size: iconSize,
                                   ),
                                 ),

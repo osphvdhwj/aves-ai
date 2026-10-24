@@ -1,3 +1,5 @@
+import 'package:material_symbols_icons/symbols.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 // adapted from Flutter `SnackBar` in `/material/snack_bar.dart`
@@ -386,7 +388,7 @@ class _OverlaySnackBarState extends State<OverlaySnackBar> {
     final IconButton? iconButton = showCloseIcon
         ? IconButton(
             key: StandardComponentType.closeButton.key,
-            icon: const Icon(Icons.close),
+            icon: const Icon(Symbols.close),
             iconSize: 24.0,
             color: widget.closeIconColor ?? snackBarTheme.closeIconColor ?? defaults.closeIconColor,
             onPressed: () => ScaffoldMessenger.of(

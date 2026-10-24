@@ -1,11 +1,12 @@
 import 'package:aves/model/filters/filters.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/icons.dart';
-import 'package:aves/theme/styles.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/identity/buttons/outlined_button.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class const TitledExpandableFilterRow({
@@ -26,24 +27,33 @@ class const TitledExpandableFilterRow({
 
     Widget header = Text(
       title,
-      style: AStyles.knownTitleText,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
     void toggle() => expandedNotifier.value = isExpanded ? null : title;
     if (settings.useTvLayout) {
       header = Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: InkWell(
-          onTap: toggle,
-          borderRadius: const BorderRadius.all(Radius.circular(123)),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisSize: .min,
-              children: [
-                header,
-                const SizedBox(width: 16),
-                Icon(isExpanded ? AIcons.collapse : AIcons.expand),
-              ],
+        child: PressableScale(
+          passthrough: true,
+          scale: 0.98,
+          child: InkWell(
+            onTap: toggle,
+            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisSize: .min,
+                children: [
+                  header,
+                  const SizedBox(width: 16),
+                  Icon(isExpanded ? AIcons.collapse : AIcons.expand),
+                ],
+              ),
             ),
           ),
         ),

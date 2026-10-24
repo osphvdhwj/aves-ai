@@ -153,12 +153,13 @@ class _CollectionPageState extends State<CollectionPage> {
                   },
                   child: AvesScaffold(
                     body: body,
-                    floatingActionButton: _buildFab(context, isSelecting, selectedItemCount),
+                    floatingActionButton: showBottomNavigationBar ? null : _buildFab(context, isSelecting, selectedItemCount),
                     drawer: canNavigate ? AppDrawer(currentCollection: _collection) : null,
                     bottomNavigationBar: showBottomNavigationBar
                         ? AppBottomNavBar(
                             events: _draggableScrollBarEventStreamController.stream,
                             currentCollection: _collection,
+                            trailing: _buildFab(context, isSelecting, selectedItemCount),
                           )
                         : null,
                     resizeToAvoidBottomInset: false,

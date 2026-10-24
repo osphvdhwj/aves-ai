@@ -9,6 +9,7 @@ import 'package:aves/model/settings/enums/accessibility_animations.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/colors.dart';
 import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/view/view.dart';
 import 'package:aves/widgets/collection/filter_bar.dart';
@@ -56,14 +57,14 @@ class AvesFilterChip extends StatefulWidget {
   final AFilterCallback? onTap, onRemove;
   final OffsetFilterCallback? onLongPress;
 
-  static const double defaultPadding = 6.0;
-  static const double defaultRadius = 32;
+  static const double defaultPadding = 8.0;
   static const double outlineWidth = 2;
-  static const double minChipHeight = kMinInteractiveDimension;
+  // M3E: roomier chip, slightly taller than kMinInteractiveDimension
+  static const double minChipHeight = 52;
   static const double minChipWidth = kMinInteractiveDimension;
-  static const double iconSize = 18;
+  static const double iconSize = 20;
   static const double fontSize = 14;
-  static const double decoratedContentVerticalPadding = 5;
+  static const double decoratedContentVerticalPadding = 6;
 
   const new({
     super.key,
@@ -165,10 +166,16 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
   late Color _outlineColor;
   late bool _tapped;
   Offset? _tapPosition;
+  bool _pressed = false;
 
   CollectionFilter get filter => widget.filter;
 
   double get padding => widget.padding;
+
+  void _setPressed(bool v) {
+    if (_pressed == v) return;
+    setState(() => _pressed = v);
+  }
 
   @override
   void initState() {
@@ -260,6 +267,7 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
               ),
               child: IconButton(
                 icon: Icon(AIcons.clear, size: iconSize),
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
                 padding: EdgeInsets.zero,
                 splashRadius: IconTheme.of(context).size,
                 constraints: const BoxConstraints(),
@@ -281,6 +289,8 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
                 filter.getLabel(context),
                 style: TextStyle(
                   fontSize: AvesFilterChip.fontSize,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.1,
                   decoration: filter.reversed ? TextDecoration.lineThrough : null,
                   decorationThickness: 2,
                 ),
@@ -326,7 +336,7 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
       }
     }
 
-    final borderRadius = decoration?.chipBorderRadius ?? const BorderRadius.all(Radius.circular(AvesFilterChip.defaultRadius));
+    final borderRadius = decoration?.chipBorderRadius ?? BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge));
     final banner = widget.banner;
     Widget chip = Container(
       constraints: BoxConstraints(
@@ -359,7 +369,12 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
             child: AInkResponse(
               // as of Flutter v2.8.0, `InkWell` does not have `onLongPressStart` like `GestureDetector`,
               // so we get the long press details from the tap instead
-              onTapDown: onLongPress != null ? (details) => _tapPosition = details.globalPosition : null,
+              onTapDown: (details) {
+                if (onLongPress != null) _tapPosition = details.globalPosition;
+                _setPressed(true);
+              },
+              onTapUp: (_) => _setPressed(false),
+              onTapCancel: () => _setPressed(false),
               onTap: onTap,
               onLongPress: onLongPress,
               containedInkWell: true,
@@ -431,6 +446,12 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
         );
       }
     }
-    return chip;
+    final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    return AnimatedScale(
+      scale: (_pressed && !disableAnimations) ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOutCubic,
+      child: chip,
+    );
   }
 }

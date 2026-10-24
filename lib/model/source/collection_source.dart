@@ -623,6 +623,27 @@ abstract class CollectionSource with SourceBase, AlbumMixin, CountryMixin, Place
     return recentEntry(filter);
   }
 
+  /// Up to [count] entries matching [filter], most recent first.
+  /// Used for the Google Photos-style 2x2 album collage.
+  /// Falls back to the single cover entry if the filter has fewer matches.
+  List<AvesEntry> coverEntries(CollectionFilter filter, {int count = 4}) {
+    final pinned = covers.of(filter)?.entryId;
+    final matches = <AvesEntry>[];
+    // pinned entry goes first
+    if (pinned != null) {
+      final pinnedEntry = visibleEntries.firstWhereOrNull((entry) => entry.id == pinned);
+      if (pinnedEntry != null) matches.add(pinnedEntry);
+    }
+    // fill with most recent matches
+    for (final entry in sortedEntriesByDate) {
+      if (matches.length >= count) break;
+      if (!filter.test(entry)) continue;
+      if (matches.any((e) => e.id == entry.id)) continue;
+      matches.add(entry);
+    }
+    return matches;
+  }
+
   void _onFilterVisibilityChanged(Set<CollectionFilter> newlyVisibleFilters) {
     updateDerivedFilters();
     eventBus.fire(const FilterVisibilityChangedEvent());

@@ -2,7 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 
+## <a id="v2.0.0"></a>[v2.0.0] - 2026-10-23
+
+Aves + first public release. Forked from Aves 1.15.5 (upstream `deckerst/aves`) with a Material 3 Expressive redesign of the info page and a new on-device AI companion.
+
+### Added
+
+- **Info page redesign** — Google Photos-inspired layout: two-line date header, caption field (title + description), People / Albums / Details rows, chip clusters (Media / When / Where / Why), grouped Exif tiles, color palette with tap-to-copy.
+- **AI companion integration** — new bridge to `com.avesplus.tools` (AVESPlusTools) over AIDL:
+  - Extract text (OCR) and long-press select-text page.
+  - In-place translation overlay (ready for `@ocr.structured`).
+  - Find similar photos (`@like`).
+  - NSFW tag picker with bundled vocabulary.
+  - Auto-tag review page with collection mode.
+- **AI tools hub** — single surface for Memories, Cleaner, Duplicates, People, Objects, Compose query, Secure share, Backup & sync.
+- **Cleaner** — five buckets with real image analysis: Large, Screenshots, Blurry (Laplacian variance), Dark (mean luma), Duplicates (FNV-1a + "keep best"), Old.
+- **Memories** — "A year ago today", Best of year, Favourites, Last 30 days, Top rated.
+- **Query composer** — chip-based filter builder with Clear and selected-checkmark.
+- **Saved searches** — pin and clear recent AI queries.
+- **Debug panel** — AI companion diagnostics with health, package, chat probe.
+
+### Changed
+
+- **Material 3 Expressive theme**
+  - All icons migrated from `Icons.*` to `Symbols.*` (`material_symbols_icons`).
+  - Motion system: `SpringScale` / `SpringAnimatedValue` with critically-damped defaults (`damping: 1.0`, `stiffness: 900`).
+  - `PressableScale` now wraps every tap target that isn't a Material button.
+  - Page transitions: `ZoomPageTransitionsBuilder` on Android.
+  - Info page section headings normalized to `titleSmall` + `w600`.
+  - Section text overflow guarded with `maxLines` + `ellipsis`.
+- **App bar** — info page actions consolidated into an overflow menu (Extract text, Select text, Find similar, Secure share, AI tools, plus per-entry edit actions).
+- **Grid tiles** — wrapped in `RepaintBoundary` for scroll isolation.
+- **Color section** — plain swatches (no card) with tap-to-copy hex.
+- **Date header** — uses `AvesLocale` so Hijri and Persian calendars render correctly.
+
+### Fixed
+
+- Info page thumbnail taps now route through `ShowEntryNotification`, keeping the viewer's page index and entry controllers in sync.
+- `AiTagsSection` and `DetailsSection` react to `metadataChangeNotifier`; no longer stale after edits.
+- Google Photos backup row no longer flickers on rebuild.
+- `AiToolsPage` picks up a Recheck without a full restart.
+- Auto-tag "Apply all" in collection mode now tags each entry with its own suggestions.
+- `InfoFadeIn` stagger delay uses a cancelable Timer; rapid entry switching no longer leaves pending callbacks.
+
+### Removed
+
+- `BasicSection` — replaced by `DetailsSection` + `ChipsSection`.
+- Legacy `aves-ai-core` companion fallback from `AiHandler.COMPANION_PACKAGES`.
+- `flutter_staggered_animations` usage from Color and Metadata sections.
+- Hardcoded `BorderRadius.circular(123)` magic values replaced with semantic shapes.
+- Upstream store badges, donation links, and the upstream certificate fingerprint (fork signs with its own key).
+
 ## <a id="unreleased"></a>[Unreleased]
+
+### Added
+
+- Collection: support for Realme burst pattern
+
+## <a id="v1.15.5"></a>[v1.15.5] - 2026-10-02
+
+### Added
+
+- panorama audio playback
+- Hijri calendars (tabular scheme IIa, Umm al-Qura)
+- Collection: added options for video thumbnail strategy
+
+### Changed
+
+- upgraded Flutter to stable v3.47.6
+
+### Fixed
+
+- back navigation delay when animations are disabled
+- back navigation delay when toggling system UI
+- failing to rename or move files on SD card
 
 ## <a id="v1.15.4"></a>[v1.15.4] - 2026-09-22
 

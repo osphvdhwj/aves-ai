@@ -105,7 +105,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
     if (settings.maxBrightness == MaxBrightness.viewerOnly) {
       AvesApp.screenBrightness?.setApplicationScreenBrightness(1);
     }
-    if (settings.keepScreenOn == KeepScreenOn.viewerOnly) {
+    if (settings.keepScreenOn == .viewerOnly) {
       windowService.keepScreenOn(true);
     }
 
@@ -145,7 +145,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
     _overlayButtonScale = CurvedAnimation(
       parent: _overlayAnimationController,
       // a little bounce at the top
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
     _overlayVideoControlScale = CurvedAnimation(
       parent: _overlayAnimationController,
@@ -683,7 +683,7 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
     await _onLeave();
     final uri = entryNotifier.value?.uri;
     unawaited(
-      Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      Navigator.maybeOf(context)?.push(
         MaterialPageRoute(
           settings: const RouteSettings(name: CollectionPage.routeName),
           builder: (context) => CollectionPage(
@@ -692,7 +692,6 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
             highlightTest: uri != null ? (entry) => entry.uri == uri : null,
           ),
         ),
-        (route) => false,
       ),
     );
   }
@@ -755,8 +754,12 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
             duration: animationDuration,
             curve: Curves.easeOutCubic,
           );
-        } else {
+        } else if (_horizontalPager.hasClients) {
           _horizontalPager.jumpToPage(page);
+        } else {
+          // the image page may not be built while the info page is in full view
+          _currentEntryIndex = page;
+          await _updateEntry();
         }
       }
     }
@@ -902,6 +905,23 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
   }
 
   Future<void> _onLeave() async {
+    final systemUIReadyCompleter = Completer<bool>();
+    final isStatusBarVisibleNotifier = AvesApp.isAndroidStatusBarVisibleNotifier;
+    void onStatusBarVisibleChanged() async {
+      // cf below for explanation on transition delay
+      await Future.delayed(const Duration(milliseconds: 50));
+      systemUIReadyCompleter.complete(isStatusBarVisibleNotifier.value);
+    }
+
+    final bool requestSystemUIChange;
+    if (isStatusBarVisibleNotifier.value) {
+      requestSystemUIChange = false;
+      systemUIReadyCompleter.complete(true);
+    } else {
+      requestSystemUIChange = true;
+      isStatusBarVisibleNotifier.addListener(onStatusBarVisibleChanged);
+    }
+
     await viewerController.stopCast();
 
     try {
@@ -916,21 +936,25 @@ class _EntryViewerStackState extends State<EntryViewerStack> with EntryViewContr
       // `screen_brightness` plugin may fail
       unawaited(reportService.recordError(e, stack));
     }
-    if (settings.keepScreenOn == KeepScreenOn.viewerOnly) {
+    if (settings.keepScreenOn == .viewerOnly) {
       await windowService.keepScreenOn(false);
     }
     await mediaSessionService.release();
-    await AvesApp.showSystemUI(true);
+    if (requestSystemUIChange) {
+      await AvesApp.showSystemUI(true);
+    }
     if (!settings.useTvLayout) {
       await windowService.requestOrientation();
     }
     unawaited(mediaFetchService.clearDecoders());
     unawaited(deviceService.requestGarbageCollection());
 
-    // delay to prevent white/black flash on page transition
+    // as of Flutter v3.47.5, a white/black flash appears on page transition
     // from a viewer with a transparent background and no system UI
-    // to a regular page with system UI
-    await Future.delayed(const Duration(milliseconds: 150));
+    // to a regular page with system UI (tested on Android 15)
+    // so we wait until the system UI is ready
+    await systemUIReadyCompleter.future;
+    isStatusBarVisibleNotifier.removeListener(onStatusBarVisibleChanged);
   }
 
   // overlay

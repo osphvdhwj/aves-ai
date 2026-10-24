@@ -42,6 +42,10 @@ mixin ViewerSettings on SettingsAccess {
 
   set showOverlayThumbnailPreview(bool newValue) => set(SettingKeys.showOverlayThumbnailPreviewKey, newValue);
 
+  bool get showInfoThumbnail => getBool(SettingKeys.showInfoThumbnailKey) ?? SettingsDefaults.showInfoThumbnail;
+
+  set showInfoThumbnail(bool newValue) => set(SettingKeys.showInfoThumbnailKey, newValue);
+
   bool get viewerGestureSideTapNext => getBool(SettingKeys.viewerGestureSideTapNextKey) ?? SettingsDefaults.viewerGestureSideTapNext;
 
   set viewerGestureSideTapNext(bool newValue) => set(SettingKeys.viewerGestureSideTapNextKey, newValue);

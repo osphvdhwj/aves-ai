@@ -919,12 +919,11 @@ class EntrySetActionDelegate with FeedbackMixin, PermissionAwareMixin, SizeAware
       } else {
         highlightInfo.set(albumFilter);
         final initialGroup = albumGrouping.getFilterParent(albumFilter);
-        await navigator.pushAndRemoveUntil(
+        await navigator.push(
           MaterialPageRoute(
             settings: const RouteSettings(name: AlbumListPage.routeName),
             builder: (_) => AlbumListPage(initialGroup: initialGroup),
           ),
-          (route) => false,
         );
       }
     }

@@ -4,7 +4,8 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/settings/common/switch_icon.dart';
-import 'package:aves/widgets/settings/common/tiles.dart';
+import 'package:aves/widgets/settings/common/tiles/single_selection.dart';
+import 'package:aves/widgets/settings/common/tiles/switch_list.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class ViewerOverlayPage extends StatelessWidget {
     SettingKeys.showOverlayMinimapKey,
     SettingKeys.overlayHistogramStyleKey,
     SettingKeys.showOverlayThumbnailPreviewKey,
+    SettingKeys.showInfoThumbnailKey,
   ];
 
   const new({super.key});
@@ -127,6 +129,18 @@ class ViewerOverlayPage extends StatelessWidget {
                 onChanged: (v) => settings.showOverlayThumbnailPreview = v,
                 title: (_) => l10n.settingsViewerShowOverlayThumbnails,
                 trailing: _trailingIcon(context, AIcons.thumbnailBar),
+              ),
+              Selector<Settings, bool>(
+                selector: (context, s) => s.showOverlayThumbnailPreview,
+                builder: (context, showThumbnails, child) {
+                  return SettingsSwitchListTile(
+                    selector: (context, s) => s.showInfoThumbnail,
+                    onChanged: showThumbnails ? (v) => settings.showInfoThumbnail = v : null,
+                    title: (_) => 'Show thumbnail in info page',
+                    subtitle: (_) => 'Show thumbnail strip at the bottom of the info page',
+                    trailing: _trailingIcon(context, AIcons.thumbnailBar),
+                  );
+                },
               ),
             ],
           ],

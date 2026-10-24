@@ -150,7 +150,7 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     );
     _overlayScale = CurvedAnimation(
       parent: _overlayAnimationController,
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCubic,
     );
     _scrollerSize = CurvedAnimation(
       parent: _overlayAnimationController,
@@ -443,7 +443,8 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     Navigator.maybeOf(context)?.push(
       TransparentMaterialPageRoute(
         settings: const RouteSettings(name: EntryViewerPage.routeName),
-        pageBuilder: (context, a, sa) {
+        transitionDuration: context.read<DurationsData>().viewerRouteTransitionDuration,
+        pageBuilder: (context, _, _) {
           // propagate app mode from the map page, as it could be locally overridden
           // and differ from the real app mode above the `Navigator`
           return ListenableProvider<ValueNotifier<AppMode>>.value(
@@ -462,7 +463,7 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
     final isMainMode = context.read<ValueNotifier<AppMode>>().value == .main;
     if (!isMainMode) return;
 
-    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+    Navigator.maybeOf(context)?.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: CollectionPage.routeName),
         builder: (context) {
@@ -476,7 +477,6 @@ class _ContentState extends State<_Content> with SingleTickerProviderStateMixin 
           );
         },
       ),
-      (route) => false,
     );
   }
 

@@ -21,7 +21,7 @@ class FilterChipGridDecorator<T extends CollectionFilter, U extends FilterGridIt
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.all(CoveredFilterChip.radius(extent));
+    final borderRadius = BorderRadius.all(CoveredFilterChip.radius(context, extent));
     return SizedBox(
       width: extent,
       height: extent,

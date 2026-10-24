@@ -11,6 +11,7 @@ import 'package:aves/widgets/common/fx/blurred.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:aves_video/aves_video.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class VideoProgressBar extends StatefulWidget {
@@ -116,7 +117,7 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
                                 ],
                               ),
                               ClipRRect(
-                                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraSmall)),
                                 child: Directionality(
                                   textDirection: kVideoPlaybackDirection,
                                   child: StreamBuilder<int>(

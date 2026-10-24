@@ -1,5 +1,6 @@
-In v1.15.4, since v1.14.9:
-- check what happened that day with the calendar layout
-- switch views with the layout bar
-- enjoy the app in Thai
-Full changelog available on GitHub
+Aves + v2.0.0 (first release):
+- redesigned info page with a Google Photos-style layout
+- extract text (OCR) and find similar photos via the AVES+ Tools companion
+- cleaner, duplicates, memories, and query composer
+- Material 3 Expressive throughout
+Full changelog on GitHub

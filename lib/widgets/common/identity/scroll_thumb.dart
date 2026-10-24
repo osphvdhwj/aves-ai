@@ -1,5 +1,6 @@
 import 'package:aves/widgets/common/basic/draggable_scrollbar/arrow_clipper.dart';
 import 'package:aves/widgets/common/basic/draggable_scrollbar/scrollbar.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AvesScrollThumb {
@@ -14,13 +15,14 @@ class AvesScrollThumb {
   // height and background color do not change
   // so we do not rely on the builder props
   static ScrollThumbBuilder builder({
+    required BuildContext context,
     required double height,
     required Color backgroundColor,
   }) {
     final scrollThumb = Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.black26,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeMedium)),
       ),
       height: height,
       margin: _margin,
@@ -31,7 +33,7 @@ class AvesScrollThumb {
           width: _width,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeMedium)),
           ),
         ),
       ),

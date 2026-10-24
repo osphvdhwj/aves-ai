@@ -7,9 +7,11 @@ import 'package:aves/model/source/collection_source.dart';
 import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/collection/collection_page.dart';
 import 'package:aves/widgets/common/action_mixins/feedback.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/action_mixins/vault_aware.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/navigation/drawer/tile.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -34,25 +36,36 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
     return SafeArea(
       top: false,
       bottom: false,
-      child: ListTile(
-        leading: leading,
-        title: title,
-        trailing: trailing != null
-            ? Builder(
-                builder: (context) {
-                  final trailingColor = IconTheme.of(context).color!.withValues(alpha: .6);
-                  return IconTheme.merge(
-                    data: IconThemeData(color: trailingColor),
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(color: trailingColor),
-                      child: trailing!,
-                    ),
-                  );
-                },
-              )
-            : null,
-        onTap: () => _goToCollection(context),
-        selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+      child: PressableScale(
+        passthrough: true,
+        scale: 0.97,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: ListTile(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge)),
+            tileColor: context.currentRouteName == CollectionPage.routeName && isSelected()
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Theme.of(context).colorScheme.surfaceContainerHigh,
+            leading: leading,
+            title: title,
+            trailing: trailing != null
+                ? Builder(
+                    builder: (context) {
+                      final trailingColor = IconTheme.of(context).color!.withValues(alpha: .6);
+                      return IconTheme.merge(
+                        data: IconThemeData(color: trailingColor),
+                        child: DefaultTextStyle.merge(
+                          style: TextStyle(color: trailingColor),
+                          child: trailing!,
+                        ),
+                      );
+                    },
+                  )
+                : null,
+            onTap: () => _goToCollection(context),
+            selected: context.currentRouteName == CollectionPage.routeName && isSelected(),
+          ),
+        ),
       ),
     );
   }
@@ -69,7 +82,7 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
 
     Navigator.maybeOf(context)?.pop();
     unawaited(
-      Navigator.maybeOf(context)?.pushAndRemoveUntil(
+      Navigator.maybeOf(context)?.push(
         MaterialPageRoute(
           settings: const RouteSettings(name: CollectionPage.routeName),
           builder: (context) => CollectionPage(
@@ -77,7 +90,6 @@ class CollectionNavTile extends StatelessWidget with FeedbackMixin, VaultAwareMi
             filters: _filters,
           ),
         ),
-        (route) => false,
       ),
     );
   }

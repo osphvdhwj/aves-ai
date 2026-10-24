@@ -46,7 +46,6 @@ import 'package:aves/widgets/navigation/tv_page_transitions.dart';
 import 'package:aves/widgets/navigation/tv_rail.dart';
 import 'package:aves/widgets/settings/app_export/items.dart';
 import 'package:aves/widgets/settings/settings_action_delegate.dart';
-import 'package:aves/widgets/welcome_page.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:aves_utils/aves_utils.dart';
 import 'package:collection/collection.dart';
@@ -64,32 +63,20 @@ import 'package:provider/provider.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:url_launcher/url_launcher.dart' as ul;
 
-class AvesApp extends StatefulWidget {
-  final AppFlavor flavor;
-  final Map<String, Object?>? debugIntentData;
-
+class const AvesApp({
+  super.key,
+  required final AppFlavor flavor,
+  final Map<String, Object?>? debugIntentData,
+}) extends StatefulWidget {
   // temporary exclude locales not ready yet for prime time
   // `ckb`: add `flutter_ckb_localization` and necessary app localization delegates when ready
-  static final _unsupportedLocales = {
-    'az', // Azerbaijani
-    'bn', // Bengali
-    'ckb', // Kurdish (Sorani, Central)
-    'he', // Hebrew
-    'hi', // Hindi
-    'hr', // Croatian
-    'ml', // Malayalam
-    'my', // Burmese
-    'ne', // Nepali
-    'or', // Odia
-    'sat', // Santali
-    'sl', // Slovenian
-    'sr', // Serbian
-    'ur', // Urdu
-  }.map(Locale.new).toSet();
-  static final List<Locale> supportedLocales = AppLocalizations.supportedLocales.where((v) => !_unsupportedLocales.contains(v)).toList();
+  // Aves + ships English only.
+  static const List<Locale> supportedLocales = [Locale('en')];
   static final ValueNotifier<bool> canGestureToOtherApps = ValueNotifier(false);
   static final ValueNotifier<bool> isInPictureInPictureMode = ValueNotifier(false);
   static final ValueNotifier<EdgeInsets> cutoutInsetsNotifier = ValueNotifier(EdgeInsets.zero);
+  static final ValueNotifier<bool> isAndroidStatusBarVisibleNotifier = ValueNotifier(true);
+  static final ValueNotifier<bool> isAndroidNavBarVisibleNotifier = ValueNotifier(true);
 
   // children widgets registering as `WidgetsBinding` observers and implementing `didChangeAppLifecycleState`
   // do not receive events fast enough for time sensitive actions (like PiP when leaving by gesture to home)
@@ -103,12 +90,6 @@ class AvesApp extends StatefulWidget {
   static ScreenBrightness? get screenBrightness => _AvesAppState._screenBrightness;
 
   static EventBus get intentEventBus => _AvesAppState._intentEventBus;
-
-  const new({
-    super.key,
-    required this.flavor,
-    this.debugIntentData,
-  });
 
   @override
   State<AvesApp> createState() => _AvesAppState();
@@ -412,7 +393,8 @@ class _AvesAppState extends State<AvesApp> with WidgetsBindingObserver {
     }
   }
 
-  static Widget getFirstPage({Map<String, Object?>? intentData}) => settings.hasAcceptedTerms ? HomePage(intentData: intentData) : const WelcomePage();
+  // Aves + skips the welcome/terms page; users land directly on Home.
+  static Widget getFirstPage({Map<String, Object?>? intentData}) => HomePage(intentData: intentData);
 
   Size? _getScreenSize(BuildContext context) {
     final view = View.of(context);
@@ -504,6 +486,8 @@ class _AvesAppState extends State<AvesApp> with WidgetsBindingObserver {
     settingStream.where((event) => event.key == SettingKeys.maxBrightnessKey).listen((_) => _applyMaxBrightness());
     // navigation
     settingStream.where((event) => event.key == SettingKeys.keepScreenOnKey).listen((_) => _applyKeepScreenOn());
+    // cache
+    settingStream.where((event) => event.key == SettingKeys.videoThumbnailMethodsKey).listen((_) => _clearThumbnailCache());
     // platform settings
     settingStream.where((event) => event.key == SettingKeys.platformAccelerometerRotationKey).listen((_) => _applyIsRotationLocked());
 
@@ -624,6 +608,12 @@ class _AvesAppState extends State<AvesApp> with WidgetsBindingObserver {
       default:
         _screenBrightness = ScreenBrightness();
     }
+  }
+
+  void _clearThumbnailCache() async {
+    unawaited(mediaFetchService.clearImageDiskCache());
+    unawaited(mediaFetchService.clearImageMemoryCache());
+    imageCache.clear();
   }
 }
 
@@ -782,11 +772,13 @@ class _AvesAppContentDecoratorState extends State<AvesAppContentDecorator> with 
       case 'system_bar_visibility':
         // on older devices, setting system UI style right after UI mode is not effective
         // and the required delay is unknown, so we monitor the change on the platform side
-        final statusBarVisible = fields['status_bar'];
-        final navBarVisible = fields['nav_bar'];
+        final statusBarVisible = fields['status_bar'] as bool;
+        final navBarVisible = fields['nav_bar'] as bool;
         if (statusBarVisible == true && navBarVisible == true && context.mounted) {
           AvesApp.setSystemUIStyle(Theme.of(context));
         }
+        AvesApp.isAndroidStatusBarVisibleNotifier.value = statusBarVisible;
+        AvesApp.isAndroidNavBarVisibleNotifier.value = navBarVisible;
     }
   }
 

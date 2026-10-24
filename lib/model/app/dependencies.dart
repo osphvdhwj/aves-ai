@@ -203,6 +203,11 @@ class Dependencies {
       sourceUrl: 'https://github.com/pd4d10/highlight',
     ),
     Dependency(
+      name: 'Flutter Hijri Rrule (Aves fork)',
+      license: mit,
+      sourceUrl: 'https://github.com/hb12devtn/flutter_hijri_rrule',
+    ),
+    Dependency(
       name: 'Flutter Map',
       license: bsd3,
       sourceUrl: 'https://github.com/fleaflet/flutter_map',
@@ -211,11 +216,6 @@ class Dependencies {
       name: 'Flutter Markdown Plus',
       license: bsd3,
       sourceUrl: 'https://github.com/foresightmobile/flutter_markdown_plus',
-    ),
-    Dependency(
-      name: 'Flutter Staggered Animations (Aves fork)',
-      license: mit,
-      sourceUrl: 'https://github.com/deckerst/flutter_staggered_animations',
     ),
     Dependency(
       name: 'Kurd Localization',

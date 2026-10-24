@@ -18,6 +18,7 @@ import 'package:aves/view/view.dart';
 import 'package:aves/widgets/common/action_mixins/feedback.dart';
 import 'package:aves/widgets/common/action_mixins/vault_aware.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/identity/buttons/captioned_button.dart';
 import 'package:aves/widgets/common/identity/empty.dart';
@@ -204,7 +205,10 @@ class _AlbumPickPageState extends State<_AlbumPickPage> with FeedbackMixin, Vaul
             selector: (context, v) => v.value,
             builder: (context, groupUri, child) {
               final isValid = widget.isValidGroupPick?.call(groupUri) ?? true;
-              return FloatingActionButton.extended(
+              return PressableScale(
+                passthrough: true,
+                scale: 0.92,
+                child: FloatingActionButton.extended(
                 onPressed: isValid
                     ? () {
                         final filter = groupUri != null ? albumGrouping.uriToFilter(groupUri) : AlbumGroupFilter.root;
@@ -216,6 +220,7 @@ class _AlbumPickPageState extends State<_AlbumPickPage> with FeedbackMixin, Vaul
                 backgroundColor: isValid ? null : Theme.of(context).disabledColor,
                 icon: const Icon(AIcons.apply),
                 label: Text(context.l10n.groupPickerUseThisGroupButton),
+                ),
               );
             },
           )

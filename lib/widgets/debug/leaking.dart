@@ -8,6 +8,8 @@ import 'package:aves/utils/file_utils.dart';
 import 'package:aves/widgets/common/identity/aves_expansion_tile.dart';
 import 'package:collection/collection.dart';
 import 'package:leak_tracker/leak_tracker.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 class DebugLeakingSection extends StatefulWidget {
@@ -194,7 +196,7 @@ class _CollectorOverlayState extends State<_CollectorOverlay> {
                   children: [
                     IconButton(
                       onPressed: () => setState(() => _alignment = _alignment == .bottomStart ? .topStart : .bottomStart),
-                      icon: Icon(_alignment == .bottomStart ? Icons.vertical_align_top_outlined : Icons.vertical_align_bottom_outlined),
+                      icon: Icon(_alignment == .bottomStart ? Symbols.vertical_align_top : Symbols.vertical_align_bottom),
                     ),
                     ...LeakType.values.map((v) {
                       return OutlinedButton(

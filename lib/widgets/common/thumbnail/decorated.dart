@@ -1,4 +1,5 @@
 import 'package:aves/model/entry/entry.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
 import 'package:aves/widgets/common/grid/overlay.dart';
 import 'package:aves/widgets/common/grid/sections/mosaic/section_layout_builder.dart';
@@ -66,10 +67,12 @@ class const DecoratedThumbnail({
       ],
     );
 
+    final radius = BorderRadius.circular(context.m3e.shapeMedium);
     return Container(
       // `decoration` with sub logical pixel width yields scintillating borders
       // so we use `foregroundDecoration` instead
       foregroundDecoration: BoxDecoration(
+        borderRadius: radius,
         border: Border.fromBorderSide(
           BorderSide(
             color: borderColor(context),
@@ -79,7 +82,10 @@ class const DecoratedThumbnail({
       ),
       width: thumbnailWidth,
       height: thumbnailHeight,
-      child: child,
+      child: ClipRRect(
+        borderRadius: radius,
+        child: child,
+      ),
     );
   }
 }

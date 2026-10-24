@@ -53,3 +53,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Local scratch tools, not part of the app
+/perchance_scraper.py
+/termux-browser-pilot/

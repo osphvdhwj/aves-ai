@@ -1,4 +1,5 @@
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,7 @@ class _WheelSelectorState<T> extends State<WheelSelector<T>> {
                         duration: transitionDuration,
                         decoration: BoxDecoration(
                           color: foreground.withValues(alpha: focused ? .2 : 0),
-                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeSmall)),
                         ),
                       );
                     },

@@ -10,12 +10,14 @@ class DaySectionHeader<T> extends StatelessWidget {
   final SectionKey sectionKey;
   final DateTime? date;
   final bool selectable;
+  final int? count;
 
   const new({
     super.key,
     required this.sectionKey,
     required this.date,
     required this.selectable,
+    this.count,
   });
 
   static String _formatDate(BuildContext context, DateTime? date) {
@@ -39,6 +41,8 @@ class DaySectionHeader<T> extends StatelessWidget {
       sectionKey: sectionKey,
       title: _formatDate(context, date),
       selectable: selectable,
+      leading: _buildDot(context),
+      trailing: count != null ? _buildCount(context, count!) : null,
     );
   }
 }
@@ -47,12 +51,14 @@ class MonthSectionHeader<T> extends StatelessWidget {
   final SectionKey sectionKey;
   final DateTime? date;
   final bool selectable;
+  final int? count;
 
   const new({
     super.key,
     required this.sectionKey,
     required this.date,
     required this.selectable,
+    this.count,
   });
 
   static String _formatDate(BuildContext context, DateTime? date) {
@@ -75,6 +81,31 @@ class MonthSectionHeader<T> extends StatelessWidget {
       sectionKey: sectionKey,
       title: _formatDate(context, date),
       selectable: selectable,
+      leading: _buildDot(context),
+      trailing: count != null ? _buildCount(context, count!) : null,
     );
   }
+}
+
+
+Widget _buildDot(BuildContext context) {
+  return Center(
+    child: Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        shape: BoxShape.circle,
+      ),
+    ),
+  );
+}
+
+Widget _buildCount(BuildContext context, int count) {
+  return Text(
+    context.l10n.itemCount(count),
+    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+  );
 }

@@ -54,7 +54,10 @@ class AvesColorsProvider extends StatelessWidget {
 }
 
 abstract class AvesColorsData {
-  static const defaultAccent = Colors.indigoAccent;
+  // Matches the Aves + icon gradient. Rich indigo that reads well
+  // on both light and dark surfaces, and sits between the icon's
+  // cyan and violet stops.
+  static const defaultAccent = Color(0xFF4F46E5);
   static const _neutralOnDark = Colors.white;
   static const _neutralOnLight = Color(0xAA000000);
 

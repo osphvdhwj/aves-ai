@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:aves/model/app_inventory.dart';
 import 'package:aves/model/covers.dart';
+import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/container/album_group.dart';
 import 'package:aves/model/filters/container/dynamic_album.dart';
 import 'package:aves/model/filters/container/tag_group.dart';
@@ -18,11 +19,13 @@ import 'package:aves/model/source/tag.dart';
 import 'package:aves/model/vaults/vaults.dart';
 import 'package:aves/theme/durations.dart';
 import 'package:aves/theme/icons.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/text.dart';
 import 'package:aves/utils/android_file_utils.dart';
 import 'package:aves/widgets/common/basic/text/fading_line.dart';
 import 'package:aves/widgets/common/identity/aves_filter_chip.dart';
 import 'package:aves/widgets/common/thumbnail/image.dart';
+import 'package:aves/widgets/filter_grids/common/cover_collage.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +63,8 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
     return textScaler.scale(AvesFilterChip.fontSize + detailFontSize(extent) + 4) + AvesFilterChip.decoratedContentVerticalPadding * 2;
   }
 
-  static Radius radius(double extent) => Radius.circular(min<double>(AvesFilterChip.defaultRadius, extent / 4));
+  static Radius radius(BuildContext context, double extent) =>
+      Radius.circular(min<double>(context.m3e.shapeExtraLarge, extent / 4));
 
   static double detailIconSize(double extent) => min<double>(AvesFilterChip.fontSize, extent / 7);
 
@@ -148,7 +152,7 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
       showText: showText,
       allowGenericIcon: false,
       decoration: AvesFilterDecoration(
-        radius: radius(extent),
+        radius: radius(context, extent),
         widget: Padding(
           padding: EdgeInsets.only(
             bottom: infoHeight(
@@ -179,11 +183,7 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
                     );
                   },
                 )
-              : ThumbnailImage(
-                  entry: entry,
-                  extent: thumbnailExtent,
-                  devicePixelRatio: MediaQuery.devicePixelRatioOf(context),
-                ),
+              : _buildCover(context, entry, source, _filter),
         ),
       ),
       banner: banner,
@@ -192,6 +192,25 @@ class CoveredFilterChip<T extends CollectionFilter> extends StatelessWidget {
       heroType: heroType,
       onTap: onTap,
       onLongPress: null,
+    );
+  }
+
+  Widget _buildCover(BuildContext context, AvesEntry cover, CollectionSource source, T filter) {
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    // Only stored albums, dynamic albums, tag filters get collages.
+    // Groups and locations keep the single-cover look.
+    final wantsCollage = filter is StoredAlbumFilter || filter is DynamicAlbumFilter || filter is TagFilter;
+    if (!wantsCollage) {
+      return ThumbnailImage(entry: cover, extent: thumbnailExtent, devicePixelRatio: dpr);
+    }
+    final entries = source.coverEntries(filter, count: 4);
+    if (entries.length < 4) {
+      return ThumbnailImage(entry: cover, extent: thumbnailExtent, devicePixelRatio: dpr);
+    }
+    return CoverCollage(
+      entries: entries,
+      extent: thumbnailExtent,
+      devicePixelRatio: dpr,
     );
   }
 

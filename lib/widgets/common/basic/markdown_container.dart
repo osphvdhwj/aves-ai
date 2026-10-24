@@ -3,6 +3,7 @@ import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/common/fx/borders.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 class MarkdownContainer extends StatelessWidget {
@@ -43,7 +44,7 @@ class MarkdownContainer extends StatelessWidget {
         data: Theme.of(context).copyWith(
           scrollbarTheme: ScrollbarThemeData(
             thumbVisibility: WidgetStateProperty.all(true),
-            radius: const Radius.circular(16),
+            radius: Radius.circular(context.m3e.shapeLarge),
             crossAxisMargin: 6,
             mainAxisMargin: 16,
             interactive: true,
@@ -63,11 +64,11 @@ class MarkdownContainer extends StatelessWidget {
           color: Theme.of(context).dividerColor,
           width: AvesBorder.curvedBorderWidth(context),
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeLarge)),
       ),
       constraints: BoxConstraints(maxWidth: useTvLayout ? double.infinity : mobileMaxWidth),
       child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeLarge)),
         child: child,
       ),
     );

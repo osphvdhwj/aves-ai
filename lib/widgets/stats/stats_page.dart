@@ -32,7 +32,8 @@ import 'package:aves/widgets/stats/top_page.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -161,18 +162,8 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
                 _onFilterSelection(context, notification.filter);
                 return true;
               },
-              child: AnimationLimiter(
-                child: ListView(
-                  children: AnimationConfiguration.toStaggeredList(
-                    duration: durations.staggeredAnimation,
-                    delay: durations.staggeredAnimationDelay * timeDilation,
-                    childAnimationBuilder: (child) => SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: child,
-                      ),
-                    ),
-                    children: [
+              child: ListView(
+                  children: [
                       const TvEdgeFocus(),
                       mimeDonuts,
                       Histogram(
@@ -196,9 +187,7 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
                       if (showRatings) ..._buildFilterSection<int>(context, l10n.searchRatingSectionTitle, _entryCountPerRating, RatingFilter.new, sortByCount: false, maxRowCount: null),
                     ],
                   ),
-                ),
-              ),
-            );
+                );
           }
         }
 
@@ -292,7 +281,10 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
         : null;
     Widget header = Text(
       title,
-      style: AStyles.knownTitleText,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
     if (settings.useTvLayout) {
       header = Padding(
@@ -312,10 +304,13 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
         // prevent ink response when tapping the header does nothing,
         // because otherwise Play Store reviewers think it is broken navigation
         child: onHeaderPressed != null
-            ? InkWell(
-                onTap: onHeaderPressed,
-                borderRadius: const BorderRadius.all(Radius.circular(123)),
-                child: header,
+            ? PressableScale(
+                passthrough: true,
+                child: InkWell(
+                  onTap: onHeaderPressed,
+                  borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge * 4),
+                  child: header,
+                ),
               )
             : Focus(child: header),
       );
@@ -370,7 +365,7 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
   }
 
   void _jumpToCollectionPage(BuildContext context, CollectionFilter filter) {
-    Navigator.maybeOf(context)?.pushAndRemoveUntil(
+    Navigator.maybeOf(context)?.push(
       MaterialPageRoute(
         settings: const RouteSettings(name: CollectionPage.routeName),
         builder: (context) => CollectionPage(
@@ -378,7 +373,6 @@ class _StatsPageState extends State<StatsPage> with FeedbackMixin, VaultAwareMix
           filters: {filter},
         ),
       ),
-      (route) => false,
     );
   }
 
@@ -439,6 +433,8 @@ class const _LocationIndicator({required final Set<AvesEntry> entries}) extends 
           Text(
             context.l10n.statsWithGps(withGpsCount),
             textAlign: .center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

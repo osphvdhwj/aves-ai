@@ -1,6 +1,8 @@
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +17,12 @@ class AvesDialog extends StatefulWidget {
   final Widget? content;
   final List<Widget> actions;
 
-  static const Radius cornerRadius = Radius.circular(24);
+  static Radius cornerRadiusOf(BuildContext context) =>
+      Radius.circular(context.m3e.shapeExtraLarge);
   static const double defaultHorizontalContentPadding = 24;
   static const double controlCaptionPadding = 16;
   static const double borderWidth = 1.0;
-  static const EdgeInsets actionsPadding = EdgeInsets.symmetric(vertical: 4, horizontal: 16);
+  static const EdgeInsets actionsPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 24);
   static const EdgeInsets buttonPadding = EdgeInsets.symmetric(horizontal: 8);
 
   const new({
@@ -35,16 +38,13 @@ class AvesDialog extends StatefulWidget {
   @override
   State<AvesDialog> createState() => _AvesDialogState();
 
-  static Decoration contentDecoration(BuildContext context) => BoxDecoration(
-    border: Border(
-      bottom: Divider.createBorderSide(context, width: borderWidth),
-    ),
-  );
+  /// Kept as a stable API for cover selection dialog and others, but
+  /// returns a flat decoration — 2026 M3E dialogs don't use borders.
+  static Decoration contentDecoration(BuildContext context) => const BoxDecoration();
 
   static ShapeBorder shape(BuildContext context) {
     return RoundedRectangleBorder(
-      side: Divider.createBorderSide(context, width: borderWidth),
-      borderRadius: const BorderRadius.all(cornerRadius),
+      borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
     );
   }
 }
@@ -81,10 +81,15 @@ class _AvesDialogState extends State<AvesDialog> {
           ? EdgeInsets.zero
           : EdgeInsets.only(
               left: widget.horizontalContentPadding,
-              top: 20,
+              top: 8,
               right: widget.horizontalContentPadding,
+              bottom: 8,
             ),
-      actions: widget.actions,
+      actions: widget.actions.map((a) => PressableScale(
+        passthrough: true,
+        scale: 0.94,
+        child: a,
+      )).toList(),
       actionsPadding: AvesDialog.actionsPadding,
       buttonPadding: AvesDialog.buttonPadding,
       // clipping to prevent highlighted material to bleed through rounded corners
@@ -112,10 +117,10 @@ class _AvesDialogState extends State<AvesDialog> {
           data: Theme.of(context).copyWith(
             scrollbarTheme: ScrollbarThemeData(
               thumbVisibility: WidgetStateProperty.all(true),
-              radius: const Radius.circular(16),
+              radius: Radius.circular(context.m3e.shapeLarge),
               crossAxisMargin: 4,
               // adapt margin when corner is around content itself, not outside for the title
-              mainAxisMargin: 4 + (widget.title != null ? 0 : AvesDialog.cornerRadius.y / 2),
+              mainAxisMargin: 4 + (widget.title != null ? 0 : context.m3e.shapeExtraLarge / 2),
               interactive: true,
             ),
           ),
@@ -161,13 +166,17 @@ class DialogTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: .center,
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-      decoration: AvesDialog.contentDecoration(context),
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
       child: Text(
         title,
-        textAlign: .center,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.2,
+          color: theme.colorScheme.onSurface,
+        ),
       ),
     );
   }

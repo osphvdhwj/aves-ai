@@ -1,6 +1,6 @@
 name: aves
-description: A visual media gallery and metadata explorer app.
-repository: https://github.com/deckerst/aves
+description: Aves + is a privacy-first gallery and metadata explorer, with an on-device AI companion.
+repository: https://github.com/osphvdhwj/aves-ai
 publish_to: none
 
 # version bump checklist:
@@ -8,12 +8,12 @@ publish_to: none
 # - edit GitHub changelog:     /CHANGELOG.md
 # - edit Play Store changelog: /whatsnew/whatsnew-en-US
 # - run `scripts/apply_version_bump.sh`
-version: 1.15.4+178
+version: 2.0.0+180
 
 environment:
   # this project bundles Flutter SDK via `flutter_wrapper`
   # cf https://github.com/passsy/flutter_wrapper
-  flutter: 3.47.5
+  flutter: 3.47.6
   sdk: ">=3.13.3 <4.0.0"
 
 platforms:
@@ -24,7 +24,7 @@ workspace:
   - plugins/aves_map
   - plugins/aves_model
   - plugins/aves_report
-  - plugins/aves_report_crashlytics
+
   - plugins/aves_screen_state
   - plugins/aves_services
   - plugins/aves_services_google
@@ -49,7 +49,7 @@ dependencies:
   aves_report:
     path: plugins/aves_report
   aves_report_platform:
-    path: plugins/aves_report_crashlytics
+    path: plugins/aves_report_console
   aves_screen_state:
     path: plugins/aves_screen_state
   aves_services:
@@ -91,15 +91,15 @@ dependencies:
   fluster:
   flutter_displaymode:
   flutter_highlight:
+  flutter_hijri_rrule:
+    git:
+      url: https://github.com/deckerst/flutter_hijri_rrule
+      ref: aves
   flutter_localizations_plus:
     git:
       url: https://github.com/deckerst/flutter_localizations_plus.git
   flutter_map:
   flutter_markdown_plus:
-  flutter_staggered_animations:
-    git:
-      url: https://github.com/deckerst/flutter_staggered_animations
-      ref: aves
   get_it:
   gpx:
   highlight:
@@ -113,6 +113,8 @@ dependencies:
   flutter_material_design_icons:
   material_symbols_icons:
   material_ui:
+  m3e_design:
+  expressive_m3:
   network_info_plus:
   overlay_support:
     git:

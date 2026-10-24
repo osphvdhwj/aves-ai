@@ -1,3 +1,4 @@
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_ui/material_ui.dart';
 
 // `RadioListTile` that can trigger `onChanged` on tap when already selected, if `reselectable` is true
@@ -41,6 +42,9 @@ class const ReselectableRadioListTile<T>({
     return MergeSemantics(
       child: ListTileTheme.merge(
         selectedColor: activeColor ?? Theme.of(context).colorScheme.primary,
+        child: PressableScale(
+        passthrough: true,
+        scale: 0.98,
         child: ListTile(
           leading: leading,
           title: title,
@@ -61,6 +65,7 @@ class const ReselectableRadioListTile<T>({
               : null,
           selected: selected,
           autofocus: autofocus,
+        ),
         ),
       ),
     );

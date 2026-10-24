@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/theme/themes.dart';
 import 'package:aves/widgets/aves_app.dart';
 import 'package:aves/widgets/common/basic/font_size_icon_theme.dart';
@@ -209,8 +210,8 @@ class AvesFloatingBar extends StatefulWidget {
   final Widget Function(BuildContext context, Color backgroundColor, Widget? child) builder;
   final Widget? child;
 
-  static const margin = EdgeInsets.all(8);
-  static const borderRadius = BorderRadius.all(Radius.circular(8));
+  // M3E floating surface — bigger radius, slightly larger inset
+  static const margin = EdgeInsets.symmetric(horizontal: 10, vertical: 8);
 
   const new({
     super.key,
@@ -274,16 +275,21 @@ class _AvesFloatingBarState extends State<AvesFloatingBar> with RouteAware {
       builder: (context, isBlurAllowed, child) {
         final blurred = isBlurAllowed && context.select<Settings, bool>((v) => v.enableBlurEffect);
         return Container(
-          foregroundDecoration: BoxDecoration(
-            border: Border.all(
-              color: theme.dividerColor,
-            ),
-            borderRadius: AvesFloatingBar.borderRadius,
-          ),
           margin: AvesFloatingBar.margin,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 12,
+                spreadRadius: 0,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: BlurredRRect(
             enabled: blurred,
-            borderRadius: AvesFloatingBar.borderRadius,
+            borderRadius: BorderRadius.all(Radius.circular(context.m3e.shapeExtraLarge)),
             child: widget.builder(
               context,
               blurred ? backgroundColor.withValues(alpha: .85) : backgroundColor,

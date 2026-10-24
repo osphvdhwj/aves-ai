@@ -7,21 +7,30 @@ import 'package:aves/model/selection.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/durations.dart';
+import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/insets.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
+import 'package:aves/model/entry/extensions/favourites.dart';
+import 'package:aves/widgets/common/action_controls/togglers/favourite.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
-import 'package:aves/widgets/viewer/info/basic_section.dart';
+import 'package:aves/widgets/viewer/info/chips_section.dart';
+import 'package:aves/widgets/viewer/info/ai_tags_section.dart';
 import 'package:aves/widgets/viewer/info/color_section.dart';
+import 'package:aves/widgets/viewer/info/details_section.dart';
+import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
+import 'package:aves/widgets/viewer/info/info_fade_in.dart';
 import 'package:aves/widgets/viewer/info/location_section.dart';
+import 'package:aves/widgets/viewer/info/header_section.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
-import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
+import 'package:aves/widgets/viewer/overlay/bottom/thumbnail_preview.dart';
 import 'package:aves/widgets/viewer/multipage/conductor.dart';
 import 'package:aves/widgets/viewer/page_entry_builder.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -82,6 +91,18 @@ class _InfoPageState extends State<InfoPage> {
                       scrollController: _scrollController,
                       split: MediaQuery.sizeOf(context).width > splitScreenWidthThreshold,
                       goToViewer: _goToViewer,
+                      onEntrySelected: (newEntry) {
+                        // go through the viewer's horizontal pager instead of setting `entryNotifier` directly,
+                        // so that the page index, entry controllers (e.g. video) and the notifier stay in sync
+                        final entries = widget.collection?.sortedEntries;
+                        final index = entries?.indexWhere((e) => e.id == newEntry.id) ?? -1;
+                        if (index < 0) return;
+                        ShowEntryNotification(animate: false, index: index).dispatch(context);
+                        // jump info scroll back to top so new entry is visible
+                        if (_scrollController.hasClients) {
+                          _scrollController.jumpTo(0);
+                        }
+                      },
                     ),
                   );
                 }
@@ -139,6 +160,7 @@ class _InfoPageContent extends StatefulWidget {
   final ScrollController scrollController;
   final bool split;
   final VoidCallback goToViewer;
+  final ValueChanged<AvesEntry>? onEntrySelected;
 
   const new({
     required this.collection,
@@ -148,6 +170,7 @@ class _InfoPageContent extends StatefulWidget {
     required this.scrollController,
     required this.split,
     required this.goToViewer,
+    this.onEntrySelected,
   });
 
   @override
@@ -190,6 +213,9 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       _isBasicSectionVisibleNotifier.value = false;
       _isMetadataSectionVisibleNotifier.value = false;
       _isColorSectionVisibleNotifier.value = false;
+      // re-evaluate visibility for the new entry so sections render
+      // immediately instead of waiting for a scroll
+      _onPageInViewChanged();
     }
   }
 
@@ -226,7 +252,16 @@ class _InfoPageContentState extends State<_InfoPageContent> {
 
   @override
   Widget build(BuildContext context) {
-    final basicSection = BasicSection(
+    final detailsSection = DetailsSection(entry: entry);
+    final locationSection = LocationSection(
+      collection: collection,
+      entry: entry,
+      showTitle: true,
+      isScrollingNotifier: widget.isScrollingNotifier,
+      onFilterSelection: _onFilterSelection,
+      actionDelegate: _actionDelegate,
+    );
+    final chipsSection = ChipsSection(
       entry: entry,
       collection: collection,
       actionDelegate: _actionDelegate,
@@ -234,91 +269,76 @@ class _InfoPageContentState extends State<_InfoPageContent> {
       isEditingMetadataNotifier: _isEditingMetadataNotifier,
       onFilterSelection: _onFilterSelection,
     );
-    final locationAtTop = widget.split && entry.hasGps;
-    final locationSection = LocationSection(
-      collection: collection,
-      entry: entry,
-      showTitle: !locationAtTop,
-      isScrollingNotifier: widget.isScrollingNotifier,
-      onFilterSelection: _onFilterSelection,
-    );
-    final basicAndLocationSliver = locationAtTop
-        ? SliverToBoxAdapter(
-            child: Row(
-              crossAxisAlignment: .start,
-              children: [
-                Expanded(child: basicSection),
-                const SizedBox(width: 8),
-                Expanded(child: locationSection),
-              ],
-            ),
-          )
-        : SliverList(
-            delegate: SliverChildListDelegate.fixed(
-              [
-                basicSection,
-                locationSection,
-              ],
-              addAutomaticKeepAlives: true,
-            ),
-          );
 
     return NotificationListener<SelectFilterNotification>(
       onNotification: (notification) {
         _onFilterSelection(notification.filter);
         return true;
       },
-      child: CustomScrollView(
-        controller: widget.scrollController,
-        slivers: [
-          const SliverToBoxAdapter(
-            child: TvEdgeFocus(),
-          ),
-          InfoAppBar(
-            entry: entry,
-            collection: collection,
-            actionDelegate: _actionDelegate,
-            metadataNotifier: _metadataNotifier,
-            onBackPressed: widget.goToViewer,
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isBasicSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(top: 8),
-                      sliver: basicAndLocationSliver,
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _isMetadataSectionVisibleNotifier,
-            builder: (context, visible, child) {
-              return visible
-                  ? SliverPadding(
-                      padding: _horizontalPadding + const EdgeInsets.only(bottom: 8),
-                      sliver: MetadataSectionSliver(
-                        entry: entry,
-                        metadataNotifier: _metadataNotifier,
-                      ),
-                    )
-                  : const SliverToBoxAdapter(child: SizedBox());
-            },
-          ),
-          if (!settings.useTvLayout)
-            ValueListenableBuilder<bool>(
-              valueListenable: _isColorSectionVisibleNotifier,
-              builder: (context, visible, child) {
-                return visible
-                    ? SliverPadding(
-                        padding: _horizontalPadding + const EdgeInsets.only(bottom: 8),
-                        sliver: ColorSectionSliver(entry: entry),
-                      )
-                    : const SliverToBoxAdapter(child: SizedBox());
-              },
+      child: Column(
+        children: [
+          Expanded(
+            child: CustomScrollView(
+              controller: widget.scrollController,
+              slivers: [
+                const SliverToBoxAdapter(
+                  child: TvEdgeFocus(),
+                ),
+                InfoAppBar(
+                  entry: entry,
+                  collection: collection,
+                  actionDelegate: _actionDelegate,
+                  metadataNotifier: _metadataNotifier,
+                  onBackPressed: widget.goToViewer,
+                ),
+                SliverToBoxAdapter(
+                  child: _InfoTitleRow(entry: entry),
+                ),
+                SliverToBoxAdapter(
+                  child: InfoHeaderSection(
+                    entry: entry,
+                    collection: collection,
+                    actionDelegate: _actionDelegate,
+                    chipsSection: chipsSection,
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: detailsSection,
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: locationSection,
+                  ),
+                ),
+                MetadataSectionSliver(
+                  entry: entry,
+                  metadataNotifier: _metadataNotifier,
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  sliver: SliverToBoxAdapter(
+                    child: AiTagsSection(
+                      entry: entry,
+                      actionDelegate: _actionDelegate,
+                    ),
+                  ),
+                ),
+                if (!settings.useTvLayout)
+                  ColorSectionSliver(entry: entry),
+                const BottomPaddingSliver(),
+              ],
             ),
-          const BottomPaddingSliver(),
+          ),
+          if (settings.showOverlayThumbnailPreview && settings.showInfoThumbnail)
+            _InfoBottomThumbnail(
+              collection: collection,
+              currentEntry: entry,
+              onEntrySelected: widget.onEntrySelected,
+            ),
         ],
       ),
     );
@@ -338,5 +358,114 @@ class _InfoPageContentState extends State<_InfoPageContent> {
   void _onFilterSelection(CollectionFilter filter) {
     if (!mounted) return;
     SelectFilterNotification(filter).dispatch(context);
+  }
+}
+
+class _InfoBottomThumbnail extends StatelessWidget {
+  final CollectionLens? collection;
+  final AvesEntry currentEntry;
+  final ValueChanged<AvesEntry>? onEntrySelected;
+
+  const new({
+    super.key,
+    required this.collection,
+    required this.currentEntry,
+    this.onEntrySelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = collection?.sortedEntries ?? [currentEntry];
+    final index = entries.indexWhere((e) => e.id == currentEntry.id);
+    if (index < 0) return const SizedBox();
+
+    final width = MediaQuery.sizeOf(context).width;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: ViewerThumbnailPreview(
+          entries: entries,
+          displayedIndex: index,
+          availableWidth: width,
+          onTapOverride: onEntrySelected == null
+              ? null
+              : (i) {
+                  if (i >= 0 && i < entries.length) {
+                    onEntrySelected!.call(entries[i]);
+                  }
+                },
+        ),
+      ),
+    );
+  }
+}
+
+
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  _TabBarDelegate(this.tabBar, this.backgroundColor);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_TabBarDelegate oldDelegate) {
+    return tabBar != oldDelegate.tabBar || backgroundColor != oldDelegate.backgroundColor;
+  }
+}
+
+
+
+class _InfoTitleRow extends StatelessWidget {
+  final AvesEntry entry;
+
+  const _InfoTitleRow({required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final title = entry.bestTitle ?? '';
+    if (title.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          FavouriteToggler(
+            entries: {entry},
+            onPressed: () => entry.toggleFavourite(),
+          ),
+        ],
+      ),
+    );
   }
 }

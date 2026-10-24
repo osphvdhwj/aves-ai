@@ -15,6 +15,10 @@ mixin AppSettings on SettingsAccess {
 
   set canUseAnalysisService(bool newValue) => set(SettingKeys.canUseAnalysisServiceKey, newValue);
 
+  bool get aiSearchEnabled => getBool(SettingKeys.aiSearchEnabledKey) ?? SettingsDefaults.aiSearchEnabled;
+
+  set aiSearchEnabled(bool newValue) => set(SettingKeys.aiSearchEnabledKey, newValue);
+
   bool get isInstalledAppAccessAllowed => getBool(SettingKeys.isInstalledAppAccessAllowedKey) ?? SettingsDefaults.isInstalledAppAccessAllowed;
 
   set isInstalledAppAccessAllowed(bool newValue) => set(SettingKeys.isInstalledAppAccessAllowedKey, newValue);

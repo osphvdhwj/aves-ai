@@ -115,9 +115,22 @@ class _ViewerDetailOverlayState extends State<ViewerDetailOverlay> {
               MetadataSyntheticField.focalLength,
               MetadataSyntheticField.iso,
             },
-            if (settings.showOverlayDescription) MetadataSyntheticField.description,
+            // Don't fetch description from file if we already have a local edit
+            if (settings.showOverlayDescription && !entry.hasLocalMetadataEdit) MetadataSyntheticField.description,
           })
-          .then(_detailStreamController.add);
+          .then((details) {
+            if (entry.hasLocalMetadataEdit) {
+              _detailStreamController.add(OverlayMetadata(
+                aperture: details.aperture,
+                exposureTime: details.exposureTime,
+                focalLength: details.focalLength,
+                iso: details.iso,
+                description: entry.catalogMetadata?.xmpDescription,
+              ));
+            } else {
+              _detailStreamController.add(details);
+            }
+          });
     }
     _unregisterEntry();
     _requestEntry = entry;

@@ -46,7 +46,6 @@ import 'package:aves/widgets/navigation/nav_bar/nav_bar.dart';
 import 'package:aves/widgets/navigation/tv_rail.dart';
 import 'package:aves_model/aves_model.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -636,7 +635,7 @@ class _FilterScaler<T extends CollectionFilter> extends StatelessWidget {
           spacing: tileSpacing,
           horizontalPadding: horizontalPadding,
           borderWidth: AvesFilterChip.outlineWidth,
-          borderRadius: CoveredFilterChip.radius(tileSize.shortestSide),
+          borderRadius: CoveredFilterChip.radius(context, tileSize.shortestSide),
           color: Colors.grey.shade700,
           textDirection: Directionality.of(context),
         ),
@@ -659,7 +658,7 @@ class _FilterScaler<T extends CollectionFilter> extends StatelessWidget {
             color: context.read<AvesColorsData>().neutral,
             width: AvesFilterChip.outlineWidth,
           ),
-          borderRadius: BorderRadius.all(CoveredFilterChip.radius(targetExtent)),
+          borderRadius: BorderRadius.all(CoveredFilterChip.radius(context, targetExtent)),
         ),
       ),
       highlightItem: (item) => item.filter,
@@ -708,6 +707,7 @@ class _FilterScrollView<T extends CollectionFilter> extends StatelessWidget {
                   backgroundColor: Colors.white,
                   scrollThumbSize: AvesScrollThumb.thumbSize,
                   scrollThumbBuilder: AvesScrollThumb.builder(
+                    context: context,
                     height: AvesScrollThumb.thumbHeight,
                     backgroundColor: Colors.white,
                   ),
@@ -749,7 +749,7 @@ class _FilterScrollView<T extends CollectionFilter> extends StatelessWidget {
                 ),
           slivers: [
             appBar,
-            AnimationLimiter(
+            KeyedSubtree(
               key: ValueKey(context.select<FilterGroupNotifier?, Uri?>((v) => v?.value)),
               child: isEmpty
                   ? SliverFillRemaining(

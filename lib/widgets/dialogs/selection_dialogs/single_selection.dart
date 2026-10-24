@@ -1,3 +1,5 @@
+import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/dialogs/selection_dialogs/common.dart';
 import 'package:aves/widgets/dialogs/selection_dialogs/radio_list_tile.dart';
@@ -35,7 +37,7 @@ class _AvesSingleSelectionDialogState<T> extends State<AvesSingleSelectionDialog
   Widget build(BuildContext context) {
     final title = widget.title;
     final message = widget.message;
-    final verticalPadding = (title == null && message == null) ? AvesDialog.cornerRadius.y / 2 : .0;
+    final verticalPadding = (title == null && message == null) ? context.m3e.shapeExtraLarge / 2 : .0;
     final confirmationButtonLabel = widget.confirmationButtonLabel;
     final needConfirmation = confirmationButtonLabel != null;
     return AvesDialog(
@@ -83,9 +85,13 @@ class _AvesSingleSelectionDialogState<T> extends State<AvesSingleSelectionDialog
       actions: [
         const CancelButton(),
         if (needConfirmation)
-          TextButton(
-            onPressed: () => Navigator.maybeOf(context)?.pop<T>(_selectedValue),
-            child: Text(confirmationButtonLabel),
+          PressableScale(
+            passthrough: true,
+            scale: 0.94,
+            child: TextButton(
+              onPressed: () => Navigator.maybeOf(context)?.pop<T>(_selectedValue),
+              child: Text(confirmationButtonLabel),
+            ),
           ),
       ],
     );

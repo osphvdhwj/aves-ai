@@ -1,6 +1,7 @@
 import 'package:aves/app_mode.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/props.dart';
+import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/selection.dart';
 import 'package:aves/model/settings/enums/accessibility_animations.dart';
 import 'package:aves/model/settings/settings.dart';
@@ -15,12 +16,19 @@ import 'package:aves/widgets/common/basic/popup/menu_row.dart';
 import 'package:aves/widgets/common/extensions/build_context.dart';
 import 'package:aves/widgets/common/search/route.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/widgets/viewer/info/info_search_delegate.dart';
+import 'package:aves/widgets/search/ai_search_delegate.dart';
+import 'package:aves/widgets/viewer/info/extract_text_dialog.dart';
+import 'package:aves/widgets/viewer/info/text_select_page.dart';
+import 'package:aves/widgets/viewer/info/secure_share_dialog.dart';
+import 'package:aves/widgets/viewer/info/ai_tools_page.dart';
 import 'package:aves/widgets/viewer/info/metadata/metadata_dir.dart';
 import 'package:aves_model/aves_model.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class InfoAppBar extends StatelessWidget {
   final AvesEntry entry;
@@ -51,6 +59,8 @@ class InfoAppBar extends StatelessWidget {
     final useTvLayout = settings.useTvLayout;
     final animations = context.select<Settings, AccessibilityAnimations>((v) => v.accessibilityAnimations);
     return SliverAppBar(
+      expandedHeight: 280.0,
+      pinned: true,
       leading: useTvLayout
           ? null
           : FontSizeIconTheme(
@@ -72,43 +82,142 @@ class InfoAppBar extends StatelessWidget {
       actions: useTvLayout
           ? []
           : [
-              IconButton(
-                icon: const Icon(AIcons.search),
-                onPressed: () => _goToSearch(context),
-                tooltip: MaterialLocalizations.of(context).searchFieldLabel,
-              ),
-              if (entry.canEdit)
-                PopupMenuButton<EntryAction>(
-                  itemBuilder: (context) => [
-                    ...commonActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))),
-                    if (formatSpecificActions.isNotEmpty) ...[
-                      const PopupMenuDivider(),
-                      ...formatSpecificActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))),
-                    ],
-                    if (isVisible(EntryAction.debug)) ...[
-                      const PopupMenuDivider(),
-                      _toMenuItem(context, EntryAction.debug, enabled: true),
-                    ],
-                  ],
-                  onSelected: (action) async {
-                    // wait for the popup menu to hide before proceeding with the action
-                    await Future.delayed(animations.popUpAnimationDelay * timeDilation);
-                    await actionDelegate.onActionSelected(context, entry, collection, action);
-                  },
-                  popUpAnimationStyle: animations.popUpAnimationStyle,
+              FontSizeIconTheme(
+                child: IconButton(
+                  icon: const Icon(AIcons.search),
+                  onPressed: () => _goToSearch(context),
+                  tooltip: MaterialLocalizations.of(context).searchFieldLabel,
                 ),
-            ].map((v) => FontSizeIconTheme(child: v)).toList(),
-      floating: true,
+              ),
+              FontSizeIconTheme(
+                child: FutureBuilder<AiHealth>(
+                  future: aiService.health(),
+                  builder: (context, snap) {
+                    final health = snap.data;
+                    final ocrSupported = health?.connected == true && health!.has('ocr');
+                    return PopupMenuButton<Object>(
+                      icon: const Icon(Symbols.more_vert),
+                      tooltip: 'More',
+                      itemBuilder: (context) => _buildMenuItems(
+                        context,
+                        ocrSupported: ocrSupported,
+                        commonActions: commonActions,
+                        formatSpecificActions: formatSpecificActions,
+                        isVisible: isVisible,
+                      ),
+                      onSelected: (value) => _onMenuSelected(
+                        context,
+                        value,
+                        animations: animations,
+                      ),
+                      popUpAnimationStyle: animations.popUpAnimationStyle,
+                    );
+                  },
+                ),
+              ),
+            ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Image(
+          image: entry.getThumbnail(extent: 1024),
+          fit: BoxFit.cover,
+        ),
+      ),
       // as of Flutter v3.44.4, `SliverAppBar` does not automatically pick up `systemOverlayStyle` from `AppBar` theme
       systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
     );
   }
 
-  PopupMenuItem<EntryAction> _toMenuItem(BuildContext context, EntryAction action, {required bool enabled}) {
-    return PopupMenuItem(
+  List<PopupMenuEntry<Object>> _buildMenuItems(
+    BuildContext context, {
+    required bool ocrSupported,
+    required Iterable<EntryAction> commonActions,
+    required Iterable<EntryAction> formatSpecificActions,
+    required bool Function(EntryAction) isVisible,
+  }) {
+    final items = <PopupMenuEntry<Object>>[];
+
+    // Info-page specific actions, now consolidated into the overflow menu.
+    if (entry.isImage && ocrSupported) {
+      items.add(_customItem('Extract text', Symbols.text_fields, _AppBarAction.extractText));
+      items.add(_customItem('Select text', Symbols.text_select_start, _AppBarAction.selectText));
+    }
+    if (entry.isImage) {
+      items.add(_customItem('Find similar', Symbols.image_search, _AppBarAction.findSimilar));
+    }
+    items.add(_customItem('Secure share', Symbols.shield_lock, _AppBarAction.secureShare));
+    items.add(_customItem('AI tools', Symbols.auto_awesome, _AppBarAction.aiTools));
+
+    // Existing per-entry edit actions (only when the entry supports them).
+    if (entry.canEdit && (commonActions.isNotEmpty || formatSpecificActions.isNotEmpty)) {
+      items.add(const PopupMenuDivider());
+      items.addAll(commonActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))));
+      if (formatSpecificActions.isNotEmpty) {
+        items.add(const PopupMenuDivider());
+        items.addAll(formatSpecificActions.map((action) => _toMenuItem(context, action, enabled: actionDelegate.canApply(entry, action))));
+      }
+    }
+
+    if (isVisible(EntryAction.debug)) {
+      items.add(const PopupMenuDivider());
+      items.add(_toMenuItem(context, EntryAction.debug, enabled: true));
+    }
+
+    return items;
+  }
+
+  PopupMenuItem<Object> _customItem(String label, IconData icon, _AppBarAction value) {
+    return PopupMenuItem<Object>(
+      value: value,
+      child: MenuRow(text: label, icon: Icon(icon)),
+    );
+  }
+
+  PopupMenuItem<Object> _toMenuItem(BuildContext context, EntryAction action, {required bool enabled}) {
+    return PopupMenuItem<Object>(
       value: action,
       enabled: enabled,
       child: MenuRow(text: action.getText(context), icon: action.getIcon()),
+    );
+  }
+
+  Future<void> _onMenuSelected(
+    BuildContext context,
+    Object value, {
+    required AccessibilityAnimations animations,
+  }) async {
+    if (value is EntryAction) {
+      // wait for the popup menu to hide before proceeding with the action
+      await Future.delayed(animations.popUpAnimationDelay * timeDilation);
+      await actionDelegate.onActionSelected(context, entry, collection, value);
+      return;
+    }
+    if (value is _AppBarAction) {
+      switch (value) {
+        case _AppBarAction.extractText:
+          showExtractTextDialog(context, entry);
+        case _AppBarAction.selectText:
+          showTextSelectPage(context, entry);
+        case _AppBarAction.findSimilar:
+          _openFindSimilar(context);
+        case _AppBarAction.secureShare:
+          showSecureShareDialog(context, entry);
+        case _AppBarAction.aiTools:
+          showAiToolsPage(context, entry, collection: collection);
+      }
+    }
+  }
+
+  void _openFindSimilar(BuildContext context) {
+    Navigator.maybeOf(context)?.push(
+      SearchPageRoute(
+        delegate: AiSearchDelegate(
+          searchFieldLabel: 'Find similar',
+          searchFieldStyle: Themes.searchFieldStyle(context),
+          initialText: '@like',
+          contextEntry: entry,
+        ),
+        background: Theme.of(context).scaffoldBackgroundColor,
+      ),
     );
   }
 
@@ -127,4 +236,12 @@ class InfoAppBar extends StatelessWidget {
       ),
     );
   }
+}
+
+enum _AppBarAction {
+  extractText,
+  selectText,
+  findSimilar,
+  secureShare,
+  aiTools,
 }
