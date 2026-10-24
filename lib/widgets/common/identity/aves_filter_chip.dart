@@ -447,8 +447,10 @@ class _AvesFilterChipState extends State<AvesFilterChip> {
       }
     }
     final disableAnimations = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    return SpringScale(
+    return AnimatedScale(
       scale: (_pressed && !disableAnimations) ? 0.96 : 1.0,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOutCubic,
       child: chip,
     );
   }
