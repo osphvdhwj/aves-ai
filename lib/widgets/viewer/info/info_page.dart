@@ -14,9 +14,12 @@ import 'package:aves/widgets/common/basic/tv_edge_focus.dart';
 import 'package:aves/model/entry/extensions/favourites.dart';
 import 'package:aves/widgets/common/action_controls/togglers/favourite.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
-import 'package:aves/widgets/viewer/action/entry_action_delegate.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/info/chips_section.dart';
+import 'package:aves/widgets/viewer/info/ai_tags_section.dart';
+import 'package:aves/widgets/viewer/info/color_section.dart';
+import 'package:aves/widgets/viewer/info/details_section.dart';
+import 'package:aves/widgets/viewer/info/metadata/metadata_section.dart';
 import 'package:aves/widgets/viewer/info/embedded/embedded_data_opener.dart';
 import 'package:aves/widgets/viewer/info/info_app_bar.dart';
 import 'package:aves/widgets/viewer/info/info_fade_in.dart';
@@ -174,11 +177,9 @@ class _InfoPageContent extends StatefulWidget {
   State<_InfoPageContent> createState() => _InfoPageContentState();
 }
 
-class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+class _InfoPageContentState extends State<_InfoPageContent> {
   final Set<StreamSubscription> _subscriptions = {};
   late EntryInfoActionDelegate _actionDelegate;
-  late EntryActionDelegate _viewerActionDelegate;
   final ValueNotifier<bool> _isBasicSectionVisibleNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isMetadataSectionVisibleNotifier = ValueNotifier(false);
   final ValueNotifier<bool> _isColorSectionVisibleNotifier = ValueNotifier(false);
@@ -197,7 +198,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
     _registerWidget(widget);
     // necessary when animations are disabled and page is in full view from first frame
     _onPageInViewChanged();
@@ -210,7 +210,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
     if (oldWidget.entry != widget.entry) {
       _unregisterWidget(oldWidget);
       _registerWidget(widget);
-      _viewerActionDelegate = EntryActionDelegate(widget.entry, widget.entry, widget.collection);
       _isBasicSectionVisibleNotifier.value = false;
       _isMetadataSectionVisibleNotifier.value = false;
       _isColorSectionVisibleNotifier.value = false;
@@ -222,7 +221,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
 
   @override
   void dispose() {
-    _tabController.dispose();
     _isBasicSectionVisibleNotifier.dispose();
     _isMetadataSectionVisibleNotifier.dispose();
     _isColorSectionVisibleNotifier.dispose();
@@ -234,7 +232,6 @@ class _InfoPageContentState extends State<_InfoPageContent> with SingleTickerPro
 
   void _registerWidget(_InfoPageContent widget) {
     _actionDelegate = EntryInfoActionDelegate();
-    _viewerActionDelegate = EntryActionDelegate(widget.entry, widget.entry, widget.collection);
     _subscriptions.add(_actionDelegate.eventStream.listen(_onActionDelegateEvent));
     widget.pageInViewNotifier.addListener(_onPageInViewChanged);
   }
