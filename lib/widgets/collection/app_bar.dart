@@ -228,8 +228,14 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                                   children: _buildActions(context, selection, double.infinity),
                                 ),
                               ),
-                            CollectionSearchBar(onTap: _goToSearch),
-                            CollectionQuickFilters(collection: collection),
+                            SizedBox(
+                              height: CollectionSearchBar.preferredHeight,
+                              child: CollectionSearchBar(onTap: _goToSearch),
+                            ),
+                            SizedBox(
+                              height: CollectionQuickFilters.preferredHeight,
+                              child: CollectionQuickFilters(collection: collection),
+                            ),
                             if (showFilterBar)
                               NotificationListener(
                                 onNotification: (notification) {
