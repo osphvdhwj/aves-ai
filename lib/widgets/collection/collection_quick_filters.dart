@@ -10,6 +10,8 @@ import 'package:material_ui/material_ui.dart';
 class CollectionQuickFilters extends StatelessWidget {
   final CollectionLens collection;
 
+  static const double preferredHeight = 52.0;
+
   const new({super.key, required this.collection});
 
   @override

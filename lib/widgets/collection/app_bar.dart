@@ -214,8 +214,11 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                         ),
                         title: _buildAppBarTitle(isSelecting),
                         actions: (context, maxWidth) => useTvLayout ? [] : _buildActions(context, selection, maxWidth),
-                        bottom: Column(
-                          children: [
+                        bottom: PreferredSize(
+                          preferredSize: Size.fromHeight(_getAppBarContentHeight(context) - kToolbarHeight),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                             if (useTvLayout)
                               SizedBox(
                                 height: CaptionedButton.getTelevisionButtonHeight(context),
@@ -260,8 +263,9 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                               ),
                           ],
                         ),
-                        transitionKey: isSelecting,
-                      );
+                      ),
+                      transitionKey: isSelecting,
+                    );
                     },
                   );
                 },
@@ -285,6 +289,8 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     if (settings.useTvLayout) {
       height += CaptionedButton.getTelevisionButtonHeight(context);
     }
+    height += CollectionSearchBar.preferredHeight;
+    height += CollectionQuickFilters.preferredHeight;
     if (showFilterBar) {
       height += FilterBar.preferredHeight;
     }

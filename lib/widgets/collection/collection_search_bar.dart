@@ -7,6 +7,8 @@ import 'package:material_ui/material_ui.dart';
 class CollectionSearchBar extends StatelessWidget {
   final VoidCallback onTap;
 
+  static const double preferredHeight = 68.0;
+
   const new({super.key, required this.onTap});
 
   @override
