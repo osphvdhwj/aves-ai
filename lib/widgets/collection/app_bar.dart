@@ -295,7 +295,6 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
     if (settings.useTvLayout) {
       height += CaptionedButton.getTelevisionButtonHeight(context);
     }
-    height += CollectionSearchBar.preferredHeight;
     height += CollectionQuickFilters.preferredHeight;
     if (showFilterBar) {
       height += FilterBar.preferredHeight;
