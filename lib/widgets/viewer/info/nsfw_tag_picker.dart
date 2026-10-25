@@ -1,8 +1,7 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/nsfw_tags.dart';
 import 'package:aves/model/filters/covered/tag.dart';
-import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/theme/icons.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -22,6 +21,7 @@ Future<void> showNsfwTagPicker(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (context) => _NsfwTagPicker(entry: entry, actionDelegate: actionDelegate),
   );
 }
@@ -108,15 +108,9 @@ class _NsfwTagPickerState extends State<_NsfwTagPicker> {
                   controller: _controller,
                   autofocus: false,
                   onChanged: _filter,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Filter vocabulary…',
-                    prefixIcon: const Icon(Symbols.search),
-                    filled: true,
-                    fillColor: colors.surfaceContainerHigh,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
-                    ),
+                    prefixIcon: Icon(AIcons.search),
                   ),
                 ),
               ),
@@ -142,19 +136,10 @@ class _NsfwTagPickerState extends State<_NsfwTagPicker> {
                       itemCount: _visible.length,
                       itemBuilder: (context, i) {
                         final tag = _visible[i];
-                        return PressableScale(
+                        return ListTile(
                           onTap: () => _apply(tag),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(tag, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface)),
-                                ),
-                                Icon(Symbols.add, size: 18, color: colors.primary),
-                              ],
-                            ),
-                          ),
+                          title: Text(tag, style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface)),
+                          trailing: Icon(Symbols.add, size: 18, color: colors.primary),
                         );
                       },
                     );

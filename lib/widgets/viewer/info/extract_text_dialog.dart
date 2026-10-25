@@ -1,15 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
+import 'package:aves/theme/themes.dart';
+import 'package:aves/widgets/common/search/route.dart';
+import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/search/ai_search_delegate.dart';
 import 'package:aves/widgets/viewer/info/translation_overlay.dart';
-import 'package:aves/widgets/common/search/route.dart';
-import 'package:aves/theme/themes.dart';
-import 'package:aves/widgets/dialogs/aves_dialog.dart';
-import 'package:material_symbols_icons/symbols.dart';
-import 'dart:typed_data';
-
 import 'package:material_ui/material_ui.dart';
 
 /// Shows the OCR result for [entry] in a dialog with a copy action.
@@ -52,108 +51,44 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return AlertDialog(
-      icon: Icon(Symbols.text_fields, color: colors.primary),
-      title: const Text('Extract text'),
-      content: SizedBox(
-        width: 360,
-        child: FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            final reply = snapshot.data;
-            final error = reply?.error;
-            final text = reply?.text.trim() ?? '';
-            if (reply?.isModelMissing == true) {
-              return _message(theme, colors, 'The AVES+ Tools companion does not have its OCR model installed yet.');
-            }
-            if (reply?.isUnsupported == true) {
-              return _message(theme, colors, 'This companion build does not support OCR. Update AVES+ Tools.');
-            }
-            if (error != null && error.isNotEmpty) {
-              return _message(theme, colors, 'Text extraction failed: $error');
-            }
-            if (text.isEmpty) {
-              return _message(theme, colors, 'No text detected in this image.');
-            }
-            return SingleChildScrollView(
-              child: SelectableText(
-                text,
-                style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
-              ),
-            );
-          },
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          child: const Text('Close'),
-        ),
-        FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            final text = snapshot.data?.text.trim() ?? '';
-            final enabled = text.isNotEmpty;
-            return TextButton.icon(
-              onPressed: enabled
+    return FutureBuilder<AiChatReply>(
+      future: _future,
+      builder: (context, snapshot) {
+        final reply = snapshot.data;
+        final text = reply?.text.trim() ?? '';
+        final hasText = text.isNotEmpty;
+        return AvesDialog(
+          title: 'Extract text',
+          content: SizedBox(
+            width: 360,
+            child: snapshot.connectionState != ConnectionState.done
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : _content(theme, colors, reply, hasText: hasText),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: const Text('Close'),
+            ),
+            TextButton(
+              onPressed: hasText ? () => _copy(context, text, message: 'Text copied') : null,
+              child: const Text('Copy'),
+            ),
+            TextButton(
+              onPressed: hasText
                   ? () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      final copied = await appService.copyToClipboard(text: text);
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text(copied ? 'Text copied' : 'Copy failed'),
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
+                      final navigator = Navigator.of(context);
+                      await _copy(context, text, message: 'Text copied — paste it into your translation app.');
+                      navigator.maybePop();
                     }
                   : null,
-              icon: const Icon(Symbols.content_copy, size: 18),
-              label: const Text('Copy'),
-            );
-          },
-        ),
-        FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            final text = snapshot.data?.text.trim() ?? '';
-            final enabled = text.isNotEmpty;
-            return TextButton.icon(
-              onPressed: enabled
-                  ? () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      final copied = await appService.copyToClipboard(text: text);
-                      if (!mounted) return;
-                      Navigator.of(context).maybePop();
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            copied
-                                ? 'Text copied — paste it into your translation app.'
-                                : 'Copy failed',
-                          ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  : null,
-              icon: const Icon(Symbols.translate, size: 18),
-              label: const Text('Translate'),
-            );
-          },
-        ),
-        FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            final text = snapshot.data?.text.trim() ?? '';
-            final enabled = text.isNotEmpty;
-            return TextButton.icon(
-              onPressed: enabled
+              child: const Text('Translate'),
+            ),
+            TextButton(
+              onPressed: hasText
                   ? () {
                       final blocks = parseOcrBlocks(text);
                       Navigator.of(context).maybePop();
@@ -168,18 +103,10 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
                       );
                     }
                   : null,
-              icon: const Icon(Symbols.text_increase, size: 18),
-              label: const Text('In place'),
-            );
-          },
-        ),
-        FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            final text = snapshot.data?.text.trim() ?? '';
-            final enabled = text.isNotEmpty;
-            return TextButton.icon(
-              onPressed: enabled
+              child: const Text('In place'),
+            ),
+            TextButton(
+              onPressed: hasText
                   ? () async {
                       final messenger = ScaffoldMessenger.of(context);
                       final saved = await storageService.createFile(
@@ -196,18 +123,10 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
                       );
                     }
                   : null,
-              icon: const Icon(Symbols.save_alt, size: 18),
-              label: const Text('Save .txt'),
-            );
-          },
-        ),
-        FutureBuilder<AiChatReply>(
-          future: _future,
-          builder: (context, snapshot) {
-            final text = snapshot.data?.text.trim() ?? '';
-            final enabled = text.isNotEmpty;
-            return TextButton.icon(
-              onPressed: enabled
+              child: const Text('Save .txt'),
+            ),
+            TextButton(
+              onPressed: hasText
                   ? () {
                       Navigator.of(context).maybePop();
                       Navigator.of(context).push(
@@ -221,12 +140,45 @@ class _ExtractTextDialogState extends State<_ExtractTextDialog> {
                       );
                     }
                   : null,
-              icon: const Icon(Symbols.search, size: 18),
-              label: const Text('Find'),
-            );
-          },
-        ),
-      ],
+              child: const Text('Find'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _content(ThemeData theme, ColorScheme colors, AiChatReply? reply, {required bool hasText}) {
+    final error = reply?.error;
+    final text = reply?.text.trim() ?? '';
+    if (reply?.isModelMissing == true) {
+      return _message(theme, colors, 'The AVES+ Tools companion does not have its OCR model installed yet.');
+    }
+    if (reply?.isUnsupported == true) {
+      return _message(theme, colors, 'This companion build does not support OCR. Update AVES+ Tools.');
+    }
+    if (error != null && error.isNotEmpty) {
+      return _message(theme, colors, 'Text extraction failed: $error');
+    }
+    if (text.isEmpty) {
+      return _message(theme, colors, 'No text detected in this image.');
+    }
+    return SingleChildScrollView(
+      child: SelectableText(
+        text,
+        style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurface),
+      ),
+    );
+  }
+
+  Future<void> _copy(BuildContext context, String text, {required String message}) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final copied = await appService.copyToClipboard(text: text);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(copied ? message : 'Copy failed'),
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 

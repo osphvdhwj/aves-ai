@@ -8,6 +8,7 @@ import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/viewer/info/image_quality.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -69,15 +70,8 @@ class _CleanerPageState extends State<CleanerPage> {
   Widget build(BuildContext context) {
     final entries = _cachedEntries;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Symbols.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: const Text('Cleaner'),
-      ),
+    return AvesScaffold(
+      appBar: AppBar(title: const Text('Cleaner')),
       body: SafeArea(
         child: FutureBuilder<Map<CleanerBucket, List<AvesEntry>>>(
           future: _classificationFuture,
@@ -92,20 +86,9 @@ class _CleanerPageState extends State<CleanerPage> {
                 ),
                 const SizedBox(height: 16),
                 if (buckets == null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: Column(
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Analyzing ${entries.length} items…',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 64),
+                    child: Center(child: CircularProgressIndicator()),
                   )
                 else
                   for (final bucket in CleanerBucket.values)
@@ -253,17 +236,12 @@ class CleanerBucketPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(
         title: Text(
           bucket.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-        ),
-        leading: IconButton(
-          icon: const Icon(Symbols.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () => Navigator.of(context).maybePop(),
         ),
       ),
       body: SafeArea(
@@ -320,8 +298,8 @@ class _BucketTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

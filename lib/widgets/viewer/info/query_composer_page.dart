@@ -3,7 +3,7 @@ import 'package:aves/model/filters/mime.dart';
 import 'package:aves/model/filters/rating.dart';
 import 'package:aves/model/filters/type.dart';
 import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -57,7 +57,7 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
     final colors = theme.colorScheme;
     final composed = _composed;
 
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(
         title: const Text('Compose query'),
         actions: [
@@ -116,8 +116,8 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colors.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+                  color: colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
                 ),
                 child: Text(
                   'Applying ${composed.length} filter${composed.length == 1 ? '' : 's'}',
@@ -151,46 +151,22 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
       runSpacing: 8,
       children: items.map((item) {
         final isSelected = selected == item;
-        return PressableScale(
-          onTap: () => onSelect(item),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.secondaryContainer : Theme.of(context).colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isSelected) ...[
-                  Icon(Symbols.check, size: 14, color: Theme.of(context).colorScheme.onSecondaryContainer),
-                  const SizedBox(width: 4),
-                ],
-                Text(
-                  label(item),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isSelected ? Theme.of(context).colorScheme.onSecondaryContainer : Theme.of(context).colorScheme.onSurface,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      ),
-                ),
-              ],
-            ),
-          ),
+        return FilterChip(
+          selected: isSelected,
+          label: Text(label(item)),
+          showCheckmark: true,
+          onSelected: (_) => onSelect(item),
         );
       }).toList(),
     );
   }
 }
 
-Future<void> showQueryComposerPage(BuildContext context) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showQueryComposerPage(BuildContext context) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: QueryComposerPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, __) => const QueryComposerPage(),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => const QueryComposerPage(),
     ),
   );
 }

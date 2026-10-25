@@ -1,7 +1,5 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/props.dart';
-import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -28,8 +26,7 @@ class AiFiltersBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     int countOf(AiFilterKind k) => entries.where(k.test).length;
 
@@ -45,61 +42,21 @@ class AiFiltersBar extends StatelessWidget {
           final count = countOf(kind);
           final isSelected = selected.contains(kind);
           final enabled = count > 0;
-          return PressableScale(
-            enabled: enabled,
-            onTap: enabled
-                ? () {
+          return FilterChip(
+            selected: isSelected,
+            avatar: Icon(
+              kind.icon,
+              size: 16,
+              color: enabled ? colors.onSurfaceVariant : colors.onSurfaceVariant.withValues(alpha: 0.4),
+            ),
+            label: Text(count > 0 ? '${kind.label} $count' : kind.label),
+            onSelected: enabled
+                ? (_) {
                     final next = {...selected};
                     if (!next.remove(kind)) next.add(kind);
                     onSelectionChanged(next);
                   }
                 : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? colors.secondaryContainer
-                    : colors.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
-                border: isSelected
-                    ? Border.all(color: colors.secondary, width: 1)
-                    : null,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    kind.icon,
-                    size: 16,
-                    color: enabled
-                        ? (isSelected
-                            ? colors.onSecondaryContainer
-                            : colors.onSurfaceVariant)
-                        : colors.onSurfaceVariant.withValues(alpha: .4),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    kind.label,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: enabled
-                          ? (isSelected
-                              ? colors.onSecondaryContainer
-                              : colors.onSurface)
-                          : colors.onSurfaceVariant.withValues(alpha: .4),
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    ),
-                  ),
-                  if (count > 0) ...[
-                    const SizedBox(width: 6),
-                    Text(
-                      '$count',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
           );
         },
       ),

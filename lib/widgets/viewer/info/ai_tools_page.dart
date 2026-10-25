@@ -2,7 +2,7 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/services/ai_service.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/viewer/info/cleaner_page.dart';
 import 'package:aves/widgets/viewer/info/duplicates_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
@@ -36,7 +36,9 @@ class _AiToolsPageState extends State<AiToolsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return AvesScaffold(
       appBar: AppBar(title: const Text('AI tools')),
       body: SafeArea(
         child: FutureBuilder<AiHealth>(
@@ -47,11 +49,32 @@ class _AiToolsPageState extends State<AiToolsPage> {
           builder: (context, healthSnapshot) {
             final health = healthSnapshot.data;
             final connected = health?.connected == true;
+            final tiles = _buildTiles(context, health);
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
                 if (!connected) _CompanionBanner(health: health),
-                ..._buildTiles(context, health),
+                Container(
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < tiles.length; i++) ...[
+                        tiles[i],
+                        if (i < tiles.length - 1)
+                          Divider(
+                            height: 1,
+                            indent: 16,
+                            endIndent: 16,
+                            color: colors.outlineVariant.withValues(alpha: 0.3),
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
               ],
             );
           },
@@ -178,7 +201,7 @@ class _CompanionBanner extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: colors.errorContainer,
-          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
         ),
         child: Row(
           children: [
@@ -212,62 +235,40 @@ class _Tile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final enabled = onTap != null;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: PressableScale(
-        enabled: enabled,
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          decoration: BoxDecoration(
-            color: enabled ? colors.surfaceContainerHigh : colors.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, color: enabled ? colors.primary : colors.onSurfaceVariant.withValues(alpha: .4)),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: enabled ? colors.onSurface : colors.onSurfaceVariant,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: enabled ? colors.onSurfaceVariant : colors.onSurfaceVariant.withValues(alpha: .7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (enabled)
-                Icon(Symbols.chevron_right, color: colors.onSurfaceVariant, size: 20)
-              else
-                Icon(Symbols.lock, color: colors.onSurfaceVariant.withValues(alpha: .5), size: 18),
-            ],
-          ),
+    return ListTile(
+      onTap: onTap,
+      enabled: enabled,
+      leading: Icon(
+        icon,
+        color: enabled ? colors.primary : colors.onSurfaceVariant.withValues(alpha: 0.4),
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: enabled ? colors.onSurface : colors.onSurfaceVariant,
         ),
       ),
+      subtitle: Text(
+        subtitle,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: enabled ? colors.onSurfaceVariant : colors.onSurfaceVariant.withValues(alpha: 0.7),
+        ),
+      ),
+      trailing: enabled
+          ? Icon(Symbols.chevron_right, color: colors.onSurfaceVariant, size: 20)
+          : Icon(Symbols.lock, color: colors.onSurfaceVariant.withValues(alpha: 0.5), size: 18),
     );
   }
 }
 
-Future<void> showAiToolsPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showAiToolsPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: AiToolsPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, _) => AiToolsPage(entry: entry, collection: collection),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => AiToolsPage(entry: entry, collection: collection),
     ),
   );
 }

@@ -101,52 +101,46 @@ class _AiStatusTileBodyState extends State<_AiStatusTileBody> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: FutureBuilder<AiHealth>(
-        future: _future,
-        builder: (context, snap) {
-          if (snap.connectionState != ConnectionState.done) {
-            return Text('Checking companion...', style: theme.textTheme.bodyMedium);
-          }
-          final h = snap.data;
-          if (h == null) {
-            return Text('No result', style: theme.textTheme.bodyMedium);
-          }
-          final installed = h.installed;
-          final connected = h.connected;
-          final color = connected ? theme.colorScheme.primary : theme.colorScheme.error;
-          final pkg = h.companionPackage;
-          final status = connected
-              ? 'Connected  ·  v${h.apiVersion ?? '?'}  ·  ${h.capabilities.join(', ')}${pkg != null ? '\n$pkg' : ''}'
-              : installed
-                  ? 'Installed but not connected${pkg != null ? '  ·  $pkg' : ''}'
-                  : 'Companion not installed';
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(connected ? Symbols.check_circle : Symbols.info, color: color, size: 18),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('Companion status', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-                  ),
-                  TextButton(
-                    onPressed: _recheck,
-                    child: const Text('Recheck'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.only(left: 26),
-                child: Text(status, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-              ),
-            ],
-          );
-        },
-      ),
+    return FutureBuilder<AiHealth>(
+      future: _future,
+      builder: (context, snap) {
+        final loading = snap.connectionState != ConnectionState.done;
+        final h = snap.data;
+        final connected = h?.connected == true;
+        final installed = h?.installed == true;
+        final pkg = h?.companionPackage;
+        final subtitle = loading
+            ? 'Checking companion…'
+            : h == null
+                ? 'No result'
+                : connected
+                    ? 'Connected  ·  v${h.apiVersion ?? '?'}  ·  ${h.capabilities.join(', ')}${pkg != null ? '\n$pkg' : ''}'
+                    : installed
+                        ? 'Installed but not connected${pkg != null ? '  ·  $pkg' : ''}'
+                        : 'Companion not installed';
+        return ListTile(
+          leading: Icon(
+            loading
+                ? Symbols.autorenew
+                : connected
+                    ? Symbols.check_circle
+                    : Symbols.info,
+            color: connected ? theme.colorScheme.primary : theme.colorScheme.error,
+          ),
+          title: Text(
+            'Companion status',
+            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          trailing: TextButton(
+            onPressed: _recheck,
+            child: const Text('Recheck'),
+          ),
+        );
+      },
     );
   }
 }

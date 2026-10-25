@@ -2,9 +2,11 @@ import 'dart:math' as math;
 
 import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
+import 'package:aves/theme/icons.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
+import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/model/ai/prompt_service.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
@@ -86,11 +88,6 @@ class AiSearchDelegate extends AvesSearchDelegate {
           ),
 
           const SizedBox(height: 24),
-
-          // ── faces ─────────────────────────────────────────
-          const _FaceRow(),
-
-          const SizedBox(height: 28),
 
           // ── hero card ─────────────────────────────────────
           _HeroCard(
@@ -189,7 +186,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
         final reply = snap.data;
         if (reply == null) {
           return StatusView(
-            icon: Symbols.error,
+            icon: AIcons.error,
             isError: true,
             title: 'No reply from the assistant.',
             actionLabel: 'Retry',
@@ -218,7 +215,7 @@ class AiSearchDelegate extends AvesSearchDelegate {
         }
         if (reply.error != null) {
           return StatusView(
-            icon: Symbols.error,
+            icon: AIcons.error,
             isError: true,
             title: 'Search failed',
             subtitle: reply.error!,
@@ -311,9 +308,10 @@ class AiSearchDelegate extends AvesSearchDelegate {
       _retry(context);
       return;
     }
-    await showDialog<void>(
+    await showAvesDialog<void>(
       context: context,
       barrierDismissible: false,
+      routeSettings: const RouteSettings(name: 'IndexBuildDialog'),
       builder: (_) => _IndexBuildDialog(entries: entries),
     );
     _retry(context);
@@ -408,89 +406,67 @@ class _HeroCard extends StatelessWidget {
 
     return PressableScale(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(m3e.shapeExtraLarge),
-        child: Container(
-          height: 148,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [colors.primaryContainer, colors.tertiaryContainer],
-            ),
-          ),
-          child: Stack(
+      child: Container(
+        height: 148,
+        decoration: BoxDecoration(
+          color: colors.primaryContainer,
+          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 4),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Positioned(
-                right: -40,
-                top: -40,
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: ink.withValues(alpha: 0.06),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: ink,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: -0.2,
-                                  height: 1.1,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                subtitle,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: ink.withValues(alpha: 0.8),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            color: ink.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(m3e.shapeLarge + 4),
-                          ),
-                          child: Icon(Symbols.auto_awesome, color: ink, size: 32),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Row(
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Try it',
-                          style: theme.textTheme.labelLarge?.copyWith(
+                          title,
+                          style: theme.textTheme.titleLarge?.copyWith(
                             color: ink,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
+                            height: 1.1,
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Icon(Symbols.arrow_outward, size: 18, color: ink),
+                        const SizedBox(height: 6),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: ink.withValues(alpha: 0.8),
+                          ),
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: ink.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(m3e.shapeLarge),
+                    ),
+                    child: Icon(Symbols.auto_awesome, color: ink, size: 32),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Text(
+                    'Try it',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: ink,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Symbols.arrow_outward, size: 18, color: ink),
+                ],
               ),
             ],
           ),
@@ -566,7 +542,7 @@ class _PromptTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 6),
+          borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 4),
         ),
         padding: const EdgeInsets.all(12),
         child: Stack(
@@ -580,7 +556,7 @@ class _PromptTile extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(m3e.shapeLarge - 2),
+                    borderRadius: BorderRadius.circular(m3e.shapeLarge),
                   ),
                   child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
                 ),
@@ -624,19 +600,19 @@ class _QuickActions extends StatelessWidget {
   static const _commandGroup = <String>{'/find', '/dup', '/blur', '/receipt', '/clean', '/translate', '/objects', '/faces'};
 
   static IconData _iconForCommand(String token) => switch (token) {
-    '/find' => Symbols.search,
+    '/find' => AIcons.search,
     '/dup' => Symbols.copy_all,
     '/blur' => Symbols.blur_on,
     '/receipt' => Symbols.receipt_long,
     '/clean' => Symbols.cleaning_services,
-    '/translate' => Symbols.translate,
+    '/translate' => AIcons.language,
     '/objects' => Symbols.category,
     '/faces' => Symbols.face,
     '@deep' => Symbols.psychology,
     '@fast' => Symbols.bolt,
     '@ocr' => Symbols.text_fields,
     '@person' => Symbols.person,
-    '@like' => Symbols.favorite,
+    '@like' => AIcons.favourite,
     _ => Symbols.auto_awesome,
   };
 
@@ -675,7 +651,7 @@ class _QuickActions extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(m3e.shapeExtraLarge - 8),
+                borderRadius: BorderRadius.circular(m3e.shapeExtraLarge),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -684,12 +660,11 @@ class _QuickActions extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     token,
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.onSurface,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
+                        ),
                   ),
                 ],
               ),
@@ -727,168 +702,6 @@ class _QuickActions extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// face row
-// ─────────────────────────────────────────────────────────────
-class _Person {
-  final String id;
-  final String label;
-
-  const _Person({required this.id, required this.label});
-
-  /// Fallback set shown until face-cluster data is wired through ai_service.
-  static const stubs = <_Person>[
-    _Person(id: 'me', label: 'Me'),
-    _Person(id: 'p2', label: 'Person 2'),
-    _Person(id: 'p3', label: 'Person 3'),
-    _Person(id: 'p4', label: 'Person 4'),
-    _Person(id: 'p5', label: 'Person 5'),
-    _Person(id: 'p6', label: 'Person 6'),
-    _Person(id: 'p7', label: 'Person 7'),
-    _Person(id: 'p8', label: 'Person 8'),
-  ];
-}
-
-/// Data-driven people rail. Pass [people] once face clusters are available;
-/// otherwise the stub list is rendered. Kept as [_FaceRow] so existing call
-/// sites do not need to change.
-class _FaceRow extends StatelessWidget {
-  final List<_Person>? people;
-  final ValueChanged<_Person>? onPick;
-  final VoidCallback? onSeeAll;
-
-  static const _circleDim = 76.0;
-
-  const _FaceRow({super.key, this.people, this.onPick, this.onSeeAll});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final list = people ?? _Person.stubs;
-
-    final palette = [
-      colors.primaryContainer,
-      colors.secondaryContainer,
-      colors.tertiaryContainer,
-    ];
-    final fgPalette = [
-      colors.onPrimaryContainer,
-      colors.onSecondaryContainer,
-      colors.onTertiaryContainer,
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            children: [
-              Text(
-                'People',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: onSeeAll ?? () => _notify(context, 'see all'),
-                child: const Text('See all'),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: _circleDim + 30,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            itemCount: list.length + 1,
-            separatorBuilder: (_, _) => const SizedBox(width: 14),
-            itemBuilder: (context, i) {
-              if (i == list.length) {
-                return _PersonCircle(
-                  label: 'Add',
-                  icon: Symbols.add,
-                  bg: colors.surfaceContainerHighest,
-                  fg: colors.onSurfaceVariant,
-                  borderColor: colors.outlineVariant,
-                  onTap: () => _notify(context, 'add person'),
-                );
-              }
-              final p = list[i];
-              final isFirst = i == 0;
-              return _PersonCircle(
-                label: p.label,
-                icon: Symbols.person,
-                bg: palette[i % palette.length],
-                fg: fgPalette[i % fgPalette.length],
-                borderColor: isFirst ? colors.primary : null,
-                borderWidth: isFirst ? 2.5 : 1.5,
-                onTap: () => (onPick ?? (_) => _notify(context, p.label)).call(p),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _notify(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 1)),
-    );
-  }
-}
-
-class _PersonCircle extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color bg;
-  final Color fg;
-  final Color? borderColor;
-  final double borderWidth;
-  final VoidCallback onTap;
-
-  const _PersonCircle({
-    required this.label,
-    required this.icon,
-    required this.bg,
-    required this.fg,
-    required this.onTap,
-    this.borderColor,
-    this.borderWidth = 1.5,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        PressableScale(
-          onTap: onTap,
-          child: Container(
-            width: _FaceRow._circleDim,
-            height: _FaceRow._circleDim,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: bg,
-              border: borderColor == null
-                  ? null
-                  : Border.all(color: borderColor!, width: borderWidth),
-            ),
-            child: Icon(icon, color: fg, size: 32),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
 // results header
 // ─────────────────────────────────────────────────────────────
 class _ResultsHeader extends StatelessWidget {
@@ -916,7 +729,7 @@ class _ResultsHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
             decoration: BoxDecoration(
               color: colors.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(m3e.shapeSmall + 2),
+              borderRadius: BorderRadius.circular(m3e.shapeSmall),
             ),
             child: Text(
               '$count',
@@ -960,18 +773,18 @@ class _ResultGrid extends StatelessWidget {
           scale: 0.94,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              borderRadius: BorderRadius.circular(m3e.shapeLarge),
               border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.3)),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+              borderRadius: BorderRadius.circular(m3e.shapeLarge),
               child: Image(
                 image: entry.getThumbnail(extent: 256),
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stack) => Container(
                   color: colors.surfaceContainerHighest,
                   alignment: Alignment.center,
-                  child: Icon(Symbols.broken_image, size: 22, color: colors.onSurfaceVariant),
+                  child: Icon(AIcons.broken, size: 22, color: colors.onSurfaceVariant),
                 ),
               ),
             ),
@@ -1037,8 +850,8 @@ class _IndexBuildDialogState extends State<_IndexBuildDialog> {
   @override
   Widget build(BuildContext context) {
     final total = widget.entries.length;
-    return AlertDialog(
-      title: const Text('Building search index'),
+    return AvesDialog(
+      title: 'Building search index',
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1161,13 +974,14 @@ class _AssistantReplyCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colors.primaryContainer.withValues(alpha: 0.35),
-              borderRadius: BorderRadius.circular(20).copyWith(topLeft: const Radius.circular(6)),
-              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.4)),
+              color: colors.primaryContainer,
+              borderRadius: BorderRadius.circular(context.m3e.shapeLarge).copyWith(
+                topLeft: Radius.circular(context.m3e.shapeSmall),
+              ),
             ),
             child: SelectableText(
               text,
-              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4),
+              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4, color: colors.onPrimaryContainer),
             ),
           ),
         ],
@@ -1239,7 +1053,7 @@ class _LoadingStateState extends State<_LoadingState> with SingleTickerProviderS
               child: Container(
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(m3e.shapeLarge + 2),
+                  borderRadius: BorderRadius.circular(m3e.shapeLarge),
                 ),
               ),
             ),
@@ -1265,8 +1079,6 @@ class _EmptyResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
@@ -1285,11 +1097,7 @@ class _EmptyResults extends StatelessWidget {
               children: _fallbacks
                   .map((p) => PressableScale(
                         onTap: () => onPrompt(p),
-                        child: Chip(
-                          label: Text(p),
-                          side: BorderSide(color: colors.outlineVariant),
-                          backgroundColor: colors.surface,
-                        ),
+                        child: Chip(label: Text(p)),
                       ))
                   .toList(),
             ),
@@ -1312,7 +1120,8 @@ class _HistoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Wrap(
@@ -1326,7 +1135,7 @@ class _HistoryChips extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors.surfaceContainer,
                 borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
-                border: Border.all(color: colors.outlineVariant),
+                border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1339,7 +1148,7 @@ class _HistoryChips extends StatelessWidget {
                       q,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13, color: colors.onSurface),
+                      style: theme.textTheme.labelMedium?.copyWith(color: colors.onSurface),
                     ),
                   ),
                 ],
@@ -1374,21 +1183,11 @@ class _SaveQueryBar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          PressableScale(
-            onTap: () => settings.toggleSavedSearch(query),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Row(
-                children: [
-                  Icon(isSaved ? Symbols.bookmark : Symbols.bookmark_add, size: 18, color: colors.primary),
-                  const SizedBox(width: 6),
-                  Text(
-                    isSaved ? 'Saved' : 'Save',
-                    style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
+          TextButton.icon(
+            onPressed: () => settings.toggleSavedSearch(query),
+            icon: Icon(isSaved ? Symbols.bookmark : Symbols.bookmark_add, size: 18),
+            label: Text(isSaved ? 'Saved' : 'Save'),
+            style: TextButton.styleFrom(foregroundColor: colors.primary),
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import 'package:aves/model/filters/rating.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -28,7 +29,7 @@ class MemoriesPage extends StatelessWidget {
     final entries = collection?.sortedEntries ?? [entry];
     final memories = _buildMemories(entries);
 
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(title: const Text('Memories')),
       body: SafeArea(
         child: memories.isEmpty
@@ -151,8 +152,8 @@ class _MemoryCard extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: colors.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+            color: colors.surfaceContainer,
+            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
@@ -184,15 +185,11 @@ class _MemoryCard extends StatelessWidget {
   }
 }
 
-Future<void> showMemoriesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showMemoriesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: MemoriesPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, __) => MemoriesPage(entry: entry, collection: collection),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => MemoriesPage(entry: entry, collection: collection),
     ),
   );
 }

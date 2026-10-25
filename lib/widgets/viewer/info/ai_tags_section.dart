@@ -8,7 +8,6 @@ import 'package:aves/widgets/viewer/info/nsfw_tag_picker.dart';
 import 'package:aves/widgets/viewer/info/auto_tag_page.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -97,41 +96,28 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                   ),
                 ),
                 const Spacer(),
-                PressableScale(
-                  onTap: () => showAutoTagPage(
+                TextButton.icon(
+                  onPressed: () => showAutoTagPage(
                     context,
                     entry: widget.entry,
                     actionDelegate: widget.actionDelegate,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Row(
-                      children: [
-                        Icon(Symbols.auto_fix_high, size: 16, color: colors.primary),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Auto',
-                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
+                  icon: const Icon(Symbols.auto_fix_high, size: 16),
+                  label: const Text('Auto'),
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    foregroundColor: colors.primary,
+                    textStyle: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
-                const SizedBox(width: 4),
-                PressableScale(
-                  onTap: () => showNsfwTagPicker(context, entry: widget.entry, actionDelegate: widget.actionDelegate),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Row(
-                      children: [
-                        Icon(Symbols.add, size: 16, color: colors.primary),
-                        const SizedBox(width: 4),
-                        Text(
-                          'NSFW',
-                          style: theme.textTheme.labelMedium?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
+                TextButton.icon(
+                  onPressed: () => showNsfwTagPicker(context, entry: widget.entry, actionDelegate: widget.actionDelegate),
+                  icon: const Icon(Symbols.add, size: 16),
+                  label: const Text('NSFW'),
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    foregroundColor: colors.primary,
+                    textStyle: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -146,8 +132,8 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: colors.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+                    color: colors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,36 +161,10 @@ class _AiTagsSectionState extends State<AiTagsSection> {
                     .map(
                       (t) {
                         final applied = _applied.contains(t.toLowerCase());
-                        return PressableScale(
-                          enabled: !applied && !_busy,
-                          onTap: applied ? null : () => _apply(t),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: applied ? colors.secondaryContainer : colors.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    t,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: applied ? colors.onSecondaryContainer : colors.onSurface,
-                                      fontWeight: applied ? FontWeight.w600 : FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                if (applied) ...[
-                                  const SizedBox(width: 6),
-                                  Icon(Symbols.check, size: 14, color: colors.onSecondaryContainer),
-                                ],
-                              ],
-                            ),
-                          ),
+                        return FilterChip(
+                          selected: applied,
+                          label: Text(t),
+                          onSelected: applied || _busy ? null : (_) => _apply(t),
                         );
                       },
                     )

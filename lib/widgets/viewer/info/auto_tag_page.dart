@@ -8,7 +8,7 @@ import 'package:aves/services/nsfw_service.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -178,13 +178,8 @@ class _AutoTagPageState extends State<AutoTagPage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Symbols.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
         title: const Text('Auto-tag'),
         actions: [
           FutureBuilder<List<TagProposal>>(
@@ -219,16 +214,7 @@ class _AutoTagPageState extends State<AutoTagPage> {
                 future: _loader,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          const Text('Finding tag suggestions…'),
-                        ],
-                      ),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
                   final proposals = (snapshot.data ?? const <TagProposal>[]).where((p) => !_dismissed.contains(p.tag.toLowerCase())).toList();
                   if (proposals.isEmpty) {
@@ -238,19 +224,36 @@ class _AutoTagPageState extends State<AutoTagPage> {
                       subtitle: 'Every tag this entry could carry has already been applied or dismissed.',
                     );
                   }
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: proposals.length,
-                    itemBuilder: (context, i) {
-                      final p = proposals[i];
-                      final applied = _applied.contains(p.tag.toLowerCase());
-                      return _Row(
-                        proposal: p,
-                        applied: applied,
-                        onApply: () => _apply(p),
-                        onDismiss: () => _dismiss(p),
-                      );
-                    },
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            for (int i = 0; i < proposals.length; i++) ...[
+                              _Row(
+                                proposal: proposals[i],
+                                applied: _applied.contains(proposals[i].tag.toLowerCase()),
+                                onApply: () => _apply(proposals[i]),
+                                onDismiss: () => _dismiss(proposals[i]),
+                              ),
+                              if (i < proposals.length - 1)
+                                Divider(
+                                  height: 1,
+                                  indent: 16,
+                                  endIndent: 16,
+                                  color: colors.outlineVariant.withValues(alpha: 0.3),
+                                ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -274,58 +277,41 @@ class _Row extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: applied ? colors.secondaryContainer : colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(context.m3e.shapeSmall),
+    return Container(
+      color: applied ? colors.secondaryContainer : Colors.transparent,
+      child: ListTile(
+        title: Text(
+          proposal.tag,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: applied ? colors.onSecondaryContainer : colors.onSurface,
+          ),
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        subtitle: Text(
+          '${proposal.source} · ${(proposal.confidence * 100).round()}%',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: applied ? colors.onSecondaryContainer : colors.onSurfaceVariant,
+          ),
+        ),
+        trailing: applied
+            ? Icon(Symbols.check, color: colors.onSecondaryContainer, size: 20)
+            : Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    proposal.tag,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: applied ? colors.onSecondaryContainer : colors.onSurface,
-                    ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Dismiss',
+                    onPressed: onDismiss,
+                    icon: const Icon(Symbols.close, size: 18),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${proposal.source} · ${(proposal.confidence * 100).round()}%',
-                    style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Add tag',
+                    onPressed: onApply,
+                    icon: Icon(Symbols.add, size: 20, color: colors.primary),
                   ),
                 ],
               ),
-            ),
-            if (applied)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Icon(Symbols.check, color: colors.onSecondaryContainer, size: 20),
-              )
-            else ...[
-              PressableScale(
-                onTap: onDismiss,
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Icon(Symbols.close, size: 18, color: colors.onSurfaceVariant),
-                ),
-              ),
-              PressableScale(
-                onTap: onApply,
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Icon(Symbols.add, size: 20, color: colors.primary),
-                ),
-              ),
-            ],
-          ],
-        ),
       ),
     );
   }
@@ -336,15 +322,11 @@ Future<void> showAutoTagPage(
   required AvesEntry entry,
   required EntryInfoActionDelegate actionDelegate,
   CollectionLens? collection,
-}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: AutoTagPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, __) => AutoTagPage(entry: entry, actionDelegate: actionDelegate, collection: collection),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => AutoTagPage(entry: entry, actionDelegate: actionDelegate, collection: collection),
     ),
   );
 }

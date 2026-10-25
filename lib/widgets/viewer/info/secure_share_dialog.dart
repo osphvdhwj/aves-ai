@@ -39,9 +39,8 @@ class _SecureShareDialogState extends State<_SecureShareDialog> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return AlertDialog(
-      icon: Icon(Symbols.shield_lock, color: colors.primary),
-      title: const Text('Secure share'),
+    return AvesDialog(
+      title: 'Secure share',
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,10 +89,7 @@ class _SecureShareDialogState extends State<_SecureShareDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          child: const Text('Cancel'),
-        ),
+        CancelButton(),
         FilledButton(
           onPressed: _confirmed ? () => _onShare(context) : null,
           child: const Text('Secure share'),

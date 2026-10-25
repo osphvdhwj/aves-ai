@@ -2,7 +2,9 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
-import 'package:aves/theme/m3e_tokens.dart';
+import 'package:aves/theme/icons.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -42,13 +44,8 @@ class _TextSelectPageState extends State<TextSelectPage> {
   @override
   Widget build(BuildContext context) {
     final entry = widget.entry;
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Symbols.close),
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
         title: const Text('Select text'),
         actions: [
           FutureBuilder<AiChatReply>(
@@ -100,16 +97,16 @@ class _TextSelectPageState extends State<TextSelectPage> {
                   final error = reply?.error;
                   final text = reply?.text.trim() ?? '';
                   if (reply?.isModelMissing == true) {
-                    return _msg(context, 'The AVES+ Tools companion does not have its OCR model installed yet.');
+                    return _status('OCR model missing', subtitle: 'The AVES+ Tools companion does not have its OCR model installed yet.', isError: true);
                   }
                   if (reply?.isUnsupported == true) {
-                    return _msg(context, 'This companion build does not support OCR. Update AVES+ Tools.');
+                    return _status('Update required', subtitle: 'This companion build does not support OCR. Update AVES+ Tools.', isError: true);
                   }
                   if (error != null && error.isNotEmpty) {
-                    return _msg(context, 'Text recognition failed: $error');
+                    return _status('Text recognition failed', subtitle: error, isError: true);
                   }
                   if (text.isEmpty) {
-                    return _msg(context, 'No text detected in this image.');
+                    return _status('No text detected in this image.');
                   }
                   // SelectionSurface enables the browser-like long-press
                   // drag-select affordance over the recognised text.
@@ -131,31 +128,22 @@ class _TextSelectPageState extends State<TextSelectPage> {
     );
   }
 
-  Widget _msg(BuildContext context, String text) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-      ),
+  Widget _status(String title, {String? subtitle, bool isError = false}) {
+    return StatusView(
+      icon: isError ? AIcons.error : Symbols.text_fields,
+      title: title,
+      subtitle: subtitle,
+      isError: isError,
     );
   }
 }
 
 /// Opens [TextSelectPage] with a shared-element-ish fade transition.
-Future<void> showTextSelectPage(BuildContext context, AvesEntry entry) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showTextSelectPage(BuildContext context, AvesEntry entry) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: TextSelectPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, animation, secondary) => TextSelectPage(entry: entry),
-      transitionsBuilder: (context, animation, secondary, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => TextSelectPage(entry: entry),
     ),
   );
 }

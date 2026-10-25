@@ -2,7 +2,9 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
+import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/viewer/entry_viewer_page.dart';
 import 'package:aves/widgets/viewer/info/people_page.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -34,18 +36,22 @@ class PersonDetailPage extends StatefulWidget {
 class _PersonDetailPageState extends State<PersonDetailPage> {
   Future<void> _rename(BuildContext context) async {
     final controller = TextEditingController(text: widget.cluster.name ?? '');
-    final result = await showDialog<String>(
+    final result = await showAvesDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Name this person'),
+      routeSettings: const RouteSettings(name: 'PersonRenameDialog'),
+      builder: (context) => AvesDialog(
+        title: 'Name this person',
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(hintText: 'Name'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(context).pop(controller.text.trim()), child: const Text('Save')),
+          CancelButton<String>(),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Save'),
+          ),
         ],
       ),
     );
@@ -60,7 +66,7 @@ class _PersonDetailPageState extends State<PersonDetailPage> {
     final colors = theme.colorScheme;
     final photos = widget.photos;
 
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(
         title: Text(widget.cluster.name ?? 'Unnamed'),
         actions: [
@@ -154,14 +160,10 @@ Future<void> showPersonDetailPage(
   List<AvesEntry> photos = const [],
   ValueChanged<String>? onRename,
 }) async {
-  final tokens = context.m3e;
   await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+    MaterialPageRoute(
       settings: const RouteSettings(name: PersonDetailPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, __) => PersonDetailPage(cluster: cluster, photos: photos, onRename: onRename),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => PersonDetailPage(cluster: cluster, photos: photos, onRename: onRename),
     ),
   );
 }

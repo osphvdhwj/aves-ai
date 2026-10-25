@@ -1,3 +1,4 @@
+import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -8,8 +9,9 @@ import 'package:material_ui/material_ui.dart';
 /// needs a registered client ID and a native sign-in bridge), so the
 /// confirm action currently reports that the flow is not yet available.
 Future<void> showSyncSigninDialog(BuildContext context) {
-  return showDialog<void>(
+  return showAvesDialog<void>(
     context: context,
+    routeSettings: const RouteSettings(name: 'SyncSigninDialog'),
     builder: (context) => const _SyncSigninDialog(),
   );
 }
@@ -29,9 +31,8 @@ class _SyncSigninDialogState extends State<_SyncSigninDialog> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return AlertDialog(
-      icon: Icon(Symbols.cloud_sync, color: colors.primary),
-      title: const Text('Sign in to back up'),
+    return AvesDialog(
+      title: 'Sign in to back up',
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +76,7 @@ class _SyncSigninDialogState extends State<_SyncSigninDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).maybePop(), child: const Text('Cancel')),
+        CancelButton(),
         FilledButton(
           onPressed: _consent
               ? () {
@@ -83,7 +84,7 @@ class _SyncSigninDialogState extends State<_SyncSigninDialog> {
                   Navigator.of(context).maybePop();
                   messenger.showSnackBar(
                     const SnackBar(
-                      content: const Text('Sign-in is not yet available in this build.'),
+                      content: Text('Sign-in is not yet available in this build.'),
                       duration: Duration(seconds: 2),
                     ),
                   );

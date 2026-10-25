@@ -1,6 +1,7 @@
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -87,14 +88,8 @@ class TranslationOverlayDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Symbols.close),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        title: const Text('Translation'),
-      ),
+    return AvesScaffold(
+      appBar: AppBar(title: const Text('Translation')),
       body: SafeArea(
         child: blocks.isEmpty
             ? const StatusView(

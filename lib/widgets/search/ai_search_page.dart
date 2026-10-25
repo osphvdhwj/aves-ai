@@ -212,9 +212,9 @@ class _PillButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? colors.primary : colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
           border: Border.all(
-            color: selected ? colors.primary : colors.outlineVariant,
+            color: selected ? colors.primary : colors.outlineVariant.withValues(alpha: 0.3),
           ),
         ),
         child: Row(
@@ -257,7 +257,7 @@ class _Palette extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(m3e.shapeExtraLarge - 4)),
         boxShadow: [
           BoxShadow(
-            color: colors.shadow.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.18),
             blurRadius: 12,
             offset: const Offset(0, -2),
           ),
@@ -308,8 +308,8 @@ class _Palette extends StatelessWidget {
                           alignment: Alignment.center,
                           child: Text(
                             c.trigger,
-                            style: TextStyle(
-                              fontSize: 18,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontFamily: 'monospace',
                               fontWeight: FontWeight.w700,
                               color: colors.onPrimaryContainer,
                             ),
@@ -394,7 +394,7 @@ class _InputRow extends StatelessWidget {
                 focusNode: focusNode,
                 decoration: InputDecoration(
                   hintText: 'Ask, or type /find or @mode',
-                  hintStyle: TextStyle(color: colors.onSurfaceVariant),
+                  hintStyle: theme.textTheme.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
                   border: InputBorder.none,
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -433,6 +433,7 @@ class _TokenChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final m3e = context.m3e;
     return PressableScale(
       onTap: onTap,
@@ -447,9 +448,8 @@ class _TokenChip extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           label,
-          style: TextStyle(
+          style: theme.textTheme.titleSmall?.copyWith(
             fontFamily: 'monospace',
-            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: colors.onSurfaceVariant,
           ),
@@ -486,21 +486,24 @@ class _RoundActionButton extends StatelessWidget {
         ? colors.primary
         : (subtle ? colors.surfaceContainerHighest : Colors.transparent);
     final size = accent ? 44.0 : 40.0;
-    final child = icon != null
-        ? Icon(icon, size: 22, color: fg)
-        : Text(label ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: fg));
-    return PressableScale(
-      onTap: onPressed,
-      scale: 0.88,
-      child: Tooltip(
-        message: tooltip,
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
-          alignment: Alignment.center,
-          child: child,
+    return Tooltip(
+      message: tooltip,
+      child: IconButton(
+        onPressed: onPressed,
+        iconSize: 22,
+        style: IconButton.styleFrom(
+          backgroundColor: bg,
+          foregroundColor: fg,
+          shape: const CircleBorder(),
+          fixedSize: Size(size, size),
+          minimumSize: Size(size, size),
+          maximumSize: Size(size, size),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: EdgeInsets.zero,
         ),
+        icon: icon != null
+            ? Icon(icon)
+            : Text(label ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
       ),
     );
   }

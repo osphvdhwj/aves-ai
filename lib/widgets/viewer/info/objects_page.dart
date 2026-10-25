@@ -1,5 +1,5 @@
 import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -33,7 +33,7 @@ class ObjectsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(title: const Text('Objects')),
       body: SafeArea(
         child: GridView.builder(
@@ -70,55 +70,43 @@ class _CategoryCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final enabled = (count ?? 0) > 0;
 
-    return PressableScale(
-      enabled: enabled,
-      onTap: enabled
-          ? () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Opening "$label" needs the AI companion.'), duration: const Duration(seconds: 1)),
-              );
-            }
-          : null,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: enabled ? colors.primary : colors.onSurfaceVariant, size: 26),
-            const Spacer(),
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: enabled ? colors.onSurface : colors.onSurfaceVariant,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    // Category cards become tappable once the companion reports counts;
+    // until then they render as a static catalogue.
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: enabled ? colors.primary : colors.onSurfaceVariant, size: 26),
+          const Spacer(),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: enabled ? colors.onSurface : colors.onSurfaceVariant,
             ),
-            Text(
-              count == null ? '—' : '$count',
-              style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-            ),
-          ],
-        ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            count == null ? '—' : '$count',
+            style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+          ),
+        ],
       ),
     );
   }
 }
 
-Future<void> showObjectsPage(BuildContext context, {Map<String, int> counts = const {}}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showObjectsPage(BuildContext context, {Map<String, int> counts = const {}}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: ObjectsPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, _) => ObjectsPage(counts: counts),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => ObjectsPage(counts: counts),
     ),
   );
 }

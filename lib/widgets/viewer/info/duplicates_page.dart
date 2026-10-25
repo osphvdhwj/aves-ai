@@ -6,7 +6,7 @@ import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
-import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -30,7 +30,7 @@ class DuplicatesPage extends StatelessWidget {
     final entries = collection?.sortedEntries ?? [entry];
     final groups = _groupDuplicates(entries);
 
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(title: const Text('Duplicates')),
       body: SafeArea(
         child: groups.isEmpty
@@ -161,8 +161,8 @@ class _GroupCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(context.m3e.shapeMedium),
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 4),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,33 +228,9 @@ class _GroupCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: const Text('Auto-resolve needs the AI companion.'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                  child: const Text('Auto-resolve'),
-                ),
-                const SizedBox(width: 4),
-                FilledButton.tonal(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: const Text('Select and delete is not yet wired.'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                  child: const Text('Review'),
-                ),
-              ],
+            Text(
+              'The highest-resolution original is marked "Keep". Review and delete wiring lands with the AI companion.',
+              style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
             ),
           ],
         ),
@@ -270,15 +246,11 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-Future<void> showDuplicatesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showDuplicatesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: DuplicatesPage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, _) => DuplicatesPage(entry: entry, collection: collection),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => DuplicatesPage(entry: entry, collection: collection),
     ),
   );
 }

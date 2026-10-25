@@ -7,6 +7,7 @@ import 'package:aves/services/ai_service.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
+import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -123,36 +124,11 @@ class _AiChatPageState extends State<AiChatPage> {
   }
 
   Widget _buildEmpty(ThemeData theme) {
-    final colors = theme.colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Symbols.auto_awesome, size: 32, color: colors.onPrimaryContainer),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Ask AI about your photos',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try /find dog, /receipt, or @ocr. Tap a preset below to start.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+    return const Center(
+      child: StatusView(
+        icon: Symbols.auto_awesome,
+        title: 'Ask AI about your photos',
+        subtitle: 'Try /find dog, /receipt, or @ocr. Tap a preset below to start.',
       ),
     );
   }
@@ -164,8 +140,8 @@ class _AiChatPageState extends State<AiChatPage> {
     final fg = isUser ? colors.onPrimaryContainer : colors.onSurface;
     final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
     final radius = BorderRadius.only(
-      topLeft: Radius.circular(isUser ? context.m3e.shapeLarge : 4),
-      topRight: Radius.circular(isUser ? 4 : context.m3e.shapeLarge),
+      topLeft: Radius.circular(isUser ? context.m3e.shapeLarge : context.m3e.shapeSmall),
+      topRight: Radius.circular(isUser ? context.m3e.shapeSmall : context.m3e.shapeLarge),
       bottomLeft: Radius.circular(context.m3e.shapeLarge),
       bottomRight: Radius.circular(context.m3e.shapeLarge),
     );
@@ -239,7 +215,7 @@ class _AiChatPageState extends State<AiChatPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: colors.surfaceContainer,
-                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
                           ),
                           child: Text(
                             p,
@@ -261,7 +237,7 @@ class _AiChatPageState extends State<AiChatPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: colors.tertiaryContainer,
-                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+                            borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
                           ),
                           child: Text(
                             p,
@@ -284,7 +260,7 @@ class _AiChatPageState extends State<AiChatPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: colors.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge - 8),
+                      borderRadius: BorderRadius.circular(context.m3e.shapeExtraLarge),
                     ),
                     child: TextField(
                       controller: _input,
@@ -301,17 +277,21 @@ class _AiChatPageState extends State<AiChatPage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                PressableScale(
-                  onTap: _send,
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Symbols.arrow_upward, color: colors.onPrimary),
+                IconButton(
+                  onPressed: _send,
+                  tooltip: 'Send',
+                  iconSize: 22,
+                  style: IconButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    shape: const CircleBorder(),
+                    fixedSize: const Size(44, 44),
+                    minimumSize: const Size(44, 44),
+                    maximumSize: const Size(44, 44),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: EdgeInsets.zero,
                   ),
+                  icon: const Icon(Symbols.arrow_upward),
                 ),
               ],
             ),

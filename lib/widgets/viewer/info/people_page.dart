@@ -1,5 +1,5 @@
-import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
+import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:aves/widgets/viewer/info/person_detail_page.dart';
@@ -24,7 +24,7 @@ class PeoplePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AvesScaffold(
       appBar: AppBar(title: const Text('People')),
       body: SafeArea(
         child: clusters.isEmpty
@@ -107,15 +107,11 @@ class _Grid extends StatelessWidget {
   }
 }
 
-Future<void> showPeoplePage(BuildContext context, {List<FaceCluster> clusters = const []}) async {
-  final tokens = context.m3e;
-  await Navigator.maybeOf(context)?.push(
-    PageRouteBuilder(
+Future<void> showPeoplePage(BuildContext context, {List<FaceCluster> clusters = const []}) {
+  return Navigator.maybeOf(context)?.push(
+    MaterialPageRoute(
       settings: const RouteSettings(name: PeoplePage.routeName),
-      transitionDuration: tokens.durationMedium2,
-      reverseTransitionDuration: tokens.durationMedium2,
-      pageBuilder: (context, _, _) => PeoplePage(clusters: clusters),
-      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+      builder: (context) => PeoplePage(clusters: clusters),
     ),
   );
 }
