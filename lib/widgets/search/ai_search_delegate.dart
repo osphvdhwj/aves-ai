@@ -20,6 +20,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 class AiSearchDelegate extends AvesSearchDelegate {
+  /// Mode toggle: true = AI commands, false = plain local filename search.
+  final aiMode = ValueNotifier<bool>(true);
   final String? initialText;
 
   /// When set, this entry is prepended to the entries payload of every
@@ -228,6 +230,16 @@ class AiSearchDelegate extends AvesSearchDelegate {
             .whereType<AvesEntry>()
             .toList();
         if (entries.isEmpty) {
+          // Assistant text-only replies (LLM answers, descriptions) get a
+          // proper bubble instead of the empty state.
+          final t = reply.text.trim();
+          final isAssistantReply = t.isNotEmpty &&
+              t.length > 12 &&
+              !t.startsWith('found') &&
+              !t.startsWith('found 0 of');
+          if (isAssistantReply) {
+            return _AssistantReplyCard(text: t, query: currentQuery);
+          }
           if (reply.isIndexEmpty) {
             return StatusView(
               icon: Symbols.model_training,
@@ -252,6 +264,20 @@ class AiSearchDelegate extends AvesSearchDelegate {
 
   Future<AiChatReply> _runQuery(BuildContext context, String q) async {
     final source = context.read<CollectionSource>();
+
+    // Plain (non-AI) mode: local filename/path filter, no companion call.
+    if (!aiMode.value) {
+      final needle = q.trim().toLowerCase();
+      if (needle.isEmpty) return const AiChatReply(text: '');
+      final matches = source.visibleEntries.where((e) {
+        final path = e.path?.toLowerCase() ?? '';
+        final uri = e.uri.toLowerCase();
+        final name = path.isNotEmpty ? path.substring(path.lastIndexOf('/') + 1) : uri.substring(uri.lastIndexOf('/') + 1);
+        return name.contains(needle) || path.contains(needle);
+      }).take(200).toList();
+      return AiChatReply(text: 'search "$q"', entryIds: matches.map((e) => e.id).toList());
+    }
+
     final sample = source.visibleEntries.take(200).toList();
 
     // If a context entry is provided (e.g. @like), prepend it so it's
@@ -1039,6 +1065,60 @@ class _IndexBuildDialogState extends State<_IndexBuildDialog> {
             child: const Text('Close'),
           ),
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// assistant reply card (LLM text answers)
+// ─────────────────────────────────────────────────────────────
+class _AssistantReplyCard extends StatelessWidget {
+  final String text;
+  final String query;
+
+  const _AssistantReplyCard({required this.text, required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(Symbols.auto_awesome, size: 18, color: colors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  query.isEmpty ? 'AI' : '“$query”',
+                  style: theme.textTheme.labelLarge?.copyWith(color: colors.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.primaryContainer.withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(20).copyWith(topLeft: const Radius.circular(6)),
+              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.4)),
+            ),
+            child: SelectableText(
+              text,
+              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4),
+            ),
+          ),
+        ],
+        ),
+      ),
     );
   }
 }

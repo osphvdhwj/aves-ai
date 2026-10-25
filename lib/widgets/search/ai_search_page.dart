@@ -123,32 +123,112 @@ class _AiSearchPageState extends State<AiSearchPage> {
     return AvesScaffold(
       appBar: AppBar(
         leading: widget.delegate.buildLeading(context),
-        title: const Text('Ask AI'),
+        title: ValueListenableBuilder<bool>(
+          valueListenable: widget.delegate.aiMode,
+          builder: (context, isAi, _) => Text(isAi ? 'Ask AI' : 'Search'),
+        ),
         actions: widget.delegate.buildActions(context),
       ),
       body: AvesPopScope(
         handlers: [tvNavigationPopHandler, doubleBackPopHandler],
-        child: SafeArea(
-          top: false,
-          child: Column(
-            children: [
-              Expanded(child: body),
-              if (paletteMatches.isNotEmpty)
-                _Palette(
-                  commands: paletteMatches,
-                  onTap: _insertCommand,
+        child: Column(
+          children: [
+            // Search | Ask AI pill toggle
+            ValueListenableBuilder<bool>(
+              valueListenable: widget.delegate.aiMode,
+              builder: (context, isAi, _) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    _PillButton(
+                      label: 'Search',
+                      icon: Symbols.search,
+                      selected: !isAi,
+                      onTap: () => widget.delegate.aiMode.value = false,
+                    ),
+                    const SizedBox(width: 8),
+                    _PillButton(
+                      label: 'Ask AI',
+                      icon: Symbols.auto_awesome,
+                      selected: isAi,
+                      onTap: () => widget.delegate.aiMode.value = true,
+                    ),
+                  ],
                 ),
-              _InputRow(
-                controller: widget.delegate.queryTextController,
-                focusNode: _inputFocus,
-                onAt: () => _insertTrigger('@'),
-                onSlash: () => _insertTrigger('/'),
-                onPlus: () {},
-                onSubmit: _onSubmit,
-                theme: theme,
               ),
-            ],
+            ),
+            Expanded(
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    Expanded(child: body),
+                    if (paletteMatches.isNotEmpty)
+                      _Palette(
+                        commands: paletteMatches,
+                        onTap: _insertCommand,
+                      ),
+                    _InputRow(
+                      controller: widget.delegate.queryTextController,
+                      focusNode: _inputFocus,
+                      onAt: () => _insertTrigger('@'),
+                      onSlash: () => _insertTrigger('/'),
+                      onPlus: () {},
+                      onSubmit: _onSubmit,
+                      theme: theme,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PillButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PillButton({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return PressableScale(
+      onPress: onTap,
+      scale: 0.96,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? colors.primary : colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: selected ? colors.primary : colors.outlineVariant,
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: selected ? colors.onPrimary : colors.onSurfaceVariant),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: selected ? colors.onPrimary : colors.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );
