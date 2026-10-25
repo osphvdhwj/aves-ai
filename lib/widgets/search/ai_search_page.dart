@@ -206,7 +206,7 @@ class _PillButton extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return PressableScale(
-      onPress: onTap,
+      onTap: onTap,
       scale: 0.96,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
