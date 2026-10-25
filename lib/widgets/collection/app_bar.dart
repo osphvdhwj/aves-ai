@@ -216,7 +216,6 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                         actions: (context, maxWidth) => useTvLayout ? [] : _buildActions(context, selection, maxWidth),
                         bottom: PreferredSize(
                           preferredSize: Size.fromHeight(
-                            CollectionSearchBar.preferredHeight +
                             CollectionQuickFilters.preferredHeight +
                             (showFilterBar ? FilterBar.preferredHeight : 0.0) +
                             (useTvLayout ? CaptionedButton.getTelevisionButtonHeight(context) : 0.0),
@@ -233,10 +232,6 @@ class _CollectionAppBarState extends State<CollectionAppBar> with RouteAware, Si
                                   children: _buildActions(context, selection, double.infinity),
                                 ),
                               ),
-                            SizedBox(
-                              height: CollectionSearchBar.preferredHeight,
-                              child: CollectionSearchBar(onTap: _goToSearch),
-                            ),
                             SizedBox(
                               height: CollectionQuickFilters.preferredHeight,
                               child: CollectionQuickFilters(collection: collection),

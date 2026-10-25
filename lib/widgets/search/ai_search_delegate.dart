@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:aves/model/ai/ai_command.dart';
 import 'package:aves/model/ai/prompt_library.dart';
 import 'package:aves/theme/m3e_tokens.dart';
@@ -1069,6 +1071,58 @@ class _IndexBuildDialogState extends State<_IndexBuildDialog> {
   }
 }
 
+// A smooth indeterminate gradient wave — a distinct progress style
+// from the linear bars used in dialogs.
+class _WaveProgress extends StatelessWidget {
+  final Animation<double> animation;
+  final Color color;
+
+  const _WaveProgress({required this.animation, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) {
+        final t = animation.value;
+        return CustomPaint(
+          size: const Size(double.infinity, 6),
+          painter: _WavePainter(t: t, color: color),
+        );
+      },
+    );
+  }
+}
+
+class _WavePainter extends CustomPainter {
+  final double t;
+  final Color color;
+
+  _WavePainter({required this.t, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final paint = Paint()
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final path = Path();
+    path.moveTo(0, h / 2);
+    for (double x = 0; x <= w; x += 2) {
+      final phase = (x / w) * 3 * 3.14159 - t * 6;
+      final amp = h * (0.28 + 0.22 * (1 - (t - 0.5).abs() * 2));
+      path.lineTo(x, h / 2 + amp * math.sin(phase));
+    }
+    paint.color = color.withValues(alpha: 0.9);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_WavePainter old) => old.t != t || old.color != color;
+}
+
 // ─────────────────────────────────────────────────────────────
 // assistant reply card (LLM text answers)
 // ─────────────────────────────────────────────────────────────
@@ -1162,6 +1216,11 @@ class _LoadingStateState extends State<_LoadingState> with SingleTickerProviderS
               Text(
                 'Searching…',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: 120,
+                child: _WaveProgress(animation: _ctl, color: colors.primary),
               ),
             ],
           ),
