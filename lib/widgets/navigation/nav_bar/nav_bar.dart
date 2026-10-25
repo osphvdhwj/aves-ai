@@ -97,9 +97,6 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
                   height: 68,
                   elevation: 0,
                   indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(28)),
-                  ),
                 ),
               ),
             ),
