@@ -35,8 +35,8 @@ jobs:
 
       - name: Get Flutter packages
         run: |
-          ./flutterw doctor -v
-          ./flutterw pub get
+          bash ./flutterw doctor -v
+          bash ./flutterw pub get
 
       # cf https://github.com/deckerst/aves/issues/1521#issuecomment-5229015364
       - name: Remove build ID from native lib
@@ -48,7 +48,7 @@ jobs:
           sed -i -e 's/-Wl,/-Wl,--build-id=none,/' ${PUB_CACHE}/hosted/*/jni-*/src/CMakeLists.txt 2>/dev/null || true
 
       - name: Generate app localizations
-        run: ./flutterw gen-l10n
+        run: bash ./flutterw gen-l10n
 
       - name: Build signed artifacts
         # specify NDK for `icu4x` hook linker
@@ -76,18 +76,18 @@ jobs:
           rm release.keystore.asc
           mkdir outputs
           scripts/apply_flavor_play.sh
-          ./flutterw build appbundle -t lib/main_play.dart --flavor play
+          bash ./flutterw build appbundle -t lib/main_play.dart --flavor play
           cp build/app/outputs/bundle/playRelease/*.aab outputs
-          ./flutterw build apk -t lib/main_play.dart --flavor play
+          bash ./flutterw build apk -t lib/main_play.dart --flavor play
           cp build/app/outputs/apk/play/release/*.apk outputs
           scripts/apply_flavor_izzy.sh
-          ./flutterw build apk -t lib/main_izzy.dart --flavor izzy --split-per-abi
+          bash ./flutterw build apk -t lib/main_izzy.dart --flavor izzy --split-per-abi
           cp build/app/outputs/apk/izzy/release/*.apk outputs
           export AVES_GOOGLE_API_KEY="NONE"
           scripts/apply_flavor_libre.sh
-          ./flutterw build appbundle -t lib/main_libre.dart --flavor libre
+          bash ./flutterw build appbundle -t lib/main_libre.dart --flavor libre
           cp build/app/outputs/bundle/libreRelease/*.aab outputs
-          ./flutterw build apk -t lib/main_libre.dart --flavor libre --split-per-abi
+          bash ./flutterw build apk -t lib/main_libre.dart --flavor libre --split-per-abi
           cp build/app/outputs/apk/libre/release/*.apk outputs
           rm $AVES_STORE_FILE
         env:
