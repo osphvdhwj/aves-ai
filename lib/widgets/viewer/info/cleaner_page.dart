@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_lens.dart';
+import 'package:aves/services/ai_service.dart';
+import 'package:aves/services/common/services.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/viewer/info/image_quality.dart';
 import 'package:aves/widgets/common/basic/pressable_scale.dart';
@@ -15,14 +18,17 @@ import 'package:material_ui/material_ui.dart';
 
 /// Local cleaner buckets. Each bucket is computed from the entries the
 /// caller supplies — no native model needed for the classification; it is
-/// all pure Dart over the collection.
+/// all pure Dart over the collection. The [companionJunk] bucket is not
+/// computed locally: it is filled by the companion's /clean command
+/// (CLIP zero-shot screenshots + sharpness), shown once that pass lands.
 enum CleanerBucket {
   largeFiles('Large files', 'Over 5 MB', Symbols.storage),
   screenshots('Screenshots', 'Likely screenshots to clear', Symbols.screenshot_monitor),
   blurry('Blurry', 'Low clarity shots (heuristic)', Symbols.blur_on),
   dark('Dark', 'Underexposed or near-black frames', Symbols.brightness_low),
   duplicates('Duplicates', 'Same content, different files', Symbols.content_copy),
-  oldMedia('Very old', 'Older than 3 years', Symbols.history);
+  oldMedia('Very old', 'Older than 3 years', Symbols.history),
+  companionJunk('AI junk candidates', 'Screenshots + blurry picks from the companion', Symbols.auto_awesome);
 
   final String title;
   final String subtitle;
@@ -44,7 +50,11 @@ class CleanerPage extends StatefulWidget {
 }
 
 class _CleanerPageState extends State<CleanerPage> {
+  /// Cap for the companion pass: /clean runs CLIP + sharpness per entry.
+  static const _companionPayloadCap = 300;
+
   Future<Map<CleanerBucket, List<AvesEntry>>>? _classificationFuture;
+  Future<_CompanionClean?>? _companionFuture;
   List<AvesEntry> _cachedEntries = const [];
 
   @override
@@ -64,6 +74,7 @@ class _CleanerPageState extends State<CleanerPage> {
   void _scheduleClassification() {
     _cachedEntries = widget.collection?.sortedEntries ?? [widget.entry];
     _classificationFuture = _classify(_cachedEntries);
+    _companionFuture = _runCompanionClean();
   }
 
   @override
@@ -76,37 +87,110 @@ class _CleanerPageState extends State<CleanerPage> {
         child: FutureBuilder<Map<CleanerBucket, List<AvesEntry>>>(
           future: _classificationFuture,
           builder: (context, snapshot) {
-            final buckets = snapshot.data;
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-              children: [
-                Text(
-                  '${entries.length} items in this view',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 16),
-                if (buckets == null)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 64),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else
-                  for (final bucket in CleanerBucket.values)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _BucketTile(
-                        bucket: bucket,
-                        count: buckets[bucket]?.length ?? 0,
-                        preview: buckets[bucket] ?? const [],
-                        onTap: () => _openBucket(context, bucket, buckets[bucket] ?? const []),
-                      ),
+            final local = snapshot.data;
+            return FutureBuilder<_CompanionClean?>(
+              future: _companionFuture,
+              builder: (context, companionSnapshot) {
+                final companion = companionSnapshot.data;
+                final buckets = {
+                  if (local != null) ...local,
+                  if (companion != null) ...companion.buckets,
+                };
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                  children: [
+                    Text(
+                      '${entries.length} items in this view',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-              ],
+                    const SizedBox(height: 16),
+                    if (local == null)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 64),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else ...[
+                      for (final bucket in CleanerBucket.values)
+                        if (bucket != CleanerBucket.companionJunk || companion != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _BucketTile(
+                              bucket: bucket,
+                              count: buckets[bucket]?.length ?? 0,
+                              preview: buckets[bucket] ?? const [],
+                              onTap: () => _openBucket(context, bucket, buckets[bucket] ?? const []),
+                            ),
+                          ),
+                      if (companion?.note != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            companion!.note!,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      if (companion?.error != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            'AI junk scan failed: ${companion!.error}',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ],
+                );
+              },
             );
           },
         ),
       ),
     );
+  }
+
+  /// Runs the companion's /clean over the view's entries. Returns null
+  /// when the companion is unavailable (page stays local-only); the
+  /// result carries the junk bucket plus a human note derived from the
+  /// companion's screenshots/blurry breakdown.
+  Future<_CompanionClean?> _runCompanionClean() async {
+    try {
+      if (!await aiService.hasCapability('clean')) return null;
+      final payload = _cachedEntries.take(_companionPayloadCap).toList();
+      final reply = await aiService.chat(
+        '/clean',
+        entryIds: payload.map((e) => e.id).toList(),
+        entries: AiService.entriesPayload(payload),
+      );
+      final error = reply.error;
+      if (error != null && error.isNotEmpty) {
+        return _CompanionClean(error: error);
+      }
+      final byId = {for (final e in payload) e.id: e};
+      final junk = reply.entryIds.map((id) => byId[id]).whereType<AvesEntry>().toSet().toList();
+      String? note;
+      if (reply.extra != null) {
+        try {
+          final decoded = jsonDecode(reply.extra!);
+          if (decoded is Map<String, dynamic>) {
+            final shots = decoded['screenshots'];
+            final blurry = decoded['blurry'];
+            if (shots is num && blurry is num) {
+              note = 'Companion: $shots screenshot${shots == 1 ? '' : 's'}, $blurry blurry';
+            }
+          }
+        } catch (_) {
+          // breakdown is optional — ignore malformed payloads
+        }
+      }
+      return _CompanionClean(buckets: {CleanerBucket.companionJunk: junk}, note: note);
+    } catch (e, s) {
+      await reportService.recordError(e, s);
+      return _CompanionClean(error: e.toString());
+    }
   }
 
   Future<Map<CleanerBucket, List<AvesEntry>>> _classify(List<AvesEntry> entries) async {
@@ -224,6 +308,18 @@ class _QualityStats {
   final bool dark;
 
   const _QualityStats({required this.blurry, required this.dark});
+}
+
+/// Result of the companion /clean pass: the junk bucket (empty list when
+/// nothing found), an optional human note, or an error. Never null
+/// buckets when the companion ran; null page-level result means the
+/// companion is unavailable.
+class _CompanionClean {
+  final Map<CleanerBucket, List<AvesEntry>> buckets;
+  final String? note;
+  final String? error;
+
+  const _CompanionClean({this.buckets = const {}, this.note, this.error});
 }
 
 class CleanerBucketPage extends StatelessWidget {

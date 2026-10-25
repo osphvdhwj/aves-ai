@@ -85,9 +85,12 @@ class _AiToolsPageState extends State<AiToolsPage> {
 
   List<Widget> _buildTiles(BuildContext context, AiHealth? health) {
     final needsOcr = _has(health, 'ocr');
-    final needsFaces = _has(health, 'person') || _has(health, 'faces');
+    final needsFaces = _has(health, 'faces');
     final needsObjects = _has(health, 'objects');
     final needsChat = health?.connected == true;
+    // Detection/embedding runs one model inference per photo; cap the
+    // payload the sub-pages scan.
+    final scanEntries = (collection?.sortedEntries ?? [entry]).take(200).toList();
 
     return [
       _Tile(
@@ -123,13 +126,13 @@ class _AiToolsPageState extends State<AiToolsPage> {
         icon: Symbols.face_6,
         title: 'People & faces',
         subtitle: needsFaces ? 'Browse clusters of the people in your library' : 'Needs companion with face capability',
-        onTap: needsFaces ? () => showPeoplePage(context) : null,
+        onTap: needsFaces ? () => showPeoplePage(context, entries: scanEntries) : null,
       ),
       _Tile(
         icon: Symbols.category,
         title: 'Objects',
         subtitle: needsObjects ? 'Browse by recognised object category' : 'Needs companion with objects capability',
-        onTap: needsObjects ? () => showObjectsPage(context) : null,
+        onTap: needsObjects ? () => showObjectsPage(context, entries: scanEntries) : null,
       ),
       _Tile(
         icon: Symbols.translate,

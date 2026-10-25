@@ -63,6 +63,8 @@ class AiService {
         error: map['errorMessage'] as String?,
         errorCode: code is int ? code : (code is num ? code.toInt() : null),
         hint: map['hint'] as String?,
+        groupSizes: (map['groupSizes'] as List?)?.cast<int>() ?? const [],
+        extra: map['extra'] as String?,
       );
     } on PlatformException catch (e, s) {
       await reportService.recordError(e, s);
@@ -189,17 +191,43 @@ class AiChatReply {
   /// the vector index needs building before /find can match anything.
   final String? hint;
 
+  /// Cluster sizes parallel to [entryIds] (/dup, /faces): the flat id
+  /// list split at these sizes yields one list per group. Empty when the
+  /// command has no grouping or the companion predates groupSizes.
+  final List<int> groupSizes;
+
+  /// Command-specific JSON payload, e.g. the /objects * histogram.
+  final String? extra;
+
   const AiChatReply({
     required this.text,
     this.entryIds = const [],
     this.error,
     this.errorCode,
     this.hint,
+    this.groupSizes = const [],
+    this.extra,
   });
 
   bool get isModelMissing => errorCode == 2;
   bool get isUnsupported => errorCode == 1;
   bool get isIndexEmpty => hint?.startsWith('index_empty') ?? false;
+
+  /// Splits [entryIds] into groups of [groupSizes]. Returns one flat
+  /// group when sizes are missing or do not sum to the id count.
+  List<List<int>> get groupedEntryIds {
+    final sizes = groupSizes;
+    if (sizes.isEmpty || sizes.fold<int>(0, (a, b) => a + b) != entryIds.length) {
+      return entryIds.isEmpty ? const [] : [entryIds];
+    }
+    final out = <List<int>>[];
+    var offset = 0;
+    for (final size in sizes) {
+      out.add(entryIds.sublist(offset, offset + size));
+      offset += size;
+    }
+    return out;
+  }
 }
 
 final aiService = AiService();

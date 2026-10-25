@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:aves/model/auto_tag_engine.dart';
 import 'package:aves/model/auto_tagger.dart';
 import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/filters/covered/tag.dart';
@@ -10,6 +11,7 @@ import 'package:aves/model/source/collection_lens.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
+import 'package:aves/widgets/dialogs/aves_dialog.dart';
 import 'package:aves/widgets/viewer/action/entry_info_action_delegate.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:material_ui/material_ui.dart';
@@ -124,6 +126,55 @@ class _AutoTagPageState extends State<AutoTagPage> {
     }
   }
 
+  /// Batch mode: run the AutoTagEngine over every entry in the view,
+  /// applying high-confidence proposals (plus the companion's NSFW
+  /// verdict when available) without per-photo review.
+  Future<void> _batchApply() async {
+    final entries = widget.collection?.sortedEntries ?? [widget.entry];
+    if (entries.isEmpty) return;
+    final confirmed = await showAvesDialog<bool>(
+      context: context,
+      routeSettings: const RouteSettings(name: 'AutoTagBatchConfirm'),
+      builder: (context) => AvesDialog(
+        title: 'Batch apply tags?',
+        content: Text(
+          'Auto-apply high-confidence suggestions to all ${entries.length} photos in this view. '
+          'The companion\'s NSFW verdict is included when available.',
+        ),
+        actions: [
+          CancelButton<bool>(),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Apply'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final report = await showAvesDialog<AutoTagRunReport>(
+      context: context,
+      barrierDismissible: false,
+      routeSettings: const RouteSettings(name: 'AutoTagBatchProgress'),
+      builder: (_) => _BatchProgressDialog(
+        entries: entries,
+        applyTag: (entry, tag) => widget.actionDelegate.quickTag(context, entry, TagFilter(tag)),
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _loader = _load());
+    if (report != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(report.cancelled
+              ? 'Batch stopped after ${report.scanned} of ${report.total} photos · ${report.applied} tags applied'
+              : 'Batch applied ${report.applied} tags across ${report.scanned} photos'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   Future<void> _applyAll(List<TagProposal> proposals) async {
     if (_busy) return;
     final messenger = ScaffoldMessenger.of(context);
@@ -208,6 +259,16 @@ class _AutoTagPageState extends State<AutoTagPage> {
               title: const Text('Whole collection'),
               subtitle: Text(_collectionMode ? 'Propose tags for every entry' : 'Propose tags for this entry only'),
             ),
+            if (_collectionMode)
+              ListTile(
+                leading: Icon(Symbols.bolt, color: colors.primary),
+                title: const Text('Batch apply'),
+                subtitle: const Text('Auto-apply high-confidence tags to every photo in this view.'),
+                trailing: TextButton(
+                  onPressed: _busy ? null : _batchApply,
+                  child: const Text('Run'),
+                ),
+              ),
             const Divider(height: 1),
             Expanded(
               child: FutureBuilder<List<TagProposal>>(
@@ -313,6 +374,69 @@ class _Row extends StatelessWidget {
                 ],
               ),
       ),
+    );
+  }
+}
+
+/// Progress dialog for the batch run. Owns the engine invocation and
+/// pops with the run report when the engine finishes or is cancelled.
+class _BatchProgressDialog extends StatefulWidget {
+  final List<AvesEntry> entries;
+  final Future<void> Function(AvesEntry entry, String tag) applyTag;
+
+  const _BatchProgressDialog({required this.entries, required this.applyTag});
+
+  @override
+  State<_BatchProgressDialog> createState() => _BatchProgressDialogState();
+}
+
+class _BatchProgressDialogState extends State<_BatchProgressDialog> {
+  int _done = 0;
+  bool _cancelled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _run();
+  }
+
+  Future<void> _run() async {
+    const engine = AutoTagEngine();
+    final report = await engine.run(
+      entries: widget.entries,
+      applyTag: widget.applyTag,
+      onProgress: (done, total) {
+        if (mounted) setState(() => _done = done);
+      },
+      isCancelled: () => _cancelled,
+    );
+    if (!mounted) return;
+    Navigator.of(context).pop(report);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final total = widget.entries.length;
+    return AvesDialog(
+      title: 'Applying tags',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LinearProgressIndicator(value: total == 0 ? null : _done / total),
+          const SizedBox(height: 12),
+          Text(
+            _cancelled
+                ? 'Cancelling… ($_done of $total)'
+                : 'Tagged $_done of $total photos…',
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _cancelled ? null : () => setState(() => _cancelled = true),
+          child: const Text('Cancel'),
+        ),
+      ],
     );
   }
 }

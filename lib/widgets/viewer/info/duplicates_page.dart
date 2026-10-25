@@ -5,6 +5,9 @@ import 'package:aves/model/entry/entry.dart';
 import 'package:aves/model/entry/extensions/images.dart';
 import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/source/collection_lens.dart';
+import 'package:aves/services/ai_service.dart';
+import 'package:aves/services/common/services.dart';
+import 'package:aves/theme/icons.dart';
 import 'package:aves/theme/m3e_tokens.dart';
 import 'package:aves/widgets/common/basic/scaffold.dart';
 import 'package:aves/widgets/common/basic/status_view.dart';
@@ -13,11 +16,14 @@ import 'package:material_ui/material_ui.dart';
 
 /// Duplicate finder UI.
 ///
-/// Groups entries by a stable fingerprint (size + mime + dimensions).
-/// Real-world duplicate detection typically needs perceptual hashing,
-/// which the AI companion can provide; the fingerprint below is a
-/// conservative approximation that flags only likely-exact copies.
-class DuplicatesPage extends StatelessWidget {
+/// Two complementary passes:
+///  1. local exact copies — grouped by a stable fingerprint (size + mime
+///     + dimensions) plus a head+tail content hash, computed instantly;
+///  2. AI near-duplicates — the companion's /dup command over its CLIP
+///     index (cosine >= 0.97), which catches re-encodes and crops the
+///     fingerprint cannot see. Shown only when the companion is
+///     connected with the `dup` capability.
+class DuplicatesPage extends StatefulWidget {
   static const routeName = '/viewer/info/duplicates';
 
   final CollectionLens? collection;
@@ -26,30 +32,152 @@ class DuplicatesPage extends StatelessWidget {
   const DuplicatesPage({super.key, this.collection, required this.entry});
 
   @override
+  State<DuplicatesPage> createState() => _DuplicatesPageState();
+}
+
+class _DuplicatesPageState extends State<DuplicatesPage> {
+  /// Cap for the companion pass: /dup embeds every payload entry, so
+  /// bound the work even for very large views.
+  static const _companionPayloadCap = 400;
+
+  List<_DuplicateGroup> _localGroups = const [];
+  List<_DuplicateGroup> _companionGroups = const [];
+  bool _companionLoading = false;
+  String? _companionError;
+
+  @override
+  void initState() {
+    super.initState();
+    final entries = widget.collection?.sortedEntries ?? [widget.entry];
+    _localGroups = _groupExactCopies(entries);
+    _loadCompanionGroups();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final entries = collection?.sortedEntries ?? [entry];
-    final groups = _groupDuplicates(entries);
+    final entries = widget.collection?.sortedEntries ?? [widget.entry];
+    final hasLocal = _localGroups.isNotEmpty;
+    final hasCompanion = _companionGroups.isNotEmpty;
 
     return AvesScaffold(
       appBar: AppBar(title: const Text('Duplicates')),
       body: SafeArea(
-        child: groups.isEmpty
+        child: !hasLocal && !hasCompanion && !_companionLoading && _companionError == null
             ? StatusView(
                 icon: Symbols.content_copy,
                 title: 'No duplicates found',
-                subtitle: 'Scanned ${entries.length} items using size and dimensions. '
-                    'Perceptual duplicate detection lands when the AI companion ships.',
+                subtitle: 'Scanned ${entries.length} items using size and dimensions.',
               )
-            : ListView.builder(
+            : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-                itemCount: groups.length,
-                itemBuilder: (context, index) => _GroupCard(group: groups[index], index: index),
+                children: [
+                  if (hasLocal) ...[
+                    _sectionHeader(context, 'Exact copies', trailing: '${_localGroups.length} group${_localGroups.length == 1 ? '' : 's'}'),
+                    for (var i = 0; i < _localGroups.length; i++)
+                      _GroupCard(entries: _localGroups[i].entries, index: i),
+                  ],
+                  _sectionHeader(context, 'AI near-duplicates', trailing: _companionTrailing(context)),
+                  if (_companionLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (_companionError != null)
+                    StatusView(
+                      icon: AIcons.error,
+                      isError: true,
+                      title: 'AI scan failed',
+                      subtitle: _companionError,
+                    )
+                  else if (!hasCompanion)
+                    const StatusView(
+                      icon: Symbols.auto_awesome,
+                      title: 'No near-duplicates',
+                      subtitle: 'The companion compared your photos by visual similarity and found no repeats.',
+                    )
+                  else
+                    for (var i = 0; i < _companionGroups.length; i++)
+                      _GroupCard(entries: _companionGroups[i].entries, index: i),
+                ],
               ),
       ),
     );
   }
 
-  List<_DuplicateGroup> _groupDuplicates(List<AvesEntry> entries) {
+  Widget _sectionHeader(BuildContext context, String title, {String? trailing}) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 4, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (trailing != null)
+            Text(
+              trailing,
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String? _companionTrailing(BuildContext context) {
+    if (_companionLoading) return 'scanning…';
+    if (_companionError != null) return null;
+    final n = _companionGroups.length;
+    return n > 0 ? '$n group${n == 1 ? '' : 's'}' : null;
+  }
+
+  Future<void> _loadCompanionGroups() async {
+    if (!mounted) return;
+    setState(() => _companionLoading = true);
+    try {
+      if (!await aiService.hasCapability('dup')) {
+        if (mounted) setState(() => _companionLoading = false);
+        return;
+      }
+      final entries = (widget.collection?.sortedEntries ?? [widget.entry]).take(_companionPayloadCap).toList();
+      final reply = await aiService.chat(
+        '/dup',
+        entryIds: entries.map((e) => e.id).toList(),
+        entries: AiService.entriesPayload(entries),
+      );
+      if (!mounted) return;
+      final error = reply.error;
+      if (error != null && error.isNotEmpty) {
+        setState(() {
+          _companionError = error;
+          _companionLoading = false;
+        });
+        return;
+      }
+      final byId = {for (final e in entries) e.id: e};
+      final groups = <_DuplicateGroup>[];
+      for (final ids in reply.groupedEntryIds) {
+        final group = ids.map((id) => byId[id]).whereType<AvesEntry>().toList();
+        if (group.length > 1) groups.add(_DuplicateGroup(entries: group));
+      }
+      setState(() {
+        _companionGroups = groups;
+        _companionLoading = false;
+      });
+    } catch (e, s) {
+      await reportService.recordError(e, s);
+      if (mounted) {
+        setState(() {
+          _companionError = e.toString();
+          _companionLoading = false;
+        });
+      }
+    }
+  }
+
+  List<_DuplicateGroup> _groupExactCopies(List<AvesEntry> entries) {
     // stage 1: cheap fingerprint (size + mime)
     final byFingerprint = <String, List<AvesEntry>>{};
     for (final e in entries) {
@@ -143,16 +271,15 @@ class _DuplicateGroup {
 }
 
 class _GroupCard extends StatelessWidget {
-  final _DuplicateGroup group;
+  final List<AvesEntry> entries;
   final int index;
 
-  const _GroupCard({required this.group, required this.index});
+  const _GroupCard({required this.entries, required this.index});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final entries = group.entries;
     final totalBytes = entries.map((e) => e.sizeBytes ?? 0).fold<int>(0, (a, b) => a + b);
     final keep = bestOf(entries);
 

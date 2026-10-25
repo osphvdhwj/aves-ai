@@ -6,6 +6,7 @@ import 'package:aves/model/entry/extensions/props.dart';
 import 'package:aves/model/settings/enums/widget_outline.dart';
 import 'package:aves/model/settings/settings.dart';
 import 'package:aves/model/viewer/view_state.dart';
+import 'package:aves/services/ai_service.dart';
 import 'package:aves/services/common/services.dart';
 import 'package:aves/services/media/media_session_service.dart';
 import 'package:aves/theme/icons.dart';
@@ -18,6 +19,7 @@ import 'package:aves/widgets/home_widget.dart';
 import 'package:aves/widgets/viewer/controls/controller.dart';
 import 'package:aves/widgets/viewer/controls/notifications.dart';
 import 'package:aves/widgets/viewer/hero.dart';
+import 'package:aves/widgets/viewer/info/text_select_page.dart';
 import 'package:aves/widgets/viewer/video/conductor.dart';
 import 'package:aves/widgets/viewer/view/conductor.dart';
 import 'package:aves/widgets/viewer/visual/error.dart';
@@ -422,7 +424,7 @@ class _EntryPageViewState extends State<EntryPageView> with TickerProviderStateM
             if (!context.mounted) return;
             _onTap(alignment: alignment);
           },
-          onLongPress: canGestureToOtherApps ? _startGlobalDrag : null,
+          onLongPress: canGestureToOtherApps ? _startGlobalDrag : _onLongPressOcr,
           onDoubleTap: onDoubleTap,
           child: child!,
         );
@@ -451,6 +453,27 @@ class _EntryPageViewState extends State<EntryPageView> with TickerProviderStateM
         );
 
     await windowService.startGlobalDrag(entry.uri, entry.bestTitle, dragShadowSize, dragShadowBytes);
+  }
+
+  /// Hold-to-select OCR: long-pressing a still photo runs on-device text
+  /// recognition and opens the selectable-text view. Skipped when the
+  /// long-press is reserved for the drag-to-other-apps gesture, and for
+  /// videos; a missing companion degrades to a snackbar hint.
+  Future<void> _onLongPressOcr() async {
+    if (!entry.isImage || entry.isAnimated) return;
+    final h = await aiService.health();
+    if (!h.has('ocr')) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Hold-to-select text needs the AI companion with OCR.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
+    await showTextSelectPage(context, entry);
   }
 
   void _onFling(AxisDirection direction) {
