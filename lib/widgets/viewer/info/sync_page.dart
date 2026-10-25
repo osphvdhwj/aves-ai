@@ -110,8 +110,8 @@ class _SyncPageState extends State<SyncPage> {
       );
 }
 
-Future<void> showSyncPage(BuildContext context) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showSyncPage(BuildContext context) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: SyncPage.routeName),
       builder: (context) => const SyncPage(),

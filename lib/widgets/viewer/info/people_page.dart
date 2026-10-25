@@ -107,8 +107,8 @@ class _Grid extends StatelessWidget {
   }
 }
 
-Future<void> showPeoplePage(BuildContext context, {List<FaceCluster> clusters = const []}) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showPeoplePage(BuildContext context, {List<FaceCluster> clusters = const []}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: PeoplePage.routeName),
       builder: (context) => PeoplePage(clusters: clusters),

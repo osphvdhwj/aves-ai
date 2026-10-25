@@ -246,8 +246,8 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-Future<void> showDuplicatesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showDuplicatesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: DuplicatesPage.routeName),
       builder: (context) => DuplicatesPage(entry: entry, collection: collection),

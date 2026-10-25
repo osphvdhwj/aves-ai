@@ -139,8 +139,8 @@ class _TextSelectPageState extends State<TextSelectPage> {
 }
 
 /// Opens [TextSelectPage] with a shared-element-ish fade transition.
-Future<void> showTextSelectPage(BuildContext context, AvesEntry entry) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showTextSelectPage(BuildContext context, AvesEntry entry) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: TextSelectPage.routeName),
       builder: (context) => TextSelectPage(entry: entry),

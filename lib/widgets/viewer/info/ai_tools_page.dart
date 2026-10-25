@@ -264,8 +264,8 @@ class _Tile extends StatelessWidget {
   }
 }
 
-Future<void> showAiToolsPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showAiToolsPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: AiToolsPage.routeName),
       builder: (context) => AiToolsPage(entry: entry, collection: collection),

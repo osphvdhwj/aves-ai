@@ -322,8 +322,8 @@ Future<void> showAutoTagPage(
   required AvesEntry entry,
   required EntryInfoActionDelegate actionDelegate,
   CollectionLens? collection,
-}) {
-  return Navigator.maybeOf(context)?.push(
+}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: AutoTagPage.routeName),
       builder: (context) => AutoTagPage(entry: entry, actionDelegate: actionDelegate, collection: collection),

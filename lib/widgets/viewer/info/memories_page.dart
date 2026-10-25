@@ -185,8 +185,8 @@ class _MemoryCard extends StatelessWidget {
   }
 }
 
-Future<void> showMemoriesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showMemoriesPage(BuildContext context, AvesEntry entry, {CollectionLens? collection}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: MemoriesPage.routeName),
       builder: (context) => MemoriesPage(entry: entry, collection: collection),

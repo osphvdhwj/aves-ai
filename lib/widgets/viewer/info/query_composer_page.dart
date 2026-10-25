@@ -162,8 +162,8 @@ class _QueryComposerPageState extends State<QueryComposerPage> {
   }
 }
 
-Future<void> showQueryComposerPage(BuildContext context) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showQueryComposerPage(BuildContext context) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: QueryComposerPage.routeName),
       builder: (context) => const QueryComposerPage(),

@@ -102,8 +102,8 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-Future<void> showObjectsPage(BuildContext context, {Map<String, int> counts = const {}}) {
-  return Navigator.maybeOf(context)?.push(
+Future<void> showObjectsPage(BuildContext context, {Map<String, int> counts = const {}}) async {
+  await Navigator.maybeOf(context)?.push(
     MaterialPageRoute(
       settings: const RouteSettings(name: ObjectsPage.routeName),
       builder: (context) => ObjectsPage(counts: counts),
